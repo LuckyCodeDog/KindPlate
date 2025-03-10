@@ -10,7 +10,10 @@ app.register_blueprint(dashboard, url_prefix='/dashboard')
 
 @app.route("/")
 def home():
-    return render_template(f"base.html")
+    return "Hello, World!"
 
+@app.route("/docs")
+def docs():
+    return render_template(f"docs.html")
 if __name__ == '__main__':
     app.run(debug=True)
