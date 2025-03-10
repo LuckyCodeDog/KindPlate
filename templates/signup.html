@@ -1,0 +1,205 @@
+<!--
+####### LINCOLN FITNESS #######
+### GROUP 21                ###
+###############################
+-->
+
+
+{% extends "base.html" %}
+<!-- title -->
+{% block head_title %} {{ title }} {% endblock %} {% block nav %}
+<nav>
+    <nav class="navbar navbar-expand-lg navbar-light bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand nav-link" href="/" style="color: white;">Lincoln Fitness</a>
+        </div>
+    </nav>
+</nav>
+{% endblock %}
+
+<!-- content -->
+{% block content %}
+
+<div class="container">
+    <!--header begins-->
+    <div>
+        <h2>{{ title }}</h2>
+    </div>
+    <div class="line">
+        <hr style="width: 200px;color: #ced4da; ">
+    </div>
+    <!--header ends-->
+    <!--form begins-->
+    <form action="{{ url_for('signup') }}" method="post" class="row g-3">
+        <div class="h-25 d-inline-block">
+            <span style="font-weight: bolder;">Basic info</span>
+        </div>
+        <div class="col-md-6" hidden>
+            <label class="col-form-label">User Id*</label>
+            <input type="text" class="form-control" name="user_id" readonly maxlength="50" id="user_id" value="{{ user_id }}" required>
+        </div>
+        <div class="col-md-6">
+            <label class="col-form-label">First Name*</label>
+            <input type="text" class="form-control" name="first_name" maxlength="50" id="first_name" value="{{ first_name }}" required>
+        </div>
+        <div class="col-md-6">
+            <label class="col-form-label">Last Name*</label>
+            <input type="text" class="form-control" name="last_name" maxlength="50" id="last_name" value="{{ last_name }}" required>
+        </div>
+        <div class="col-md-4">
+            <label class="col-form-label">Date of Birth*</label>
+            <input type="date" class="form-control" name="dob" id="dob" value="{{ dob or '1990-01-01' }}" required>
+        </div>
+        <div class="col-md-4">
+            <label class="col-form-label">Phone Number*</label>
+            <input type="text" class="form-control" name="phone_number" maxlength="50" value="{{ phone_number }}" id="phone_number">
+        </div>
+        <div class="col-md-4">
+            <label type="email" aria-describedby="emailHelp" class="col-form-label">Email*</label>
+            <input type="email" class="form-control" name="email" maxlength="50" value="{{ email }}" id="email" required>
+        </div>
+
+        <div class="h-25 d-inline-block">
+            <span style="font-weight: bolder;">Address </span>
+        </div>
+        <div class="col-md-6">
+            <label class="col-form-label">Street*</label>
+            <input type="text" class="form-control" name="street" maxlength="20" id="street" value="{{ street }}" required>
+        </div>
+        <div class="col-md-6">
+            <label class="col-form-label">Town*</label>
+            <input type="text" class="form-control" name="town" maxlength="25" id="town" value="{{ town }}" required>
+        </div>
+        <div class="col-md-6">
+            <label class="col-form-label">City*</label>
+            <input type="text" class="form-control" name="city" maxlength="25" id="city" value="{{ city }}" required>
+        </div>
+        <div class="col-md-6">
+            <label class="col-form-label">Postalcode*</label>
+            <input type="text" class="form-control" name="postalcode" maxlength="4" id="postalcode" value="{{ postalcode }}" required>
+        </div>
+
+        <div class="h-25 d-inline-block">
+            <span style="font-weight: bolder;">Additionnal Info </span>
+        </div>
+        <div class="col-md-12">
+            <label class="col-form-label">Health*</label>
+            <input type="text" class="form-control" name="health" maxlength="200" id="health" value="{{ health }}" required>
+        </div>
+        <div class="col-md-6" hidden>
+            <label class="col-form-label">Subscription Type*</label>
+            <select class="form-select col-form-label" name="subscription_type" value="{{subscription_type}}" id="subscription_type" required>
+          <option value="Monthly">Monthly Subscription at $60</option>
+          <option value="Yearly">Yearly Subscription at $600</option>
+        </select>
+        </div>
+        <div class="col-md-6">
+            <label class="col-form-label">Payment Method*</label>
+            <select class="form-select" name="payment_method" value="{{payment_method}}" id="payment_method" required>Payment Method*
+          <option value="Online" >Online</option>
+          <option value="Manual" >Manual</option>
+        </select>
+        </div>
+
+        <div class="col-md-12">
+            <button type="button" class="btn btn-primary" id="btn" aria-label="submit button" data-toggle="modal" data-target="#myModal">Signup as a Member</button>
+        </div>
+    </form>
+    <!--form ends-->
+
+    <!-- erro modal begins-->
+    <div class="modal fade" id="myModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 style="color: red;">Error:</h5>
+                </div>
+                <div class="modal-body">
+                    <p style="color: red;">Email exists, please change another one !</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary " data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--modal ends-->
+    <!-- success modal begins-->
+    <div class="modal fade" id="myModal2">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5>Congratulations</h5>
+                </div>
+                <div class="modal-body">
+                    <p>You have successfully become our member, click the button below to login!</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary "><a href="{{url_for('login')}}" style="color: white;text-decoration: none;">Login!</a></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- success modal ends-->
+</div>
+<script>
+    $('#btn').click(function(e) {
+        e.preventDefault();
+        var first_name = $('#first_name').val();
+        var last_name = $('#last_name').val();
+        var dob = $('#dob').val();
+        var phone_number = $('#phone_number').val();
+        var email = $('#email').val();
+        var street = $('#street').val();
+        var town = $('#town').val();
+        var city = $('#city').val();
+        var postalcode = $('#postalcode').val();
+        var health = $('#health').val();
+        var subscription_type = $('#subscription_type').val();
+        var payment_method = $('#payment_method').val();
+        var url = "{{ url_for('signup') }}";
+        // console.log(first_name)
+        // console.log(last_name)
+        // console.log(dob)
+        // console.log(phone_number)
+        // console.log(email)
+        // console.log(street)
+        // console.log(town)
+        // console.log(city)
+        // console.log(postalcode)
+        // console.log(health)
+        // console.log(subscription_type)
+        // console.log(payment_method)
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: {
+                first_name: first_name,
+                last_name: last_name,
+                dob: dob,
+                phone_number: phone_number,
+                email: email,
+                street: street,
+                town: town,
+                city: city,
+                postalcode: postalcode,
+                health: health,
+                subscription_type: subscription_type,
+                payment_method: payment_method
+            },
+            success: function(data) {
+                if (data == "failed") {
+                    $('#myModal').modal('show')
+                }
+                if (data == "success") {
+                    $('#myModal2').modal('show')
+                }
+            },
+            error: function(err) {
+                console.log(err)
+            }
+
+        })
+    })
+</script>
+{% endblock %}

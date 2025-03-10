@@ -1,0 +1,41 @@
+<!--
+####### LINCOLN FITNESS #######
+### GROUP 21                ###
+###############################
+-->
+
+
+{% extends "base.html" %} {% block content %}
+<div class="carousel slide " data-bs-ride="carousel">
+    <div class="carousel-inner">
+        <div class="carousel-item active text-center">
+            <img src="{{ url_for('static', filename='login.jpg' ) }}" class="d-block w-100" alt="...">
+            <div class="carousel-caption text-center " style="top: 25%;">
+                <div class="container text-center col-md-6">
+                    <form method="POST" action="{{ url_for('login') }}">
+                        <h1 class="h3 mb-6 fw-normal">Please sign in</h1>
+
+                        <div class="form-floating">
+                            <input class="form-control" type="email" placeholder="Please key in your email" name="email" required>
+                            <label for="email" style="color:black;opacity: 0.5;">Email Address</label>
+                        </div>
+
+                        <row>
+                            <div style="margin-top: 10px;margin-bottom: 10px;">
+                                <button class="w-100 btn btn-primary" type="submit" value="signin" name="submit_button">Sign in</button>
+                            </div>
+                    </form>
+
+                    <form method="GET" action="{{ url_for('signup') }}">
+                        <div style="margin-top: 100px;margin-bottom: 10px;">
+                            <button class="w-100 btn btn-warning" type="submit" value="signup" name="submit_button">Join Us Today</button>
+                        </div>
+                    </form>
+                    </row>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
