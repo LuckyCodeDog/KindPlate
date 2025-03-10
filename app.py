@@ -7,6 +7,9 @@ app = Flask(__name__)
 # 注册蓝图
 app.register_blueprint(dashboard, url_prefix='/dashboard')
 
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
 
 @app.route("/")
 def home():
