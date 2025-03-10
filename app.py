@@ -1,11 +1,11 @@
 # app.py
 from flask import Flask
-from app.dashboard.dashboard import admin 
+from app.dashboard.dashboard import dashboard 
 from flask import render_template
 app = Flask(__name__)
 
 # 注册蓝图
-app.register_blueprint(admin, url_prefix='/dashboard')
+app.register_blueprint(dashboard, url_prefix='/dashboard')
 
 
 @app.route("/")
