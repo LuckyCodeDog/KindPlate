@@ -22,22 +22,22 @@ class Order(db.Model):
     @staticmethod
     def get_all_orders():
         return Order.query.all()
-    # 静态方法 - 获取订单通过 ID
+
     @staticmethod
     def get_order_by_id(order_id):
         return Order.query.filter_by(order_id=order_id).first()
 
-    # 静态方法 - 获取某个顾客的所有订单
+
     @staticmethod
     def get_orders_by_customer(customer_id):
         return Order.query.filter_by(customer_id=customer_id).all()
 
-    # 静态方法 - 获取某个服务员的所有订单
+
     @staticmethod
     def get_orders_by_waiter(waiter_id):
         return Order.query.filter_by(waiter_id=waiter_id).all()
 
-    # 静态方法 - 创建一个新订单
+ 
     @staticmethod
     def create_order(customer_id, waiter_id, total_amount, status='Pending'):
         new_order = Order(customer_id=customer_id, waiter_id=waiter_id, total_amount=total_amount, status=status)
@@ -45,7 +45,7 @@ class Order(db.Model):
         db.session.commit()
         return new_order
 
-    # 静态方法 - 更新订单状态
+
     @staticmethod
     def update_order_status(order_id, new_status):
         order = Order.query.get(order_id)
@@ -55,7 +55,7 @@ class Order(db.Model):
             return order
         return None
 
-    # 静态方法 - 删除订单
+
     @staticmethod
     def delete_order(order_id):
         order = Order.query.get(order_id)
