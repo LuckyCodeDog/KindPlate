@@ -26,3 +26,8 @@ def to_dashboard():
 @dashboard.route("/menu_items")
 def menu_items():
     return render_template("dashboard_menu_items.html")
+
+#test
+@dashboard.route("/docs")
+def docs():
+    return render_template("docs.html")
