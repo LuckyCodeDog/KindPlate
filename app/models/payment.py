@@ -1,7 +1,6 @@
 # app/models.py
 from datetime import datetime
-from flask_sqlalchemy import SQLAlchemy
-db = SQLAlchemy()
+from app import db
 class Payment(db.Model):
     __tablename__ = 'Payments'
 

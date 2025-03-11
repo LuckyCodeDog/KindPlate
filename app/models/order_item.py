@@ -1,6 +1,5 @@
 # app/models.py
 from app import db
-
 class OrderItem(db.Model):
     __tablename__ = 'OrderItems'
 

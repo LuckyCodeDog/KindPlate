@@ -1,6 +1,7 @@
 # app/models.py
 from datetime import datetime
 from app import db
+from app.models.order import Order
 class User(db.Model):
     __tablename__ = 'Users'
 

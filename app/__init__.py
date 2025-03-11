@@ -14,7 +14,6 @@ def create_app():
     app.register_blueprint(dashboard, url_prefix='/dashboard')
     from app.models.order import Order
     from app.models.user import User
-
     from app.models.order_item import OrderItem
     from app.models.menu_item import MenuItem
     from app.models.payment import Payment
