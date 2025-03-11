@@ -8,8 +8,8 @@ from flask import flash
 from app import db
 from app.models.user import User
 from app.models.order import Order
-from common.login_required import admin_login_required
-from common.user import current_user
+from app.common.login_required import login_required
+from app.common.user import current_user
 dashboard = Blueprint("dashboard", __name__, template_folder="templates")
 
 @dashboard.route("/")
