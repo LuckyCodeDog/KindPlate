@@ -1,9 +1,7 @@
 # app/models.py
 # app/models.py
-from app import db
 from datetime import datetime
-from 
-
+from app import db
 class MenuItem(db.Model):
     __tablename__ = 'MenuItems'
 
@@ -17,7 +15,6 @@ class MenuItem(db.Model):
     created_at = db.Column(db.TIMESTAMP, default=datetime.utcnow)
 
     order_items = db.relationship('OrderItem', backref='menu_item')
-    reviews = db.relationship('Review', backref='menu_item')
 
     def __repr__(self):
         return f'<MenuItem {self.name}>'
