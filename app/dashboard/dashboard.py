@@ -23,3 +23,6 @@ def to_dashboard():
     print(user)
     return render_template(f"dashboard_overview.html", name="name")
 
+@dashboard.route("/menu_items")
+def menu_items():
+    return render_template("dashboard_menu_items.html")

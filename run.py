@@ -1,5 +1,5 @@
 # app.py
-from MySQLdb import OperationalError
+
 from flask import Flask
 from app.dashboard.dashboard import dashboard 
 from flask_sqlalchemy import SQLAlchemy
