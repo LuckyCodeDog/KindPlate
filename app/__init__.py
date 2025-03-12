@@ -1,3 +1,4 @@
+import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from config import Config
@@ -7,6 +8,8 @@ db = SQLAlchemy()
 def create_app():
     app = Flask(__name__)
     app.config['SECRET_KEY'] = 'your_random_generated_secret_key'
+    app.config['UPLOAD_FOLDER'] = 'app/static/uploads/'
+    app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'gif'}
     app.config.from_object(Config)
     db.init_app(app)
 
@@ -20,4 +23,5 @@ def create_app():
     from app.models.order_item import OrderItem
     from app.models.menu_item import MenuItem
     from app.models.payment import Payment
+    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
     return app 

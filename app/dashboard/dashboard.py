@@ -1,11 +1,12 @@
 
+import datetime
 from flask import Blueprint
 from flask import render_template
 from flask import request
 from flask import redirect
 from flask import url_for
 from flask import flash
-from app import db
+from flask import current_app as app
 from app.models.user import User
 from app.models.order import Order
 from app.models.menu_item import MenuItem
@@ -18,6 +19,7 @@ dashboard = Blueprint("dashboard", __name__, template_folder="templates")
 @dashboard.route("/")
 def overview():
     user = current_user()
+    print(app.config['UPLOAD_FOLDER'])
     name = "123"
     user = User.get_all_users()
     order = Order.get_all_orders()
@@ -63,17 +65,22 @@ def edit_menu_item(menu_item_id):
                                   description = menu_item.description, 
                                   price = menu_item.price, 
                                   category = menu_item.category, 
-                                  available = menu_item.available, 
-                                  image_url = menu_item.image_url
+                                  available = menu_item.available
                                   )
     
     if request.method == "POST":
+        
         form = MenuItemForm()
+        
         if form.validate_on_submit():
-            MenuItem.update(menu_item_id, name=form.name.data, description=form.description.data, price=form.price.data, category=form.category.data, available=form.available.data)
+            file = form.image.data
+            filpath = app.config['UPLOAD_FOLDER'] + datetime.datetime.now().strftime("%Y%m%d%H%M%S")+file.filename
+            file.save(filpath)
+            image_url = url_for('static', filename='uploads/' + datetime.datetime.now().strftime("%Y%m%d%H%M%S")) + file.filename 
+            MenuItem.update(menu_item_id, name=form.name.data, description=form.description.data, price=form.price.data, category=form.category.data,image_url= image_url, available=form.available.data)
             flash("Menu item updated successfully", "success")
         return redirect(url_for("dashboard.menu_item_list"))
-    return render_template("dashboard_edit_menu_item.html", form=menu_item_form)
+    return render_template("dashboard_edit_menu_item.html", form=menu_item_form, image_url=menu_item.image_url)
 
 
 @dashboard.route("/docs")

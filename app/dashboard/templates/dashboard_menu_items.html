@@ -61,6 +61,7 @@
                                 <thead>
                                     <tr>
                                         <th class="cell">Name</th>
+                                        <th class="cell">Picture</th>
                                         <th class="cell">Price</th>
                                         <th class="cell">Description</th>
                                         <th class="cell">Satus</th>
@@ -71,7 +72,14 @@
                                     {% for menu_item in items.items %}
                                     <tr>
                                         <td class="cell">{{ menu_item.name }}</td>
+                                        <td class="cell">
+                                            <img src="{{ menu_item.image_url }}" 
+                                                 alt="{{ menu_item.name }}" 
+                                                 class="menu-item-image" 
+                                                 style="max-width: 75px; max-height: 75px;">
+                                        </td>
                                         <td class="cell">${{ menu_item.price }}</td>
+                                    
                                         <td class="cell"><span class="truncate">{{ menu_item.description }}</span></td>
 
                                         <td class="cell">
