@@ -80,7 +80,7 @@ def edit_menu_item(menu_item_id):
             MenuItem.update(menu_item_id, name=form.name.data, description=form.description.data, price=form.price.data, category=form.category.data,image_url= image_url, available=form.available.data)
             flash("Menu item updated successfully", "success")
         return redirect(url_for("dashboard.menu_item_list"))
-    return render_template("dashboard_edit_menu_item.html", form=menu_item_form, image_url=menu_item.image_url)
+    return render_template("dashboard_edit_menu_item.html", form=menu_item_form, image_url=menu_item.image_url, pagetitle="Edit "+ menu_item.name)
 
 
 @dashboard.route("/docs")
