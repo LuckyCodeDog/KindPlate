@@ -6,7 +6,7 @@ db = SQLAlchemy()
 
 def create_app():
     app = Flask(__name__)
-
+    app.config['SECRET_KEY'] = 'your_random_generated_secret_key'
     app.config.from_object(Config)
     db.init_app(app)
 

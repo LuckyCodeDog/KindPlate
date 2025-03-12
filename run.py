@@ -1,7 +1,6 @@
 # app.py
 
 from flask import Flask
-from app.dashboard.dashboard import dashboard 
 from flask_sqlalchemy import SQLAlchemy
 from flask import render_template
 from app import create_app
