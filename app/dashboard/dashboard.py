@@ -1,10 +1,6 @@
-
 import datetime
-from flask import Blueprint, send_file, Response
-from flask import render_template
-from flask import request
 import os
-from flask import redirect
+from flask import Response, redirect, request, send_file
 from flask import url_for
 from flask import flash
 import csv
@@ -16,7 +12,20 @@ from app.common.login_required import login_required
 from app.common.user import current_user
 from app.common.forms import MenuItemForm, UserForm
 from flask_wtf import FlaskForm
-from app.dashboard import dashboard
+from flask import Blueprint, redirect, render_template, url_for
+
+dashboard = Blueprint("dashboard", __name__, template_folder="templates")
+
+
+@dashboard.route("/")
+def main():
+    return redirect(url_for("dashboard.overview"))
+
+
+@dashboard.route("/overview")
+def overview():
+
+    return render_template(f"dashboard_overview.html", name="name")
 
 
 @dashboard.route("/menu_items", methods=["GET", "POST"])
@@ -34,6 +43,7 @@ def menu_item_list():
 
         return render_template("dashboard_menu_items.html", items=items, search=search)
 
+
 @dashboard.route("/menu_items/add", methods=["GET", "POST"])
 def add_menu_item():
     if request.method == "POST":
@@ -43,6 +53,7 @@ def add_menu_item():
             flash("Menu item added successfully", "success")
         return redirect(url_for("dashboard.menu_items_list"))
     return render_template("dashboard_menu_item_add.html")
+
 
 @dashboard.route("/menu_items/edit/<int:menu_item_id>", methods=["GET", "POST"])
 def edit_menu_item(menu_item_id):
@@ -71,6 +82,7 @@ def edit_menu_item(menu_item_id):
         return redirect(url_for("dashboard.menu_item_list"))
     return render_template("dashboard_menu_item_edit.html", form=menu_item_form, image_url=menu_item.image_url, pagetitle="Edit "+ menu_item.name)
 
+
 #create a new menu item
 @dashboard.route("/menu_items/create", methods=["GET", "POST"])
 def create_menu_item():
@@ -87,6 +99,7 @@ def create_menu_item():
     pagetitle = "Create Menu Item"
     return render_template("dashboard_menu_item_add.html" , pagetitle=pagetitle, form=MenuItemForm())
 
+
 @dashboard.route("/menu_items/delete/<int:menu_item_id>", methods=["GET"])
 def delete_menu_item(menu_item_id):
     menu_item = MenuItem.get_by_id(menu_item_id)
@@ -96,6 +109,7 @@ def delete_menu_item(menu_item_id):
     MenuItem.delete(menu_item_id)
     flash("Menu item deleted successfully", "success")
     return redirect(url_for("dashboard.menu_item_list"))
+
 
 @dashboard.route("/export_menu_items_csv")
 def export_menu_items_csv():
@@ -135,3 +149,29 @@ def export_menu_items():
 # water saving 
 
 # === Menu Item End ===
+
+
+@dashboard.route("/users")
+def users_list():
+    # pagnation
+    page = request.args.get('page', 1, type=int)
+    per_page = 10
+    users = User.query.paginate(page=page, per_page=per_page)
+    return render_template("dashboard_users.html", items=users)
+
+
+@dashboard.route("/users/add", methods=["GET", "POST"])
+def add_user():
+    form = UserForm()
+    if request.method == "POST":
+        if form.validate_on_submit():
+            User.create_user(username=form.username.data, password_hash=form.password_hash.data, email=form.email.data, phone_number=form.phone_number.data, role=form.role.data, first_name=form.first_name.data, last_name=form.last_name.data, contribution=form.contribution.data, image_url=form.image_url.data, status=form.status.data)
+            flash("User added successfully", "success")
+        return redirect(url_for("dashboard.users_list"))
+    return render_template("dashboard_users_add.html" , form=form , pagetitle="Add User")
+# === User Management End ===
+
+
+@dashboard.route("/docs")
+def docs():
+    return render_template("docs.html")

@@ -13,7 +13,7 @@ def create_app():
     app.config.from_object(Config)
     db.init_app(app)
 
-    from app.dashboard import dashboard
+    from app.dashboard.dashboard import dashboard
     from app.home.home import home
     
     app.register_blueprint(dashboard, url_prefix='/dashboard')
