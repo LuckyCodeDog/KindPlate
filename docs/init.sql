@@ -17,6 +17,7 @@ CREATE TABLE Users (
     contribution DECIMAL(10, 2) DEFAULT 0.00,
     status ENUM('active', 'inactive') DEFAULT 'active',
     address VARCHAR(255),
+    deleted BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );

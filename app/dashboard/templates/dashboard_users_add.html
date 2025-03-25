@@ -1,0 +1,78 @@
+{% extends "dashboard_base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="app-content pt-3 p-md-3 p-lg-4">
+    <div class="container-xl">
+        <!-- Card Component for the Form -->
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0">{{ pagetitle }}</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data">
+                    {{ form.hidden_tag() }}
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="first_name" class="form-label">{{ form.first_name.label }}</label>
+                            {{ form.first_name(class="form-control") }}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="last_name" class="form-label">{{ form.last_name.label }}</label>
+                            {{ form.last_name(class="form-control") }}
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="email" class="form-label">{{ form.email.label }}</label>
+                            {{ form.email(class="form-control") }}
+                            {% for error in form.email.errors %}
+                                <div class="text-danger">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="phone_number" class="form-label">{{ form.phone_number.label }}</label>
+                            {{ form.phone_number(class="form-control") }}
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="role" class="form-label">{{ form.role.label }}</label>
+                            {{ form.role(class="form-select") }}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="status" class="form-label">{{ form.status.label }}</label>
+                            {{ form.status(class="form-select") }}
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="contribution" class="form-label">{{ form.contribution.label }}</label>
+                            {{ form.contribution(class="form-control") }}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="image_url" class="form-label">{{ form.image.label }}</label>
+                            {{ form.image(class="form-control") }}
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <button type="submit" class="btn btn-primary text-white">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- End of Card Component -->
+    </div><!--//container-xl-->
+</div>
+
+{% endblock %}
