@@ -1,7 +1,7 @@
 from datetime import datetime
 from sqlalchemy import Enum
 from sqlalchemy.orm import relationship
-from app import db  # 假设 db 是全局数据库对象
+from app import db  
 from app.models.order_item import OrderItem
 from app.models.payment import Payment
 class Order(db.Model):

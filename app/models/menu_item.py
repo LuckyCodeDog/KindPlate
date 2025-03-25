@@ -13,7 +13,6 @@ class MenuItem(db.Model):
     available = db.Column(db.Boolean, default=True)
     image_url = db.Column(db.String(255))
     created_at = db.Column(db.TIMESTAMP, default=datetime.utcnow)
-
     order_items = db.relationship('OrderItem', backref='menu_item')
 
     def __repr__(self):
@@ -33,7 +32,7 @@ class MenuItem(db.Model):
         try:
             db.session.commit()
             return menu_item
-        except IntegrityError:
+        except Exception as e:
             db.session.rollback()
             return None  #
     

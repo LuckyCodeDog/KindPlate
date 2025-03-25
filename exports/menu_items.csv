@@ -1,0 +1,11 @@
+Name,Description,Price,Category,Available
+Cheeseburger,"A juicy beef patty with melted cheese, lettuce, and tomato.",90.00,main_course,False
+Vegetarian Pizza,A delightful pizza with a variety of fresh vegetables on a crispy crust.,12.49,appetizer,True
+Grilled Chicken Salad,"Grilled chicken served with fresh greens, tomatoes, cucumbers, and dressing.",10.99,appetizer,True
+Classic Margherita Pizza,"A classic pizza with mozzarella, tomatoes, and fresh basil.",9.99,appetizer,True
+Spaghetti Carbonara,"Classic Italian spaghetti with creamy sauce, bacon, and parmesan.",14.99,appetizer,True
+BBQ Ribs,"Tender ribs glazed with a smoky BBQ sauce, served with fries.",18.99,appetizer,True
+Vegan Tacos,"Delicious tacos filled with seasoned veggies, guacamole, and salsa.",7.49,appetizer,True
+Fish and Chips,Crispy battered fish fillets with a side of fries and tartar sauce.,11.99,appetizer,True
+Chocolate Lava Cake,"Warm chocolate cake with a molten center, served with vanilla ice cream.",6.99,appetizer,True
+Caesar Salad,"Crisp romaine lettuce, parmesan cheese, croutons, and Caesar dressing.",8.49,appetizer,True

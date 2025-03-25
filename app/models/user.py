@@ -2,6 +2,8 @@
 from datetime import datetime
 from app import db
 from app.models.order import Order
+from sqlalchemy import Enum as SqlEnum
+from app.common.MyEnum import Role
 class User(db.Model):
     __tablename__ = 'Users'
 
@@ -10,9 +12,11 @@ class User(db.Model):
     password_hash = db.Column(db.String(255), nullable=False)
     email = db.Column(db.String(100))
     phone_number = db.Column(db.String(20))
-    role = db.Column(db.Enum('Admin', 'Waiter', 'Chef', 'Customer', name='role_enum'), nullable=False)
+    role = db.Column(SqlEnum(Role), nullable=False)
     first_name = db.Column(db.String(50))
     last_name = db.Column(db.String(50))
+    contribution = db.Column(db.Numeric(10, 2), default=0) 
+    image_url = db.Column(db.String(255))
     status = db.Column(db.Enum('active', 'inactive', name='status_enum'), default='active')
     created_at = db.Column(db.TIMESTAMP, default=datetime.utcnow)
     updated_at = db.Column(db.TIMESTAMP, default=datetime.utcnow, onupdate=datetime.utcnow)
@@ -23,7 +27,16 @@ class User(db.Model):
         return f'<User {self.username}>'
 
     @staticmethod
-    def create_user(username, password_hash, email=None, phone_number=None, role='Customer', first_name=None, last_name=None):
+    def create_user(username, 
+                    password_hash, 
+                    email=None, 
+                    phone_number=None, 
+                    role='Customer', 
+                    first_name=None, 
+                    last_name=None, 
+                    contribution=0,
+                    image_url = None
+                    ):
         new_user = User(
             username=username,
             password_hash=password_hash,
@@ -31,7 +44,9 @@ class User(db.Model):
             phone_number=phone_number,
             role=role,
             first_name=first_name,
-            last_name=last_name
+            last_name=last_name,
+            contribution=contribution,
+            image_url = image_url
         )
         db.session.add(new_user)
         db.session.commit()
@@ -49,7 +64,7 @@ class User(db.Model):
 
 
     @staticmethod
-    def update_user(user_id, username=None, password_hash=None, email=None, phone_number=None, role=None, first_name=None, last_name=None, status=None):
+    def update_user(user_id, username=None, password_hash=None, email=None, phone_number=None, role=None, first_name=None, last_name=None, status=None, contribution=None):
         user = User.query.get(user_id)
         if user:
             if username:
@@ -68,6 +83,8 @@ class User(db.Model):
                 user.last_name = last_name
             if status:
                 user.status = status
+            if contribution:
+                user.contribution = contribution
             user.updated_at = datetime.utcnow()  # 更新修改时间
             db.session.commit()
             return user
