@@ -119,6 +119,30 @@ CREATE TABLE CartItems (
     FOREIGN KEY (menu_item_id) REFERENCES MenuItems(menu_item_id) 
 );
 
+CREATE TABLE restaurant_profile (
+    profile_id INT AUTO_INCREMENT PRIMARY KEY,
+    description TEXT, 
+    rating DECIMAL(3, 2) DEFAULT 0.00, 
+    image_url VARCHAR(255),
+    facilities TEXT, 
+    opening_date DATE, 
+    
+    social_media_links JSON,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE restaurant_opening_hours (
+    opening_hours_id INT AUTO_INCREMENT PRIMARY KEY,
+    restaurant_id INT, 
+    day_of_week ENUM('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'),
+    opening_time TIME, 
+    closing_time TIME, 
+    is_closed BOOLEAN DEFAULT FALSE, 
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (restaurant_id) REFERENCES restaurants(restaurant_id) 
+);
 
 INSERT INTO Users (username, password_hash, email, phone_number, role, first_name, last_name, image_url, contribution, status)
 VALUES
