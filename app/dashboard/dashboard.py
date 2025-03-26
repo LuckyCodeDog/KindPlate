@@ -156,7 +156,7 @@ def export_menu_items():
 def users_list():
     search = request.args.get('search', '')
     page = request.args.get('page', 1, type=int)
-    per_page = 10
+    per_page = 5
     
     query = User.query
     
