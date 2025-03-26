@@ -35,7 +35,8 @@ class User(db.Model):
                     first_name=None, 
                     last_name=None, 
                     contribution=0,
-                    image_url = None
+                    image_url = None,
+                    status='active'
                     ):
         new_user = User(
             username=username,
@@ -46,7 +47,8 @@ class User(db.Model):
             first_name=first_name,
             last_name=last_name,
             contribution=contribution,
-            image_url = image_url
+            image_url = image_url,
+            status=status
         )
         db.session.add(new_user)
         db.session.commit()
@@ -62,9 +64,10 @@ class User(db.Model):
     def get_user_by_id(user_id):
         return User.query.get(user_id)
 
-
+   
+    
     @staticmethod
-    def update_user(user_id, username=None, password_hash=None, email=None, phone_number=None, role=None, first_name=None, last_name=None, status=None, contribution=None):
+    def update_user(user_id, username=None, password_hash=None, email=None, phone_number=None, role=None, first_name=None, last_name=None, status=None, contribution=None, image_url=None):
         user = User.query.get(user_id)
         if user:
             if username:
@@ -85,6 +88,8 @@ class User(db.Model):
                 user.status = status
             if contribution:
                 user.contribution = contribution
+            if image_url:
+                user.image_url = image_url
             user.updated_at = datetime.utcnow()  # 更新修改时间
             db.session.commit()
             return user

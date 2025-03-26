@@ -16,6 +16,9 @@ class MenuItemForm(FlaskForm):
 
 class UserForm(FlaskForm):
 
+    username = StringField('Username', validators=[DataRequired(), Length(max=50)])
+    
+    password = PasswordField('Password', validators=[DataRequired(), Length(min=8, max=50)])
     
     email = EmailField('Email', validators=[DataRequired(), Email(), Length(max=100)])
 
@@ -32,3 +35,36 @@ class UserForm(FlaskForm):
     image = FileField('Upload Image', validators=[Optional(), FileAllowed(['jpg', 'png', 'jpeg'], 'Images only!')])
     
     status = SelectField('Status', choices=[('active', 'Active'), ('inactive', 'Inactive')], default='active')
+
+
+class UserEditForm(FlaskForm):
+    
+    email = EmailField('Email', validators=[DataRequired(), Email(), Length(max=100)])
+
+    phone_number = StringField('Phone Number', validators=[Length(max=20)])
+
+    role = SelectField('Role', choices=[(role.name, role.value) for role in Role], coerce=str, validators=[DataRequired()])
+
+    first_name = StringField('First Name', validators=[Length(max=50)])
+
+    last_name = StringField('Last Name', validators=[Length(max=50)])
+
+    contribution = StringField('Contribution', default='0.00')
+
+    image = FileField('Upload Image', validators=[Optional(), FileAllowed(['jpg', 'png', 'jpeg'], 'Images only!')])
+    
+    status = SelectField('Status', choices=[('active', 'Active'), ('inactive', 'Inactive')], default='active')
+
+class changePasswordForm(FlaskForm):
+    new_password = PasswordField('New Password', validators=[DataRequired(), Length(min=8, max=50)])
+    confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), Length(min=8, max=50)])
+
+    def validate(self):
+        if not FlaskForm.validate(self):
+            return False
+
+        if self.new_password.data != self.confirm_password.data:
+            self.confirm_password.errors.append('Passwords must match')
+            return False
+
+        return True

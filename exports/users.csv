@@ -1,0 +1,24 @@
+Username,Email,Phone Number,Role,First Name,Last Name,Contribution,Status
+john_doe,john.doe@example.com,123-456-7890,Role.Customer,John,Doe,0.00,active
+jane_smith,jane.smith@example.com,123-456-7891,Role.Waiter,Jane,Smith,0.00,active
+mark_jones,mark.jones@example.com,123-456-7892,Role.Chef,Mark,Jones,0.00,active
+susan_williams,susan.williams@example.com,123-456-7893,Role.Customer,Susan,Williams,0.00,inactive
+robert_brown,robert.brown@example.com,123-456-7894,Role.Admin,Robert,Brown,0.00,active
+mary_davis,mary.davis@example.com,123-456-7895,Role.Customer,Mary,Davis,0.00,active
+james_miller,james.miller@example.com,123-456-7896,Role.Waiter,James,Miller,0.00,inactive
+lisa_garcia,lisa.garcia@example.com,123-456-7897,Role.Chef,Lisa,Garcia,0.00,active
+daniel_martin,daniel.martin@example.com,123-456-7898,Role.Customer,Daniel,Martin,0.00,active
+elizabeth_clark,elizabeth.clark@example.com,123-456-7899,Role.Admin,Elizabeth,Clark,0.00,active
+kevin_lewis,kevin.lewis@example.com,123-456-7900,Role.Chef,Kevin,Lewis,0.00,active
+anna_white,anna.white@example.com,123-456-7901,Role.Waiter,Anna,White,0.00,inactive
+chris_hall,chris.hall@example.com,123-456-7902,Role.Customer,Chris,Hall,0.00,active
+nancy_allen,nancy.allen@example.com,123-456-7903,Role.Admin,Nancy,Allen,0.00,active
+brian_young,brian.young@example.com,123-456-7904,Role.Chef,Brian,Young,0.00,active
+rebecca_king,rebecca.king@example.com,123-456-7905,Role.Waiter,Rebecca,King,0.00,inactive
+william_lee,william.lee@example.com,123-456-7906,Role.Customer,William,Lee,0.00,active
+emily_wright,emily.wright@example.com,123-456-7907,Role.Customer,Emily,Wright,0.00,active
+joseph_smith,joseph.smith@example.com,123-456-7908,Role.Chef,Joseph,Smith,0.00,inactive
+samantha_johnson,samantha.johnson@example.com,123-456-7909,Role.Waiter,Samantha,Johnson,0.00,active
+john@example.com,hanqin886@gmail.com,02221212,Role.Admin,hanqin123,hanqin,0.00,active
+john123@example.com,hanqin886@gmail.com,02221212,Role.Admin,1,11,0.00,active
+joh111n@example.com,hanqin886@gmail.com,02221212,Role.Admin,11,11,0.00,active

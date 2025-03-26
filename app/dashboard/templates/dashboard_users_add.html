@@ -13,7 +13,17 @@
             <div class="card-body">
                 <form method="POST" enctype="multipart/form-data">
                     {{ form.hidden_tag() }}
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="first_name" class="form-label">{{ form.username.label }}</label>
+                            {{ form.username(class="form-control") }}
+                        </div>
 
+                        <div class="col-md-6">
+                            <label for="last_name" class="form-label">{{ form.password.label }}</label>
+                            {{ form.password(class="form-control") }}
+                        </div>
+                    </div>
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="first_name" class="form-label">{{ form.first_name.label }}</label>
