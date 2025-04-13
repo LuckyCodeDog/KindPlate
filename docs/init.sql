@@ -15,6 +15,7 @@ CREATE TABLE Users (
     last_name VARCHAR(50),
     image_url VARCHAR(255),
     contribution DECIMAL(10, 2) DEFAULT 0.00,
+    is_deleted BOOLEAN DEFAULT FALSE,
     status ENUM('active', 'inactive') DEFAULT 'active',
     address VARCHAR(255),
     deleted BOOLEAN DEFAULT FALSE,
@@ -126,46 +127,49 @@ CREATE TABLE restaurant_profile (
     image_url VARCHAR(255),
     facilities TEXT, 
     opening_date DATE, 
-    
-    social_media_links JSON,
+    opening_time TIME,
+    closing_time TIME,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
-CREATE TABLE restaurant_opening_hours (
-    opening_hours_id INT AUTO_INCREMENT PRIMARY KEY,
-    restaurant_id INT, 
-    day_of_week ENUM('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'),
-    opening_time TIME, 
-    closing_time TIME, 
-    is_closed BOOLEAN DEFAULT FALSE, 
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (restaurant_id) REFERENCES restaurants(restaurant_id) 
-);
 
-INSERT INTO Users (username, password_hash, email, phone_number, role, first_name, last_name, image_url, contribution, status)
-VALUES
-('john_doe', 'hashed_password1', 'john.doe@example.com', '123-456-7890', 'Customer', 'John', 'Doe', 'https://example.com/images/john.jpg', 0.00, 'active'),
-('jane_smith', 'hashed_password2', 'jane.smith@example.com', '123-456-7891', 'Waiter', 'Jane', 'Smith', 'https://example.com/images/jane.jpg', 0.00, 'active'),
-('mark_jones', 'hashed_password3', 'mark.jones@example.com', '123-456-7892', 'Chef', 'Mark', 'Jones', 'https://example.com/images/mark.jpg', 0.00, 'active'),
-('susan_williams', 'hashed_password4', 'susan.williams@example.com', '123-456-7893', 'Customer', 'Susan', 'Williams', 'https://example.com/images/susan.jpg', 0.00, 'inactive'),
-('robert_brown', 'hashed_password5', 'robert.brown@example.com', '123-456-7894', 'Admin', 'Robert', 'Brown', 'https://example.com/images/robert.jpg', 0.00, 'active'),
-('mary_davis', 'hashed_password6', 'mary.davis@example.com', '123-456-7895', 'Customer', 'Mary', 'Davis', 'https://example.com/images/mary.jpg', 0.00, 'active'),
-('james_miller', 'hashed_password7', 'james.miller@example.com', '123-456-7896', 'Waiter', 'James', 'Miller', 'https://example.com/images/james.jpg', 0.00, 'inactive'),
-('lisa_garcia', 'hashed_password8', 'lisa.garcia@example.com', '123-456-7897', 'Chef', 'Lisa', 'Garcia', 'https://example.com/images/lisa.jpg', 0.00, 'active'),
-('daniel_martin', 'hashed_password9', 'daniel.martin@example.com', '123-456-7898', 'Customer', 'Daniel', 'Martin', 'https://example.com/images/daniel.jpg', 0.00, 'active'),
-('elizabeth_clark', 'hashed_password10', 'elizabeth.clark@example.com', '123-456-7899', 'Admin', 'Elizabeth', 'Clark', 'https://example.com/images/elizabeth.jpg', 0.00, 'active'),
-('kevin_lewis', 'hashed_password11', 'kevin.lewis@example.com', '123-456-7900', 'Chef', 'Kevin', 'Lewis', 'https://example.com/images/kevin.jpg', 0.00, 'active'),
-('anna_white', 'hashed_password12', 'anna.white@example.com', '123-456-7901', 'Waiter', 'Anna', 'White', 'https://example.com/images/anna.jpg', 0.00, 'inactive'),
-('chris_hall', 'hashed_password13', 'chris.hall@example.com', '123-456-7902', 'Customer', 'Chris', 'Hall', 'https://example.com/images/chris.jpg', 0.00, 'active'),
-('nancy_allen', 'hashed_password14', 'nancy.allen@example.com', '123-456-7903', 'Admin', 'Nancy', 'Allen', 'https://example.com/images/nancy.jpg', 0.00, 'active'),
-('brian_young', 'hashed_password15', 'brian.young@example.com', '123-456-7904', 'Chef', 'Brian', 'Young', 'https://example.com/images/brian.jpg', 0.00, 'active'),
-('rebecca_king', 'hashed_password16', 'rebecca.king@example.com', '123-456-7905', 'Waiter', 'Rebecca', 'King', 'https://example.com/images/rebecca.jpg', 0.00, 'inactive'),
-('william_lee', 'hashed_password17', 'william.lee@example.com', '123-456-7906', 'Customer', 'William', 'Lee', 'https://example.com/images/william.jpg', 0.00, 'active'),
-('emily_wright', 'hashed_password18', 'emily.wright@example.com', '123-456-7907', 'Customer', 'Emily', 'Wright', 'https://example.com/images/emily.jpg', 0.00, 'active'),
-('joseph_smith', 'hashed_password19', 'joseph.smith@example.com', '123-456-7908', 'Chef', 'Joseph', 'Smith', 'https://example.com/images/joseph.jpg', 0.00, 'inactive'),
-('samantha_johnson', 'hashed_password20', 'samantha.johnson@example.com', '123-456-7909', 'Waiter', 'Samantha', 'Johnson', 'https://example.com/images/samantha.jpg', 0.00, 'active');
+
+
+
+
+
+
+INSERT INTO Users (
+    username, password_hash, email, phone_number, role,
+    first_name, last_name, image_url, contribution,
+    is_deleted, status, address, deleted
+) VALUES
+
+('admin_user', 'hashed_password_1', 'admin@example.com', '1234567890', 'Admin',
+ 'Alice', 'Smith', 'https://example.com/images/admin.jpg', 150.00,
+ FALSE, 'active', '123 Admin St.', FALSE),
+
+
+('waiter_john', 'hashed_password_2', 'john.waiter@example.com', '2345678901', 'Waiter',
+ 'John', 'Doe', 'https://example.com/images/waiter.jpg', 50.25,
+ FALSE, 'active', '456 Service Ave.', FALSE),
+
+
+('chef_maria', 'hashed_password_3', 'maria.chef@example.com', '3456789012', 'Chef',
+ 'Maria', 'Lopez', 'https://example.com/images/chef.jpg', 75.50,
+ FALSE, 'inactive', '789 Kitchen Rd.', FALSE),
+
+
+('customer_lee', 'hashed_password_4', 'lee.customer@example.com', '4567890123', 'Customer',
+ 'Lee', 'Wang', 'https://example.com/images/customer1.jpg', 20.00,
+ FALSE, 'active', '101 Customer Blvd.', FALSE),
+
+('customer_kate', 'hashed_password_5', 'kate.customer@example.com', '5678901234', 'Customer',
+ 'Kate', 'Brown', 'https://example.com/images/customer2.jpg', 0.00,
+ TRUE, 'inactive', '202 Hidden Ln.', TRUE);
+
+
 
 INSERT INTO MenuItems (name, description, price, category, available, enable_water_track, image_url)
 VALUES
@@ -189,3 +193,36 @@ VALUES
 ('Fish and Chips', 'Battered fish with crispy fries', 11.99, 'Seafood', TRUE, FALSE, 'https://example.com/images/fish_and_chips.jpg'),
 ('Cheeseburger', 'Beef patty with cheese, pickles, and mustard', 8.99, 'Burgers', TRUE, FALSE, 'https://example.com/images/cheeseburger.jpg'),
 ('BBQ Chicken', 'BBQ chicken served with corn on the cob', 12.99, 'Chicken', TRUE, FALSE, 'https://example.com/images/bbq_chicken.jpg');
+
+
+INSERT INTO restaurant_profile (
+    description, 
+    rating, 
+    image_url, 
+    facilities,
+    opening_date, 
+    opening_time, 
+    closing_time
+) VALUES
+('Kind Plate', 4.75, 'https://example.com/images/italian.jpg', 'Wi-Fi, Outdoor Seating',
+ '2022-06-15', '10:00:00', '22:00:00'),
+
+
+ INSERT INTO Orders (
+    customer_id, waiter_id, order_date, status, total_amount
+) VALUES
+
+
+(4, 2, NOW(), 'Pending', 45.50),
+
+
+(4, 2, NOW(), 'Preparing', 72.30),
+
+
+(5, 2, NOW(), 'Completed', 120.00),
+
+
+(5, 2, NOW(), 'Canceled', 38.00),
+
+
+(4, 2, NOW(), 'Completed', 90.75);

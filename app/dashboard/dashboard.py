@@ -5,16 +5,20 @@ from flask import url_for
 from flask import flash
 import csv
 from flask import current_app as app
+from sqlalchemy import String, cast
 from app.models.user import User
+from sqlalchemy.orm import joinedload
 from app.models.order import Order
+from app.models.restaurant_profile import RestaurantProfile
 from app.models.menu_item import MenuItem
 from app.common.login_required import login_required
 from app.common.user import current_user
-from app.common.forms import MenuItemForm, UserEditForm, UserForm, changePasswordForm
+from app.common.forms import MenuItemForm, UserEditForm, UserForm, changePasswordForm, RestaurantProfileForm
 from flask_wtf import FlaskForm
 from flask import Blueprint, redirect, render_template, url_for
 from app.common.salt import password_salt
 from werkzeug.security import generate_password_hash, check_password_hash
+from sqlalchemy.orm import aliased
 dashboard = Blueprint("dashboard", __name__, template_folder="templates")
 
 
@@ -311,6 +315,71 @@ def reset_password(user_id):
 
 # === User Management End ===
 
+# === settings ===
+@dashboard.route("/settings", methods=["GET", "POST"])
+def settings():
+    if request.method == "POST":
+        # Handle form submission for settings here
+        form = RestaurantProfileForm()
+        if form.validate_on_submit():
+            # Update the restaurant profile with the form data
+            file = form.image.data
+            filpath = app.config['UPLOAD_FOLDER'] + datetime.datetime.now().strftime("%Y%m%d%H%M%S")+file.filename
+            file.save(filpath)
+            image_url = url_for('static', filename='uploads/' + datetime.datetime.now().strftime("%Y%m%d%H%M%S")) + file.filename 
+
+            RestaurantProfile.update_profile(
+                profile_id=1,  # Assuming you have only one profile
+                description=form.description.data,
+                rating=form.rating.data,
+                facilities=form.facilities.data,
+                opening_date=form.opening_date.data,
+                opening_time=form.opening_time.data,
+                closing_time=form.closing_time.data,
+                image_url=image_url
+            )
+            flash("Settings updated successfully", "success")
+        return redirect(url_for("dashboard.settings"))
+    
+    # Render the settings page
+
+    restaurant  =   RestaurantProfile.get_profile_by_id(1)
+
+    form = RestaurantProfileForm(
+        description=restaurant.description,
+        rating=restaurant.rating,
+        facilities=restaurant.facilities,
+        opening_date=restaurant.opening_date,
+        opening_time=restaurant.opening_time,
+        closing_time=restaurant.closing_time,
+        image_url=restaurant.image_url
+    )
+
+    return render_template("dashboard_settings.html", form=form, restaurant=restaurant)
+
+# === settings ===
+
+# === Order Management ===
+# == Order List ==
+@dashboard.route("/orders")
+def orders_list():
+    Customer = aliased(User)
+    Waiter = aliased(User)
+
+    if request.method == "GET":
+        search = request.args.get('search', None)  
+        page = request.args.get('page', 1, type=int)  
+        per_page = 5 
+        orders = None
+        if search:
+            orders = Order.query.join(Customer, Order.customer_id == Customer.user_id).join(Waiter, Order.waiter_id == Waiter.user_id).filter(
+            cast(Order.order_id, String).ilike(f"%{search}%")).paginate(page=page, per_page=per_page)
+            print(orders)
+        else:
+            orders = Order.query \
+                .options(joinedload(Order.customer), joinedload(Order.waiter)) \
+                .paginate(page=page, per_page=per_page)
+        return render_template("dashboard_orders.html", items=orders, search=search)
 
 @dashboard.route("/docs")
 def docs():

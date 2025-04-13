@@ -1,0 +1,159 @@
+{% extends "dashboard_base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="app-content pt-3 p-md-3 p-lg-4">
+    <div class="container-xl">
+
+        <div class="row g-3 mb-4 align-items-center justify-content-between">
+            <div class="col-auto">
+                <h1 class="app-page-title mb-0">Oders</h1>
+            </div>
+            <div class="col-auto">
+                <div class="page-utilities">
+                    <div class="row g-2 justify-content-start justify-content-md-end align-items-center">
+                        <div class="col-auto">
+                            <form class="table-search-form row gx-1 align-items-center" method="GET" action="{{ url_for('dashboard.users_list') }}">
+                                <div class="col-auto">
+                                    <input type="text" id="search-orders" name="search"
+                                        class="form-control search-orders" placeholder="Search by name" value="{{ request.args.get('search', '') }}">
+                                </div>
+                                <div class="col-auto">
+                                    <button type="submit" class="btn app-btn-secondary">Search </button>
+                                </div>
+                            </form>
+
+                        </div><!--//col-->
+                        <div class="col-auto">
+                            <a class="btn app-btn-secondary" href="{{ url_for('dashboard.export_users_csv') }}">
+                                <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-download me-1"
+                                    fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd"
+                                        d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
+                                    <path fill-rule="evenodd"
+                                        d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z" />
+                                </svg>
+                                Download CSV
+                            </a>
+                        </div>
+                        <div class="col-auto">
+                            <a class="btn app-btn-primary" href="{{ url_for('dashboard.add_user') }}">
+                                <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-plus me-1" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M8 0a.5.5 0 0 1 .5.5v7.5h7a.5.5 0 0 1 0 1h-7.5v7a.5.5 0 0 1-1 0v-7h-7a.5.5 0 0 1 0-1h7.5v-7A.5.5 0 0 1 8 0z"/>
+                                </svg>
+                                Create New User
+                            </a>
+                        </div>
+                        
+                    </div><!--//row-->
+                </div><!--//table-utilities-->
+            </div><!--//col-auto-->
+        </div><!--//row-->
+
+        <div class="tab-content" id="orders-table-tab-content">
+            <div class="tab-pane fade show active" id="orders-all" role="tabpanel" aria-labelledby="orders-all-tab">
+                <div class="app-card app-card-orders-table shadow-sm mb-5">
+                    <div class="app-card-body">
+                        <div class="table-responsive">
+                            <table class="table app-table-hover mb-0 text-left">
+                                <thead>
+                                    <tr>
+                                        <th class="cell">Customer Name</th>
+                                        <th class="cell">Waiter Name</th>
+                                        <th class="cell text-truncate">Order Date</th>
+                                        <th class="cell">Status</th>
+                                        <th class="cell">Total Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for order_item in items.items %}
+                                    <tr>
+                
+                                        <td class="cell">{{ order_item.customer.first_name  }} {{order_item.customer.last_name   }}</td>
+
+                                        <td class="cell">{{ order_item.waiter.first_name  }} {{order_item.waiter.last_name   }}</td>
+                                    
+                                        <td class="cell"><span class="truncate">{{ order_item.order_date }}</span></td>
+
+                                        <td class="cell">
+                                            <span class="badge {% if order_item.status == "active" %} bg-success {% else %} bg-danger  {% endif %} ">{{ order_item.status}}</span>
+                                        </td>
+                                        <td class="cell">{{ order_item.total_amount }}</td>
+                                        <td class="cell">
+                                            <a class="btn btn-sm app-btn-primary" href=" ">
+                                                <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-pencil me-1" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M12.146 0.854a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.707 0l-2-2a.5.5 0 0 1 0-.707l7-7a.5.5 0 0 1 .707 0zM11 3L13 5l-7 7L4 10l7-7z"/>
+                                                </svg>
+                                                Edit
+                                            </a>
+                                            <a class="btn btn-sm app-btn-primary" href="#" data-bs-toggle="modal" data-bs-target="#deleteModal" onclick="">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-key-fill" viewBox="0 0 16 16">
+                                                    <path d="M3.5 11.5a3.5 3.5 0 1 1 3.163-5H14L15.5 8 14 9.5l-1-1-1 1-1-1-1 1-1-1-1 1H6.663a3.5 3.5 0 0 1-3.163 2M2.5 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/>
+                                                </svg>
+                                                Reset Password
+                                            </a>
+                                            <!-- Delete Button with data-bs-toggle to show the modal -->
+                                            <a class="btn btn-sm app-btn-secondary" href="#" data-bs-toggle="modal" data-bs-target="#deleteModal" onclick="">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+                                                    <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/>
+                                                </svg>
+                                                Delete
+                                            </a>
+                                        </td>
+                                          
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div><!--//table-responsive-->
+
+                    </div><!--//app-card-body-->
+                </div><!--//app-card-->
+
+
+                <nav class="app-pagination">
+                    <ul class="pagination justify-content-center">
+                
+                        {% if items.has_prev %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('dashboard.orders_list', page=items.prev_num) }}" tabindex="-1"
+                                aria-disabled="true">Previous</a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+                        </li>
+                        {% endif %}
+
+         
+                        {% for page_num in range(1, items.pages + 1) %}
+                        <li class="page-item {% if page_num == items.page %}active{% endif %}">
+                            <a class="page-link" href="{{ url_for('dashboard.orders_list', page=page_num) }}">{{ page_num }}</a>
+                        </li>
+                        {% endfor %}
+
+                    
+                        {% if items.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('dashboard.orders_list', page=items.next_num) }}">Next</a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#">Next</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav><!--//app-pagination-->
+            </div><!--//tab-pane-->
+
+        </div><!--//tab-content-->
+
+
+
+    </div><!--//container-fluid-->
+</div>
+
+
+
+{% endblock %}

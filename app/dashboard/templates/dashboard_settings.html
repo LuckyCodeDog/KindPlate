@@ -1,0 +1,67 @@
+{% extends "dashboard_base.html" %}
+
+{% block title %}Restaurant Settings{% endblock %}
+
+{% block content %}
+<div class="app-content pt-3 p-md-3 p-lg-4">
+    <div class="container-xl">
+        <!-- Card Component for the Form -->
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0">{{ pagetitle or 'Restaurant Profile Settings' }}</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data">
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-3">
+                        {% if restaurant.image_url %}
+                            <img src="{{ restaurant.image_url }}" alt="logo Image" class="menu-item-image" style="max-width: 200px; max-height: 150px;">
+                        {% endif %}
+                    </div>    
+                    
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.description.label }}</label>
+                        {{ form.description(class="form-control") }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.rating.label }}</label>
+                        {{ form.rating(class="form-control") }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.image.label }}</label>
+                        {{ form.image(class="form-control") }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.facilities.label }}</label>
+                        {{ form.facilities(class="form-control") }}
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">{{ form.opening_date.label }}</label>
+                            {{ form.opening_date(class="form-control") }}
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">{{ form.opening_time.label }}</label>
+                            {{ form.opening_time(class="form-control") }}
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">{{ form.closing_time.label }}</label>
+                            {{ form.closing_time(class="form-control") }}
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        {{ form.submit(class="btn btn-primary text-white") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- End of Card Component -->
+    </div><!--//container-xl-->
+</div>
+{% endblock %}

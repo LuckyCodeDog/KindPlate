@@ -16,7 +16,8 @@ class Order(db.Model):
 
     order_items = db.relationship('OrderItem', backref='order')
     payment = db.relationship('Payment', backref='order', uselist=False)
-
+    customer = relationship('User', foreign_keys=[customer_id], backref='orders_as_customer')
+    waiter = relationship('User', foreign_keys=[waiter_id], backref='orders_as_waiter')
     def __repr__(self):
         return f'<Order {self.order_id}>'
     @staticmethod

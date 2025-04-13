@@ -17,11 +17,11 @@ class User(db.Model):
     last_name = db.Column(db.String(50))
     contribution = db.Column(db.Numeric(10, 2), default=0) 
     image_url = db.Column(db.String(255))
+    is_deleted = db.Column(db.Boolean, default=False)
     status = db.Column(db.Enum('active', 'inactive', name='status_enum'), default='active')
     created_at = db.Column(db.TIMESTAMP, default=datetime.utcnow)
     updated_at = db.Column(db.TIMESTAMP, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    orders = db.relationship('Order', backref='customer', foreign_keys='Order.customer_id')
 
     def __repr__(self):
         return f'<User {self.username}>'
