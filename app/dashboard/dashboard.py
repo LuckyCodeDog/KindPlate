@@ -163,7 +163,7 @@ def users_list():
     per_page = 5
     
     query = User.query
-    
+    query = query.filter(User.is_deleted == False)  # Filter out deleted users
     if search:
         query = query.filter(
             (User.first_name.ilike(f"%{search}%")) | (User.last_name.ilike(f"%{search}%"))
@@ -207,6 +207,17 @@ def add_user():
         return redirect(url_for("dashboard.users_list"))
     return render_template("dashboard_users_add.html" , form=form , pagetitle="Add User")
 
+
+#delete user
+@dashboard.route("/users/delete/<int:user_id>", methods=["GET"])
+def delete_user(user_id):
+    user = User.get_user_by_id(user_id)
+    if not user:
+        flash("User not found", "danger")
+        return redirect(url_for("dashboard.users_list"))
+    User.update_user(user_id, is_deleted=True)
+    flash("User deleted successfully", "success")
+    return redirect(url_for("dashboard.users_list"))
 
 #export users to csv
 @dashboard.route("/export_users_csv")
@@ -297,7 +308,7 @@ def edit_user(user_id):
     return render_template("dashboard_users_edit.html", form=form, pagetitle="Edit User")
 
 #reset password
-@dashboard.route("/users/reset_password/<int:user_id>", methods=["GET"])
+@dashboard.route("/users/reset_password/<int:user_id>", methods=["GET", "POST"])
 def reset_password(user_id):
     
     user = User.get_user_by_id(user_id)
@@ -307,11 +318,12 @@ def reset_password(user_id):
     form = changePasswordForm()
     if request.method == "GET":
         return render_template("dashboard_users_reset_password.html", form=form)
-    if form.validate_on_submit():
+    if form.validate():
         # updated the password  
         User.update_user(user_id, password_hash=generate_password_hash(form.new_password.data + password_salt()))
         flash("Password reset successfully", "success")
         return redirect(url_for("dashboard.users_list"))
+    return render_template("dashboard_users_reset_password.html", form=form, pagetitle="Reset Password")
 
 # === User Management End ===
 

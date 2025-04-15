@@ -67,7 +67,7 @@ class User(db.Model):
    
     
     @staticmethod
-    def update_user(user_id, username=None, password_hash=None, email=None, phone_number=None, role=None, first_name=None, last_name=None, status=None, contribution=None, image_url=None):
+    def update_user(user_id, username=None, password_hash=None, email=None, phone_number=None, role=None, first_name=None, last_name=None, status=None, contribution=None, image_url=None, is_deleted=None):
         user = User.query.get(user_id)
         if user:
             if username:
@@ -90,6 +90,8 @@ class User(db.Model):
                 user.contribution = contribution
             if image_url:
                 user.image_url = image_url
+            if is_deleted:
+                user.is_deleted = is_deleted
             user.updated_at = datetime.utcnow()  # 更新修改时间
             db.session.commit()
             return user

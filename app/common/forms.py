@@ -55,6 +55,7 @@ class UserEditForm(FlaskForm):
     
     status = SelectField('Status', choices=[('active', 'Active'), ('inactive', 'Inactive')], default='active')
 
+
 class changePasswordForm(FlaskForm):
     new_password = PasswordField('New Password', validators=[DataRequired(), Length(min=8, max=50)])
     confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), Length(min=8, max=50)])

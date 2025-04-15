@@ -46,7 +46,7 @@
 	        <div class="sidepanel-inner d-flex flex-column">
 		        <a href="#" id="sidepanel-close" class="sidepanel-close d-xl-none">&times;</a>
 		        <div class="app-branding">
-		            <a class="app-logo" href="{{ url_for('dashboard.overview') }}"><img class="logo-icon me-2" src="../../../static/images/app-logo.svg" alt="logo"><span class="logo-text">Kind Plate</span></a>
+		            <a class="app-logo" href="{{ url_for('dashboard.overview') }}"><img class="logo-icon me-2" src="{{ restaurant_profile.image_url }}" alt="logo"><span class="logo-text"> {{restaurant_profile.description}}</span></a>
 	
 		        </div><!--//app-branding-->  
 		        
@@ -61,7 +61,7 @@
 		  <path fill-rule="evenodd" d="M13 2.5V6l-2-2V2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5z"/>
 		</svg>
 						         </span>
-		                         <span class="nav-link-text">Overview</span>
+		                         <span class="nav-link-text">Overview </span>
 					        </a>
 					    </li>
 
