@@ -18,4 +18,4 @@ home = Blueprint("home", __name__, template_folder="templates")
 @home.route("/")
 def index():
     user = current_user()
-    return render_template("home_base.html", user=user)
+    return render_template("restaurant_index.html", user=user)
