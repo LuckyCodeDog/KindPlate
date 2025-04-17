@@ -1,106 +1,7 @@
-<!DOCTYPE html>
-<html lang="en" data-bs-theme="light">
 
-<head>
-  <title>{{restaurant_profile.description}}</title>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <!-- Sites meta Data -->
-  <meta name="application-name" content="{{restaurant_profile.description}}">
-  <!-- OG meta data -->
-  
-  
-  
-  
-  
-  
-
-
-
-  <link rel="shortcut icon" href="../../../static/assets/picture/favicon.png" type="image/x-icon">
-
-  <link rel="stylesheet" href="../../../static/assets/css/bootstrap.min.css">
-  <link rel="stylesheet" href="../../../static/assets/css/aos.css">
-  <link rel="stylesheet" href="../../../static/assets/css/all.min.css">
-  <link rel="stylesheet" href="../../../static/assets/css/swiper-bundle.min.css">
-
-
-  <!-- main css for template -->
-  <link rel="stylesheet" href="../../../static/assets/css/style.css">
-</head>
-
-<body>
-
-  <!-- ===============>> Preloader start here <<================= -->
-  <div class="preloader">
-    <img style="height: 100px; width: 120px;" src="{{ restaurant_profile.image_url }}" alt="preloader icon">
-  </div>
-  <!-- ===============>> Preloader end here <<================= -->
-
-
-
-
-  <!-- ===============>> Header section start here <<================= -->
-  <header class="header">
-    <div class="container">
-      <div class="header__wrapper">
-        <div class="header__brand">
-          <a href="" style="font-size: larger; font-weight: bold;"><img src="{{ restaurant_profile.image_url}}" style="width: 100px; height: 75px;" alt="logo">   {{ restaurant_profile.description}}</a>
-        </div>
-
-        <!-- section navbar Menu -->
-        <div class="header__navbar">
-          <div class="header__overlay"></div>
-          <nav class="menu">
-            <div class="menu-mobile-header">
-              <button type="button" class="menu-mobile-arrow"><i class="fa-solid fa-arrow-left"></i></button>
-              <div class="menu-mobile-title"></div>
-              <button type="button" class="menu-mobile-close"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-          </nav>
-        </div>
-
-        <div class="header__action">
-          <a class="header__action-btn d-none d-xl-grid" href="login.html"><i class="fa-regular fa-user"></i></a>
-          <a class="header__action-btn d-none d-xl-grid" href="wishlist.html"><i class="fa-regular fa-heart"></i></a>
-
-          <a class="header__action-btn d-none d-xl-grid" href="cart.html">
-            <svg width="24" height="24" viewbox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="cart-icon">
-              <path d="M4.92383 18.2228C4.92383 18.6943 5.11832 19.1464 5.46451 19.4798C5.81071 19.8132 6.28025 20.0005 6.76985 20.0005C7.25944 20.0005 7.72899 19.8132 8.07518 19.4798C8.42138 19.1464 8.61587 18.6943 8.61587 18.2228C8.61587 17.7513 8.42138 17.2991 8.07518 16.9658C7.72899 16.6324 7.25944 16.4451 6.76985 16.4451C6.28025 16.4451 5.81071 16.6324 5.46451 16.9658C5.11832 17.2991 4.92383 17.7513 4.92383 18.2228Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-              <path d="M15.0762 18.2228C15.0762 18.6943 15.2707 19.1464 15.6169 19.4798C15.9631 19.8132 16.4326 20.0005 16.9222 20.0005C17.4118 20.0005 17.8813 19.8132 18.2275 19.4798C18.5737 19.1464 18.7682 18.6943 18.7682 18.2228C18.7682 17.7513 18.5737 17.2991 18.2275 16.9658C17.8813 16.6324 17.4118 16.4451 16.9222 16.4451C16.4326 16.4451 15.9631 16.6324 15.6169 16.9658C15.2707 17.2991 15.0762 17.7513 15.0762 18.2228Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-              <path d="M16.923 16.4446H6.76985V4.00049H4.92383" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-              <path d="M6.76953 5.77881L19.6917 6.66767L18.7687 12.8897H6.76953" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-            </svg>
-          </a>
-          <a href="cart.html" class="header__action-btn menu-icon d-xl-none"><i class="fa-solid fa-cart-shopping"></i></a>
-          <button id="trk-search-icon" class="menu-icon search-icon header__action-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
-          <button type="button" class="menu-mobile-trigger">
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-          </button>
-
-          <div class="trk-search">
-            <div class="trk-search__inner">
-              <div class="input-group">
-                <input type="text" class="form-control" placeholder="Search Here" aria-label="trk Search Bar" aria-describedby="trk-search">
-                <button type="submit" class="trk-search__btn" id="trk-search">
-                  <i class="fa-solid fa-magnifying-glass"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-          <div class="trk-search__overlay"></div>
-        </div>
-      </div>
-
-    </div>
-  </header>
-  <!-- ===============>> Header section end here <<================= -->
-
+{% extends "restaurant_base.html" %}
+{% block title %}{{restaurant_profile.description}}{% endblock %}
+{% block content %}
 
 
   <!-- ===============>> Banner section start here <<================= -->
@@ -184,7 +85,9 @@
                         <h4>{{ item.price }} </h4>
                       </div>
                       <div class="product__item-action">
-                        <a class="trk-btn trk-btn--outline" href="cart.html">Add to cart</a>
+                        <form action="{{ url_for('home.add_to_cart', menu_item_id=item.menu_item_id) }}" method="POST" style="display:inline;">
+                          <button type="submit" class="trk-btn trk-btn--outline">Add to cart</button>
+                      </form>                      
                       </div>
                     </div>
                   </div>
@@ -219,51 +122,25 @@
       <div class="blog__wrapper" data-aos="fade-up" data-aos-duration="1000">
         <div class="blog__slider swiper">
           <div class="swiper-wrapper">
+            {% for employee in employees %}
             <div class="swiper-slide">
               <div class="blog__item blog__item--style2">
                 <div class="blog__item-inner">
                   <div class="blog__thumb">
-                    <img style="height: 120px; width: 80px;" src="../../../static/assets/picture/17.png" alt="blog Images">
-                  </div>
-
-                  <div class="blog__content">
-                    <div class="blog__meta">
-                      <a href="#"><span class="blog__meta-tag blog__meta-tag--style1">Diet tips</span></a>
-                    </div>
-                    <h4> <a href="blog-details.html">A Comprehensive Guide to Efficient Grocery Shopping</a>
-                    </h4>
-
-                    <div class="blog__admin">
-                      <div class="blog__admin-name">
-                        <span><i class="fa-regular fa-user"></i></span> By Benjamin
-                      </div>
-                      <div class="blog__admin-date">
-                        <span><i class="fa-regular fa-calendar-check"></i></span> Sep 20, 2024
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="swiper-slide">
-              <div class="blog__item blog__item--style2">
-                <div class="blog__item-inner">
-                  <div class="blog__thumb">
-                    <img src="../../../static/assets/picture/24.png" alt="blog Images">
+                    <img style="height: 250px; width: 100%;" src="{{ employee.image_url }}" alt="blog Images">
                   </div>
 
                   <div class="blog__content">
                     <div class="blog__meta">
                       <a href="#">
-                        <span class="blog__meta-tag blog__meta-tag--style2">Healthy</span>
+                        <span class="blog__meta-tag blog__meta-tag--style3">{{ employee.role.value}}</span>
                       </a>
                     </div>
-                    <h4> <a href="blog-details.html">Nsider Tips for Budget-Friendly and Healthy Grocery
-                        Hauls</a> </h4>
+                    <h4> <a href="blog-details.html">It is my story.</a> </h4>
 
                     <div class="blog__admin">
                       <div class="blog__admin-name">
-                        <span><i class="fa-regular fa-user"></i></span> By Benjamin
+                        <span><i class="fa-regular fa-user"></i></span> By {{ employee.first_name }}  {{ employee.last_name }}
                       </div>
                       <div class="blog__admin-date">
                         <span><i class="fa-regular fa-calendar-check"></i></span> Sep 20, 2024
@@ -273,34 +150,9 @@
                 </div>
               </div>
             </div>
-            <div class="swiper-slide">
-              <div class="blog__item blog__item--style2">
-                <div class="blog__item-inner">
-                  <div class="blog__thumb">
-                    <img src="../../../static/assets/picture/34.png" alt="blog Images">
-                  </div>
 
-                  <div class="blog__content">
-                    <div class="blog__meta">
-                      <a href="#">
-                        <span class="blog__meta-tag blog__meta-tag--style3">Vegetables</span>
-                      </a>
-                    </div>
-                    <h4> <a href="blog-details.html">Navigating the Fresh Produce in Your Online Grocery
-                        Cart</a> </h4>
+            {% endfor %}
 
-                    <div class="blog__admin">
-                      <div class="blog__admin-name">
-                        <span><i class="fa-regular fa-user"></i></span> By Benjamin
-                      </div>
-                      <div class="blog__admin-date">
-                        <span><i class="fa-regular fa-calendar-check"></i></span> Sep 20, 2024
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -311,93 +163,4 @@
   </section>
   <!-- ===============>> Blog section start here <<================= -->
 
-
-
-
-
-  <!-- ===============>> footer start here <<================= -->
-  <footer class="footer ">
-    <div class="footer__top">
-      <div class="container">
-        <div class="footer__top-wrapper">
-          <div class="row gy-5 gx-2">
-            <div class="col-xl-4 col-lg-6 col-md-6">
-              <div class="footer__about">
-                <a href="" class="footer__about-logo" style="font-size: large; font-weight: bold;"><img style="width: 100px; height: 75px;"" src="{{ restaurant_profile.image_url }}" alt="Logo">  {{ restaurant_profile.description }}</a>
-                <p class="footer__about-moto ">We offer good vege food to our customers.</p>
-                <div class="footer__social">
-                  <ul class="social">
-                    <li class="social__item">
-                      <a href="#" class="social__link social__link--style2"><i class="fab fa-facebook-f"></i></a>
-                    </li>
-                    <li class="social__item">
-                      <a href="#" class="social__link social__link--style2"><i class="fa-brands fa-linkedin-in"></i></a>
-                    </li>
-                    <li class="social__item">
-                      <a href="#" class="social__link social__link--style2"><i class="fab fa-youtube"></i></a>
-                    </li>
-                    <li class="social__item">
-                      <a href="#" class="social__link social__link--style2"><i class="fa-brands fa-x-twitter"></i></a>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            <div class="col-xl-2 col-md-3 col-sm-6 col-6">
-              <div class="footer__links">
-                <div class="footer__links-tittle">
-                  <h4>Account</h4>
-                </div>
-                <div class="footer__links-content">
-                  <ul class="footer__linklist">
-                    <li class="footer__linklist-item"> <a href="login.html">Sign In</a>
-                    </li>
-                    <li class="footer__linklist-item"> <a href="cart.html">View Cart</a>
-                    </li>
-                    <li class="footer__linklist-item"> <a href="wishlist.html">My Wishlist</a></li>
-                    <li class="footer__linklist-item"> <a href="invoice.html">Shipping Details</a> </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-         
-          </div>
-        </div>
-      </div>
-    </div>
-
-
-
-    <div class="footer__shape">
-      <span class="footer__shape-item footer__shape-item--1"><img src="../../../static/assets/picture/leaf.png" alt="shape icon"></span>
-
-      <span class="footer__shape-item footer__shape-item--2"><img src="../../../static/assets/picture/tomato.png" alt="shape icon"></span>
-
-      <span class="footer__shape-item footer__shape-item--3"><img src="../../../static/assets/picture/chilli.png" alt="shape icon"></span>
-    </div>
-  </footer>
-  <!-- ===============>> footer end here <<================= -->
-
-
-
-  <!-- ===============>> scrollToTop start here <<================= -->
-  <a href="#" class="scrollToTop scrollToTop--style1"><i class="fa-solid fa-arrow-up-from-bracket"></i></a>
-  <!-- ===============>> scrollToTop ending here <<================= -->
-
-
-  <!-- vendor plugins -->
-
-  <script src="../../../static/assets/js/metismenujs.min.js"></script>
-  <script src="../../../static/assets/js/bootstrap.bundle.min.js"></script>
-  <script src="../../../static/assets/js/all.min.js"></script>
-  <script src="../../../static/assets/js/swiper-bundle.min.js"></script>
-  <script src="../../../static/assets/js/aos.js"></script>
-  <script src="../../../static/assets/js/fslightbox.js"></script>
-  <script src="../../../static/assets/js/purecounter_vanilla.js"></script>
-  <script src="../../../static/assets/js/trk-menu.js"></script>
-  <script src="../../../static/assets/js/custom.js"></script>
-
-</body>
-
-</html>
+{% endblock %}
