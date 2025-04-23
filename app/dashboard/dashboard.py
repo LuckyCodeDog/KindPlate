@@ -396,3 +396,4 @@ def orders_list():
 @dashboard.route("/docs")
 def docs():
     return render_template("docs.html")
+

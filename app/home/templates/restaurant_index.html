@@ -85,9 +85,8 @@
                         <h4>{{ item.price }} </h4>
                       </div>
                       <div class="product__item-action">
-                        <form action="{{ url_for('home.add_to_cart', menu_item_id=item.menu_item_id) }}" method="POST" style="display:inline;">
-                          <button type="submit" class="trk-btn trk-btn--outline">Add to cart</button>
-                      </form>                      
+                        <!-- 修改按钮并去掉form -->
+                        <button type="button" class="trk-btn trk-btn--outline add-to-cart-btn" data-id="{{ item.menu_item_id }}">Add to cart</button>
                       </div>
                     </div>
                   </div>
@@ -162,5 +161,53 @@
     </div>
   </section>
   <!-- ===============>> Blog section start here <<================= -->
+   <!-- Modal -->
+<div class="modal fade" id="cartSuccessModal" tabindex="-1" aria-labelledby="cartSuccessModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="cartSuccessModalLabel">Cart</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="cartModalMessage">
+        The item has been added to your cart.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
 
+<script>
+  document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+  button.addEventListener('click', function () {
+    const menuItemId = this.getAttribute('data-id'); 
+
+    fetch(`/add_to_cart/${menuItemId}`, {
+      method: 'POST',
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',  
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({})
+    })
+    .then(response => response.json())  
+    .then(data => {
+      // Update modal message
+      document.getElementById('cartModalMessage').textContent = data.message;
+
+      // Show the Bootstrap modal
+      const modal = new bootstrap.Modal(document.getElementById('cartSuccessModal'));
+      modal.show();
+    })
+    .catch(error => {
+      alert('Error adding item to cart: ' + error);
+    });
+  });
+});
+</script>
+
+{% endblock %}
+{% block scripts %}
 {% endblock %}

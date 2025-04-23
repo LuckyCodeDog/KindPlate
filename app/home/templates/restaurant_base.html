@@ -58,7 +58,7 @@
           <a class="header__action-btn d-none d-xl-grid" href="login.html"><i class="fa-regular fa-user"></i></a>
           <a class="header__action-btn d-none d-xl-grid" href="wishlist.html"><i class="fa-regular fa-heart"></i></a>
 
-          <a class="header__action-btn d-none d-xl-grid" href="cart.html">
+          <a class="header__action-btn d-none d-xl-grid" href="{{ url_for('home.view_cart') }}">
             <svg width="24" height="24" viewbox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="cart-icon">
               <path d="M4.92383 18.2228C4.92383 18.6943 5.11832 19.1464 5.46451 19.4798C5.81071 19.8132 6.28025 20.0005 6.76985 20.0005C7.25944 20.0005 7.72899 19.8132 8.07518 19.4798C8.42138 19.1464 8.61587 18.6943 8.61587 18.2228C8.61587 17.7513 8.42138 17.2991 8.07518 16.9658C7.72899 16.6324 7.25944 16.4451 6.76985 16.4451C6.28025 16.4451 5.81071 16.6324 5.46451 16.9658C5.11832 17.2991 4.92383 17.7513 4.92383 18.2228Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
               <path d="M15.0762 18.2228C15.0762 18.6943 15.2707 19.1464 15.6169 19.4798C15.9631 19.8132 16.4326 20.0005 16.9222 20.0005C17.4118 20.0005 17.8813 19.8132 18.2275 19.4798C18.5737 19.1464 18.7682 18.6943 18.7682 18.2228C18.7682 17.7513 18.5737 17.2991 18.2275 16.9658C17.8813 16.6324 17.4118 16.4451 16.9222 16.4451C16.4326 16.4451 15.9631 16.6324 15.6169 16.9658C15.2707 17.2991 15.0762 17.7513 15.0762 18.2228Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
@@ -66,7 +66,7 @@
               <path d="M6.76953 5.77881L19.6917 6.66767L18.7687 12.8897H6.76953" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg>
           </a>
-          <a href="cart.html" class="header__action-btn menu-icon d-xl-none"><i class="fa-solid fa-cart-shopping"></i></a>
+          <a href="{{ url_for('home.view_cart') }}" class="header__action-btn menu-icon d-xl-none"><i class="fa-solid fa-cart-shopping"></i></a>
           <button id="trk-search-icon" class="menu-icon search-icon header__action-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
           <button type="button" class="menu-mobile-trigger">
             <span></span>

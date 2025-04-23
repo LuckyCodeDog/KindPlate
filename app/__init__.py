@@ -10,6 +10,7 @@ def create_app():
     app.config['SECRET_KEY'] = 'your_random_generated_secret_key'
     app.config['UPLOAD_FOLDER'] = 'app/static/uploads/'
     app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'gif'}
+    app.config['WTF_CSRF_ENABLED'] = False
     app.config.from_object(Config)
     db.init_app(app)
 

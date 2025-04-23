@@ -1,0 +1,211 @@
+
+
+
+
+
+  {% extends "restaurant_base.html" %}
+  {% block title %}{{restaurant_profile.description}}{% endblock %}
+  {% block content %}
+  
+
+  <!-- ==========>> cart Section start Here <<========== -->
+  <div class="cart padding-top padding-bottom section-bg">
+    <div class="container">
+      <div class="section-wrapper">
+        <div class="row g-5">
+          <!-- cart top product list -->
+          <div class="col-lg-12">
+            <div class="cart__product table-responsive">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                    <th>Remove</th>
+                  </tr>
+                </thead>
+                <tbody>
+
+                  {% for item in cartItems %}
+                  <tr class="cart-item-row" data-id="{{ item.menu_item_id }}">
+                    <td class="cart__item">
+                      <div class="cart__item-thumb">
+                        <a href="#"><img src="{{ item.url }}" alt="product" width="60"></a>
+                      </div>
+                      <div class="cart__item-content">
+                        <h4><a href="#"> {{ item.name }} </a></h4>
+                      </div>
+                    </td>
+                    <td class="align-middle unit-price" data-price="{{ item.price }}">{{ item.price }}</td>
+                    <td class="cart__quantity align-middle">
+                      <div class="quantity-button quantity-button--style2">
+                        <button class="quantity-button__control quantity-button__control--decrease">-</button>
+                        <span class="quantity-button__display">{{ item.quantity }}</span>
+                        <button class="quantity-button__control quantity-button__control--increase">+</button>
+                      </div>
+                    </td>
+                    <td class="align-middle sub-total">{{ item.price * item.quantity }}</td>
+                    <td class="align-middle">
+                      <div class="close-btn">
+                        <a href="#"><span><i class="fa-solid fa-xmark"></i></span></a>
+                      </div>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                  <tr>
+                    <td colspan="6">
+                      <div class="cart__footer">
+                        <div class="cart__btn">
+                          <button id="update-cart-btn" class="trk-btn trk-btn--primary"  >Update cart</button>
+                        </div>
+                      </div>
+                    </td>
+                    
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <!-- checkout-->
+        <div class="row justify-content-end">
+          <div class="col-lg-4">
+            <div class="cart__total">
+              <h3>Cart Total</h3>
+
+              <div class="cart__total-data">
+                <span>Subtotal</span>
+                <span>$174</span>
+              </div>
+
+              <div class="cart__total-data">
+                <span>Discount</span>
+                <span>$30</span>
+              </div>
+
+              <div class="cart__total-data cart__total-data--total">
+                <span>Total</span>
+                <span>$<span id="cart-total">0.00</span></span>
+              </div>
+
+              <a href="chackout.html" class="trk-btn trk-btn--primary" >Proceed to checkout</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cart Update Modal -->
+        <div class="modal fade" id="cartModal" tabindex="-1" aria-labelledby="cartModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="cartModalLabel">Cart Info</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="关闭"></button>
+              </div>
+              <div class="modal-body" id="cartModalMessage">
+                
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    
+  function updatePrices() {
+    let total = 0;
+
+    document.querySelectorAll("tr.cart-item-row").forEach(row => {
+      const price = parseFloat(row.querySelector(".unit-price").dataset.price);
+      const quantity = parseInt(row.querySelector(".quantity-button__display").textContent);
+      const subtotal = price * quantity;
+
+      row.querySelector(".sub-total").textContent = subtotal.toFixed(2);
+      total += subtotal;
+    });
+
+    document.getElementById("cart-total").textContent = total.toFixed(2);
+  }
+
+  const initialQuantities = {};
+  document.querySelectorAll("tr.cart-item-row").forEach(row => {
+    const id = row.dataset.id;
+    const qty = parseInt(row.querySelector(".quantity-button__display").textContent);
+    initialQuantities[id] = qty;
+  });
+
+  const updateButton = document.getElementById("update-cart-btn");
+
+  function checkForChanges() {
+    let changed = false;
+
+    document.querySelectorAll("tr.cart-item-row").forEach(row => {
+      const id = row.dataset.id;
+      const currentQty = parseInt(row.querySelector(".quantity-button__display").textContent);
+      if (currentQty !== initialQuantities[id]) {
+        changed = true;
+      }
+    });
+
+    updateButton.disabled = !changed;
+  }
+  document.querySelectorAll(".quantity-button__control").forEach(button => {
+    button.addEventListener("click", function () {
+      const isIncrease = this.classList.contains("quantity-button__control--increase");
+      const display = this.closest(".quantity-button").querySelector(".quantity-button__display");
+
+      let quantity = parseInt(display.textContent);
+      quantity = isIncrease ? quantity + 1 : Math.max(1, quantity - 1);
+      display.textContent = quantity;
+
+      updatePrices();
+      checkForChanges();
+    });
+  });
+
+    document.getElementById("update-cart-btn").addEventListener("click", function () {
+    const updatedCart = [];
+
+    document.querySelectorAll("tr.cart-item-row").forEach(row => {
+      const id = row.getAttribute("data-id");
+      const quantity = parseInt(row.querySelector(".quantity-button__display").textContent);
+      updatedCart.push({ id, quantity });
+    });
+
+    fetch('/update_cart', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      body: JSON.stringify({ cart: updatedCart })
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log(data.message);
+      showBootstrapModal(data.message || "Cart updated successfully!");
+    })
+    .catch(error => {
+      console.error('Error updating cart:', error);
+      showBootstrapModal("Error updating cart: " + error.message);
+    });
+  });
+
+  function showBootstrapModal(message) {
+    const messageBox = document.getElementById("cartModalMessage");
+    messageBox.textContent = message;
+
+    const modalElement = document.getElementById("cartModal");
+    const bsModal = new bootstrap.Modal(modalElement);
+    bsModal.show();
+  }
+
+    
+  </script>
+  {% endblock %}
+  {% block scripts %}
+  {% endblock %}
