@@ -1,9 +1,12 @@
 import os
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
 from config import Config
-# 创建数据库对象
-db = SQLAlchemy()
+from app.extensions import db, login_manager
+from app.models.user import User
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 def create_app():
     app = Flask(__name__)
@@ -13,7 +16,7 @@ def create_app():
     app.config['WTF_CSRF_ENABLED'] = False
     app.config.from_object(Config)
     db.init_app(app)
-
+    login_manager.init_app(app)
     from app.dashboard.dashboard import dashboard
     from app.home.home import home
     

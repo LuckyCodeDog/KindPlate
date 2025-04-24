@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import DateField, RadioField, StringField, TextAreaField, DecimalField, SelectField, BooleanField, FileField, PasswordField, EmailField, SubmitField, TimeField
 from wtforms.validators import DataRequired, Optional, NumberRange
-from wtforms.validators import DataRequired, Length, Email
+from wtforms.validators import DataRequired, Length, Email, EqualTo
 from flask_wtf.file import FileAllowed
 from flask import current_app
 from app.common.MyEnum import PaymentMethod, Role
@@ -99,3 +99,17 @@ class CheckoutForm(FlaskForm):
     )
 
     submit = SubmitField('Place Order')
+    
+    
+class RegisterForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired(), Length(min=3, max=50)])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    password = PasswordField('Password', validators=[DataRequired(), Length(min=6)])
+    confirm_password = PasswordField('Confirm Password', validators=[
+        DataRequired(),
+        EqualTo('password', message='Passwords must match.')
+    ])
+    first_name = StringField('First Name', validators=[Length(max=50)])
+    last_name = StringField('Last Name', validators=[Length(max=50)])
+    role = SelectField('Role', choices=[(role.name, role.name.title()) for role in Role], validators=[DataRequired()])
+    submit = SubmitField('Register')

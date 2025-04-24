@@ -7,14 +7,14 @@ from flask import flash
 from sqlalchemy import or_
 from app import db
 from app.common.MyEnum import Role
+from app.common.salt import password_salt
 from app.models.user import User
 from app.models.order import Order
 from app.models.menu_item import MenuItem
-from app.common.login_required import login_required
-from app.common.user import current_user  
 from app.models.dto.cart_item_dto import cart_item_dto
-from app.common.forms import CheckoutForm
-
+from app.common.forms import CheckoutForm , LoginForm, RegisterForm
+from flask_login import login_user, logout_user, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
 home = Blueprint("home", __name__, template_folder="templates")
 
 
@@ -28,6 +28,7 @@ def index():
             User.role == Role.Chef
         )
     ).limit(5).all()
+    print(current_user.is_authenticated)
     return render_template("restaurant_index.html", employees=employees, menu_items=menu_items)
 
 @home.route("/add_to_cart/<int:menu_item_id>", methods=["POST"])
@@ -150,6 +151,39 @@ def checkout():
     checkout_form = CheckoutForm()
     
     return render_template('restaurant_checkout.html', cartItems=cartItems, total_price=total_price, form=checkout_form)
+
+
+#register 
+
+@home.route('/register', methods=['GET', 'POST'])
+def  register():
+    form = RegisterForm(role=Role.Customer)
+
+    if request.method == 'POST' and form.validate_on_submit():
+        username = form.username.data
+        password = form.password.data
+        email = form.email.data
+        phone_number = form.phone_number.data
+        role = Role.Customer  # 或 Role[form.role.data] 如果是 SelectField
+
+        # 检查用户名是否存在
+        if User.query.filter_by(username=username).first():
+            flash('Username already exists.', 'danger')
+            return render_template('register.html', form=form)
+
+    
+        new_user = User.create_user(
+            username=username,
+            password_hash=generate_password_hash(form.password.data + password_salt()),
+            email=email,
+            phone_number=phone_number,
+            role=role
+        )
+        login_user(new_user)
+        flash('Registration successful!', 'success')
+        return redirect(url_for('home.index'))
+
+    return render_template('register.html', form=form)
 # def merge_session_cart_to_db(user_id):
 #     session_cart = session.get('cart', {})
 #     for product_id_str, quantity in session_cart.items():

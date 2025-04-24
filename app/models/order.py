@@ -1,7 +1,7 @@
 from datetime import datetime
 from sqlalchemy import BigInteger, Enum
 from sqlalchemy.orm import relationship
-from app import db  
+from app.extensions import db
 from app.models.order_item import OrderItem
 from app.models.payment import Payment
 

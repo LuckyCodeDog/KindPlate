@@ -1,6 +1,6 @@
 # app/models.py
 from datetime import datetime
-from app import db
+from app.extensions import db
 class Payment(db.Model):
     __tablename__ = 'Payments'
 

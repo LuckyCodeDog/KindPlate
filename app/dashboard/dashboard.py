@@ -11,8 +11,6 @@ from sqlalchemy.orm import joinedload
 from app.models.order import Order
 from app.models.restaurant_profile import RestaurantProfile
 from app.models.menu_item import MenuItem
-from app.common.login_required import login_required
-from app.common.user import current_user
 from app.common.forms import MenuItemForm, UserEditForm, UserForm, changePasswordForm, RestaurantProfileForm
 from flask_wtf import FlaskForm
 from flask import Blueprint, redirect, render_template, url_for

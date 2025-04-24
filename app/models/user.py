@@ -4,7 +4,8 @@ from app import db
 from app.models.order import Order
 from sqlalchemy import Enum as SqlEnum
 from app.common.MyEnum import Role
-class User(db.Model):
+from flask_login import UserMixin
+class User(UserMixin, db.Model):
     __tablename__ = 'Users'
 
     user_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
