@@ -1,0 +1,188 @@
+
+{% extends "restaurant_base.html" %}
+{% block title %}{{restaurant_profile.description}}{% endblock %}
+{% block content %}
+
+
+  <!-- ============ shop Section start Here========== -->
+  <section class="checkout padding-top padding-bottom">
+    <div class="container">
+      <div class="checkout__wrapper">
+        <form action="javascript:;" class="checkout__form">
+          <div class="row g-5">
+            <div class="col-lg-7">
+              <div class="checkout__details" data-aos="fade-right" data-aos-duration="800" data-aos-delay="100">
+                <div class="row g-4">
+                  <div class="col-lg-12">
+                    <div class="checkout__title">
+                      <h5>Checkout</h5>
+                    </div>
+                    <div class="checkout__subtitle">
+                      <p>Billing Details</p>
+                    </div>
+
+                  </div>
+                  <div class="col-lg-6">
+                    <div class="input-group">
+                      <input type="text" class="form-control" id="first-name" placeholder="First name*" required>
+                    </div>
+                  </div>
+                  <div class="col-lg-6">
+                    <div class="input-group">
+                      <input type="text" class="form-control" id="last-name" placeholder="Last name*" required>
+                    </div>
+                  </div>
+                  <div class="col-lg-6">
+                    <div class="input-group">
+                      <input type="text" class="form-control" id="address" placeholder="Address*" required>
+                    </div>
+                  </div>
+                  <div class="col-lg-6">
+                    <div class="input-group">
+                      <input type="text" class="form-control" id="address2" placeholder="Address 2" required>
+                    </div>
+                  </div>
+                  <div class="col-lg-6">
+                    <div class="input-group">
+                      <input type="text" class="form-control" id="city" placeholder="City/Town*" required>
+                    </div>
+                  </div>
+                  <div class="col-lg-6">
+                    <div class="input-group">
+                      <input type="text" class="form-control" id="zip-code" placeholder="Zip Code*" required>
+                    </div>
+                  </div>
+                  <div class="col-lg-12">
+                    <div class="input-group">
+                      <textarea id="account-desc" class="form-control" rows="4" placeholder="Write a message..." cols="50"></textarea>
+                    </div>
+                  </div>
+
+                  <div class="account__form-passcheck">
+                    <div class="form-check">
+                      <input type="checkbox" class="form-check-input" value="" id="terms-check">
+                      <label for="terms-check" class="form-check-label">
+                        Create an account?
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-5">
+              <div class="order" data-aos="fade-left" data-aos-duration="800" data-aos-delay="100">
+                <div class="checkout__title">
+                  <h5>Order Summary</h5>
+                </div>
+                <div class="order__details table-responsive">
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th>Product</th>
+                        <th>Total</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+
+                
+                      <tr>
+                        <td colspan="2">
+                          <table class="table table-borderless">
+                            <tbody>
+                              {% for item in cartItems %}
+                              <tr>
+                                  <td>
+                                    <div class="o-info">
+                                      <img src="{{ item.image_url }}" alt="product">
+                                      <div class="o-details">
+                                        <div class="c-reviews">
+                                          <ul>
+                                            <li><i class="fa-solid fa-star"></i>
+                                            </li>
+                                            <li><i class="fa-solid fa-star"></i>
+                                            </li>
+                                            <li><i class="fa-solid fa-star"></i>
+                                            </li>
+                                            <li><i class="fa-solid fa-star"></i>
+                                            </li>
+                                            <li><i class="fa-solid fa-star"></i>
+                                            </li>
+                                          </ul>
+                                          <p>(13 reviews)</p>
+                                        </div>
+                                        <a href="product-details.html">{{ item.name}}</a>
+                                      </div>
+      
+                                    </div>
+      
+                                  </td>
+                                  <td>${{ item.price*item.quantity}}</td>
+                                </tr>
+                              {% endfor %}
+                            </tbody>
+                          </table>
+                        </td>
+                      </tr>
+                    </tbody>
+                    <tfoot>
+                      <tr>
+                        <th>Total &#40; NZD &#41; <p>VAT included, where applicable</p>
+                        </th>
+                        <td><strong>{{total_price}}</strong></td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+                <div class="order__option">
+                  <div class="order__option-title">
+                    <p>Payment</p>
+                  </div>
+                  <div class="order__option-item">
+                    <div class="form-radio-wrapper">
+                      <input class="form-radio" type="radio" name="payment-radio" value="" id="card">
+                      <label class="form-check-label" for="card">
+                        Credit/Debit Card
+                      </label>
+                    </div>
+                    <div class="thumb">
+                      <img src="../../../static/assets/picture/master_card.png" alt="payment icon">
+                      <img src="../../../static/assets/picture/visa_card.png" alt="payment icon">
+                    </div>
+                  </div>
+                  <div class="order__option-item">
+                    <div class="form-radio-wrapper">
+                      <input class="form-radio" type="radio" name="payment-radio" value="" id="paypalCheck">
+                      <label class="form-check-label" for="paypalCheck">
+                        Paypal
+                      </label>
+                    </div>
+                    <div class="thumb">
+                      <img src="../../../static/assets/picture/paypal_logo.png" alt="payment icon">
+                    </div>
+                  </div>
+                  <div class="order__option-item">
+                    <div class="form-radio-wrapper">
+                      <input class="form-radio" type="radio" name="payment-radio" value="" id="cash">
+                      <label class="form-check-label" for="cash">
+                       Pay In Store
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <button type="submit" class="trk-btn trk-btn--primary d-block mt-4">Place
+                  Order</button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+  <!-- ============ shop Section Ends Here========== -->
+
+
+
+{% endblock %}
+{% block scripts %}
+{% endblock %}

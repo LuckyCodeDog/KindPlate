@@ -32,7 +32,7 @@
                   <tr class="cart-item-row" data-id="{{ item.menu_item_id }}">
                     <td class="cart__item">
                       <div class="cart__item-thumb">
-                        <a href="#"><img src="{{ item.url }}" alt="product" width="60"></a>
+                        <a href="#"><img src="{{ item.image_url }}"  width="60"></a>
                       </div>
                       <div class="cart__item-content">
                         <h4><a href="#"> {{ item.name }} </a></h4>
@@ -49,7 +49,9 @@
                     <td class="align-middle sub-total">{{ item.price * item.quantity }}</td>
                     <td class="align-middle">
                       <div class="close-btn">
-                        <a href="#"><span><i class="fa-solid fa-xmark"></i></span></a>
+                        <a href="#" class="remove-item-btn" data-id="{{ item.menu_item_id }}">
+                          <span><i class="fa-solid fa-xmark"></i></span>
+                        </a>                        
                       </div>
                     </td>
                   </tr>
@@ -75,22 +77,13 @@
             <div class="cart__total">
               <h3>Cart Total</h3>
 
-              <div class="cart__total-data">
-                <span>Subtotal</span>
-                <span>$174</span>
-              </div>
-
-              <div class="cart__total-data">
-                <span>Discount</span>
-                <span>$30</span>
-              </div>
-
               <div class="cart__total-data cart__total-data--total">
                 <span>Total</span>
                 <span>$<span id="cart-total">0.00</span></span>
               </div>
 
-              <a href="chackout.html" class="trk-btn trk-btn--primary" >Proceed to checkout</a>
+              <a href="{{ url_for('home.checkout') }}" class="trk-btn trk-btn--primary">Order Takeaway</a>
+              <a href="{{ url_for('home.checkout') }}" class="trk-btn trk-btn--secondary">Dine In</a>
             </div>
           </div>
         </div>
@@ -113,99 +106,125 @@
       </div>
     </div>
   </div>
-
   <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const updateButton = document.getElementById("update-cart-btn");
+      const initialQuantities = {};
+  
     
-  function updatePrices() {
-    let total = 0;
-
-    document.querySelectorAll("tr.cart-item-row").forEach(row => {
-      const price = parseFloat(row.querySelector(".unit-price").dataset.price);
-      const quantity = parseInt(row.querySelector(".quantity-button__display").textContent);
-      const subtotal = price * quantity;
-
-      row.querySelector(".sub-total").textContent = subtotal.toFixed(2);
-      total += subtotal;
-    });
-
-    document.getElementById("cart-total").textContent = total.toFixed(2);
-  }
-
-  const initialQuantities = {};
-  document.querySelectorAll("tr.cart-item-row").forEach(row => {
-    const id = row.dataset.id;
-    const qty = parseInt(row.querySelector(".quantity-button__display").textContent);
-    initialQuantities[id] = qty;
-  });
-
-  const updateButton = document.getElementById("update-cart-btn");
-
-  function checkForChanges() {
-    let changed = false;
-
-    document.querySelectorAll("tr.cart-item-row").forEach(row => {
-      const id = row.dataset.id;
-      const currentQty = parseInt(row.querySelector(".quantity-button__display").textContent);
-      if (currentQty !== initialQuantities[id]) {
-        changed = true;
+      document.querySelectorAll("tr.cart-item-row").forEach(row => {
+        const id = row.dataset.id;
+        const qty = parseInt(row.querySelector(".quantity-button__display").textContent);
+        initialQuantities[id] = qty;
+      });
+  
+  
+      function updatePrices() {
+        let total = 0;
+  
+        document.querySelectorAll("tr.cart-item-row").forEach(row => {
+          const price = parseFloat(row.querySelector(".unit-price").dataset.price);
+          const quantity = parseInt(row.querySelector(".quantity-button__display").textContent);
+          const subtotal = price * quantity;
+  
+          row.querySelector(".sub-total").textContent = subtotal.toFixed(2);
+          total += subtotal;
+        });
+  
+        document.getElementById("cart-total").textContent = total.toFixed(2);
       }
-    });
+  
+     
+      function checkForChanges() {
+        let changed = false;
+  
+        document.querySelectorAll("tr.cart-item-row").forEach(row => {
+          const id = row.dataset.id;
+          const currentQty = parseInt(row.querySelector(".quantity-button__display").textContent);
+          if (currentQty !== initialQuantities[id]) {
+            changed = true;
+          }
+        });
+  
+        updateButton.disabled = !changed;
+      }
+  
 
-    updateButton.disabled = !changed;
-  }
-  document.querySelectorAll(".quantity-button__control").forEach(button => {
-    button.addEventListener("click", function () {
-      const isIncrease = this.classList.contains("quantity-button__control--increase");
-      const display = this.closest(".quantity-button").querySelector(".quantity-button__display");
-
-      let quantity = parseInt(display.textContent);
-      quantity = isIncrease ? quantity + 1 : Math.max(1, quantity - 1);
-      display.textContent = quantity;
-
-      updatePrices();
-      checkForChanges();
-    });
-  });
-
-    document.getElementById("update-cart-btn").addEventListener("click", function () {
-    const updatedCart = [];
-
-    document.querySelectorAll("tr.cart-item-row").forEach(row => {
-      const id = row.getAttribute("data-id");
-      const quantity = parseInt(row.querySelector(".quantity-button__display").textContent);
-      updatedCart.push({ id, quantity });
-    });
-
-    fetch('/update_cart', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest'
-      },
-      body: JSON.stringify({ cart: updatedCart })
-    })
-    .then(response => response.json())
-    .then(data => {
-      console.log(data.message);
-      showBootstrapModal(data.message || "Cart updated successfully!");
-    })
-    .catch(error => {
-      console.error('Error updating cart:', error);
-      showBootstrapModal("Error updating cart: " + error.message);
-    });
-  });
-
-  function showBootstrapModal(message) {
-    const messageBox = document.getElementById("cartModalMessage");
-    messageBox.textContent = message;
-
-    const modalElement = document.getElementById("cartModal");
-    const bsModal = new bootstrap.Modal(modalElement);
-    bsModal.show();
-  }
-
+      document.querySelectorAll(".quantity-button__control").forEach(button => {
+        button.addEventListener("click", function () {
+          const isIncrease = this.classList.contains("quantity-button__control--increase");
+          const display = this.closest(".quantity-button").querySelector(".quantity-button__display");
+  
+          let quantity = parseInt(display.textContent);
+          quantity = isIncrease ? quantity + 1 : Math.max(1, quantity - 1);
+          display.textContent = quantity;
+  
+          updatePrices();
+          checkForChanges();
+        });
+      });
+  
+   
+      document.querySelectorAll('.remove-item-btn').forEach(button => {
+        button.addEventListener('click', function (e) {
+          e.preventDefault();
+          const row = this.closest('.cart-item-row');
+          if (row) {
+            row.remove();
+          }
+  
+          updatePrices();
+          checkForChanges();
+        });
+      });
+  
+      updateButton.addEventListener("click", function () {
+        const updatedCart = [];
+  
+        document.querySelectorAll("tr.cart-item-row").forEach(row => {
+          const id = row.dataset.id;
+          const quantity = parseInt(row.querySelector(".quantity-button__display").textContent);
+          updatedCart.push({ id, quantity });
+        });
+  
+        fetch('/update_cart', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+          },
+          body: JSON.stringify({ cart: updatedCart })
+        })
+        .then(response => response.json())
+        .then(data => {
+          console.log(data.message);
+          showBootstrapModal(data.message || "Cart updated successfully!");
     
+          updatedCart.forEach(item => {
+            initialQuantities[item.id] = item.quantity;
+          });
+          updateButton.disabled = true;
+        })
+        .catch(error => {
+          console.error('Error updating cart:', error);
+          showBootstrapModal("Error updating cart: " + error.message);
+        });
+      });
+  
+      function showBootstrapModal(message) {
+        const messageBox = document.getElementById("cartModalMessage");
+        messageBox.textContent = message;
+  
+        const modalElement = document.getElementById("cartModal");
+        const bsModal = new bootstrap.Modal(modalElement);
+        bsModal.show();
+      }
+  
+   
+      updatePrices();
+    });
   </script>
+  
   {% endblock %}
   {% block scripts %}
   {% endblock %}

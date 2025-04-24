@@ -1,25 +1,30 @@
 from datetime import datetime
-from sqlalchemy import Enum
+from sqlalchemy import BigInteger, Enum
 from sqlalchemy.orm import relationship
 from app import db  
 from app.models.order_item import OrderItem
 from app.models.payment import Payment
+
+
 class Order(db.Model):
     __tablename__ = 'Orders'
 
     order_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    customer_id = db.Column(db.Integer, db.ForeignKey('Users.user_id'), nullable=False)
+    customer_id = db.Column(db.Integer, db.ForeignKey('Users.user_id'), nullable=True) 
     waiter_id = db.Column(db.Integer, db.ForeignKey('Users.user_id'), nullable=False)
     order_date = db.Column(db.TIMESTAMP, default=datetime.utcnow)
     status = db.Column(db.Enum('Pending', 'Preparing', 'Completed', 'Canceled', name='order_status_enum'), default='Pending')
     total_amount = db.Column(db.Numeric(10, 2), nullable=False)
+    recall_id = db.Column(BigInteger, nullable=True)  
 
     order_items = db.relationship('OrderItem', backref='order')
     payment = db.relationship('Payment', backref='order', uselist=False)
     customer = relationship('User', foreign_keys=[customer_id], backref='orders_as_customer')
     waiter = relationship('User', foreign_keys=[waiter_id], backref='orders_as_waiter')
+
     def __repr__(self):
         return f'<Order {self.order_id}>'
+
     @staticmethod
     def get_all_orders():
         return Order.query.all()
@@ -27,21 +32,34 @@ class Order(db.Model):
     @staticmethod
     def get_order_by_id(order_id):
         return Order.query.filter_by(order_id=order_id).first()
-
-
+    @staticmethod
+    def get_order_by_recall_id(recall_id):
+        return Order.query.filter_by(recall_id=recall_id).first()
+    
     @staticmethod
     def get_orders_by_customer(customer_id):
         return Order.query.filter_by(customer_id=customer_id).all()
-
 
     @staticmethod
     def get_orders_by_waiter(waiter_id):
         return Order.query.filter_by(waiter_id=waiter_id).all()
 
- 
     @staticmethod
-    def create_order(customer_id, waiter_id, total_amount, status='Pending'):
-        new_order = Order(customer_id=customer_id, waiter_id=waiter_id, total_amount=total_amount, status=status)
+    def create_order(customer_id, waiter_id, total_amount, status='Pending', recall_id=None, 
+                 first_name=None, last_name=None, address=None, city_or_town=None, zip_code=None, email=None):
+        new_order = Order(
+            customer_id=customer_id,
+            waiter_id=waiter_id,
+            total_amount=total_amount,
+            status=status,
+            recall_id=recall_id,
+            first_name=first_name,
+            last_name=last_name,
+            address=address,
+            city_or_town=city_or_town,
+            zip_code=zip_code,
+            email=email
+        )
         db.session.add(new_order)
         db.session.commit()
         return new_order
@@ -55,7 +73,6 @@ class Order(db.Model):
             db.session.commit()
             return order
         return None
-
 
     @staticmethod
     def delete_order(order_id):

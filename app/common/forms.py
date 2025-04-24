@@ -1,10 +1,10 @@
 from flask_wtf import FlaskForm
-from wtforms import DateField, StringField, TextAreaField, DecimalField, SelectField, BooleanField, FileField, PasswordField, EmailField, SubmitField, TimeField
+from wtforms import DateField, RadioField, StringField, TextAreaField, DecimalField, SelectField, BooleanField, FileField, PasswordField, EmailField, SubmitField, TimeField
 from wtforms.validators import DataRequired, Optional, NumberRange
 from wtforms.validators import DataRequired, Length, Email
 from flask_wtf.file import FileAllowed
 from flask import current_app
-from app.common.MyEnum import Role
+from app.common.MyEnum import PaymentMethod, Role
 class MenuItemForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired()])
     description = TextAreaField('Description', validators=[Optional()])
@@ -80,3 +80,22 @@ class RestaurantProfileForm(FlaskForm):
     opening_time = TimeField('Opening Time', validators=[Optional()])
     closing_time = TimeField('Closing Time', validators=[Optional()])
     submit = SubmitField('Submit')
+
+
+class CheckoutForm(FlaskForm):
+    first_name = StringField('First Name', validators=[DataRequired(), Length(max=50)])
+    last_name = StringField('Last Name', validators=[DataRequired(), Length(max=50)])
+    address = StringField('Address', validators=[DataRequired(), Length(max=100)])
+    address2 = StringField('Address 2', validators=[Length(max=100)])
+    city = StringField('City/Town', validators=[DataRequired(), Length(max=50)])
+    zip_code = StringField('Zip Code', validators=[DataRequired(), Length(max=10)])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    message = TextAreaField('Message', validators=[Length(max=500)])
+
+    payment_method = RadioField(
+        'Payment Method',
+        choices=[(method.value, method.name.replace('_', ' ').title()) for method in PaymentMethod],
+        validators=[DataRequired()]
+    )
+
+    submit = SubmitField('Place Order')

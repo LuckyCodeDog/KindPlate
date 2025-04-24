@@ -25,3 +25,8 @@ class MeatType(Enum):
 class UserStatus(Enum):
     Active = 'Active'
     Inactive = 'Inactive'
+    
+class PaymentMethod(Enum):
+    CARD = "card"
+    PAYPAL = "paypal"
+    CASH = "cash"

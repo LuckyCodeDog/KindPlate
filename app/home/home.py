@@ -13,7 +13,7 @@ from app.models.menu_item import MenuItem
 from app.common.login_required import login_required
 from app.common.user import current_user  
 from app.models.dto.cart_item_dto import cart_item_dto
-
+from app.common.forms import CheckoutForm
 
 home = Blueprint("home", __name__, template_folder="templates")
 
@@ -88,10 +88,12 @@ def view_cart():
                 menu_item_id=menu_item.menu_item_id,
                 quantity=quantity,
                 price=menu_item.price,
-                name=menu_item.name
+                name=menu_item.name,
+                image_url=menu_item.image_url
             )
+            print(str(cart_item_dto_obj.image_url))
             cartItems.append(cart_item_dto_obj)
-
+    
     print("Cart contents:", cartItems)
     return render_template("restaurant_cart.html", cartItems=cartItems, total_price=total_price)
 
@@ -116,7 +118,38 @@ def update_cart():
     return jsonify({"message": "Cart updated successfully!"})
 
 
+#check out the cart
+@home.route('/checkout', methods=['GET'])
+def checkout():
+    cart = session.get('cart', [])
+    if not cart:
+        flash('Your cart is empty!')
+        return redirect(url_for('home.view_cart'))
 
+    menu_items = []
+    cartItems = []
+    total_price = 0
+    for item in cart:
+        menu_item = MenuItem.get_by_id(int(item['id']))
+        if menu_item:
+            quantity = item['quantity']
+            menu_items.append(menu_item)
+            total_price += menu_item.price * quantity
+
+            cart_item_dto_obj = cart_item_dto(
+                menu_item_id=menu_item.menu_item_id,
+                quantity=quantity,
+                price=menu_item.price,
+                name=menu_item.name,
+                image_url=menu_item.image_url
+            )
+            print(str(cart_item_dto_obj.image_url))
+            cartItems.append(cart_item_dto_obj)
+            
+    # if guest 
+    checkout_form = CheckoutForm()
+    
+    return render_template('restaurant_checkout.html', cartItems=cartItems, total_price=total_price, form=checkout_form)
 # def merge_session_cart_to_db(user_id):
 #     session_cart = session.get('cart', {})
 #     for product_id_str, quantity in session_cart.items():

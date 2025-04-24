@@ -1,9 +1,10 @@
 class cart_item_dto:
-    def __init__(self, menu_item_id: int, quantity: int, price: float, name: str):
+    def __init__(self, menu_item_id: int, quantity: int, price: float, name: str, image_url: str = None):
         self.__menu_item_id = menu_item_id
         self.__name = name
         self.__quantity = quantity
         self.__price = price
+        self.__image_url = image_url
     
     #generate getters and setters for the attributes
     @property
@@ -42,6 +43,13 @@ class cart_item_dto:
             raise ValueError("Name cannot be empty")
         self.__name = value
         
-        
-    def __repr__(self):
-        return f"CartItemDTO(menu_item_id={self.menu_item_id}, quantity={self.quantity})"
+    @property
+    def image_url(self):
+        return self.__image_url
+    
+    @image_url.setter
+    def image_url(self, value: str):
+        if not value:
+            raise ValueError("Image URL cannot be empty")
+        self.__image_url = value 
+           
