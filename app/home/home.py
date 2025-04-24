@@ -12,7 +12,7 @@ from app.models.user import User
 from app.models.order import Order
 from app.models.menu_item import MenuItem
 from app.models.dto.cart_item_dto import cart_item_dto
-from app.common.forms import CheckoutForm , LoginForm, RegisterForm
+from app.common.forms import CheckoutForm , RegisterForm, LoginForm
 from flask_login import login_user, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 home = Blueprint("home", __name__, template_folder="templates")
@@ -153,37 +153,36 @@ def checkout():
     return render_template('restaurant_checkout.html', cartItems=cartItems, total_price=total_price, form=checkout_form)
 
 
-#register 
+@home.route("/account", methods=["GET", "POST"])
+def account():
+    login_form = LoginForm()
+    register_form = RegisterForm()
 
-@home.route('/register', methods=['GET', 'POST'])
-def  register():
-    form = RegisterForm(role=Role.Customer)
+    if login_form.submit.data and login_form.validate_on_submit():
+        user = User.query.filter_by(username=login_form.username_or_email.data).first()
+        if user and check_password_hash(user.password_hash, login_form.password.data):
+            login_user(user)
+            flash("Login successful", "success")
+            return redirect(url_for("home.index"))
+        else:
+            flash("Invalid credentials", "danger")
+    if register_form.submit.data and register_form.validate_on_submit():
+        if User.query.filter_by(username=register_form.username.data).first():
+            flash("Username already exists", "danger")
+        else:
+            user = User.create_user(
+                username=register_form.username.data,
+                email=register_form.email.data,
+                password_hash=generate_password_hash(register_form.password.data),
+                role=Role[register_form.role.data],  # 根据 Role 选择注册角色
+                first_name=register_form.first_name.data,
+                last_name=register_form.last_name.data
+            )
+            login_user(user)
+            flash("Registration successful", "success")
+            return redirect(url_for("home.index"))
 
-    if request.method == 'POST' and form.validate_on_submit():
-        username = form.username.data
-        password = form.password.data
-        email = form.email.data
-        phone_number = form.phone_number.data
-        role = Role.Customer  # 或 Role[form.role.data] 如果是 SelectField
-
-        # 检查用户名是否存在
-        if User.query.filter_by(username=username).first():
-            flash('Username already exists.', 'danger')
-            return render_template('register.html', form=form)
-
-    
-        new_user = User.create_user(
-            username=username,
-            password_hash=generate_password_hash(form.password.data + password_salt()),
-            email=email,
-            phone_number=phone_number,
-            role=role
-        )
-        login_user(new_user)
-        flash('Registration successful!', 'success')
-        return redirect(url_for('home.index'))
-
-    return render_template('register.html', form=form)
+    return render_template("restaurant_account.html", login_form=login_form, register_form=register_form)
 # def merge_session_cart_to_db(user_id):
 #     session_cart = session.get('cart', {})
 #     for product_id_str, quantity in session_cart.items():

@@ -100,10 +100,10 @@ class CheckoutForm(FlaskForm):
 
     submit = SubmitField('Place Order')
     
-    
 class RegisterForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(), Length(min=3, max=50)])
     email = StringField('Email', validators=[DataRequired(), Email()])
+    phone_number = StringField('Phone Number', validators=[Length(max=20)])  
     password = PasswordField('Password', validators=[DataRequired(), Length(min=6)])
     confirm_password = PasswordField('Confirm Password', validators=[
         DataRequired(),
@@ -113,3 +113,8 @@ class RegisterForm(FlaskForm):
     last_name = StringField('Last Name', validators=[Length(max=50)])
     role = SelectField('Role', choices=[(role.name, role.name.title()) for role in Role], validators=[DataRequired()])
     submit = SubmitField('Register')
+    
+class LoginForm(FlaskForm):
+    username_or_email = StringField('Username or Email', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    submit = SubmitField('Login')
