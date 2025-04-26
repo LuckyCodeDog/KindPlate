@@ -26,7 +26,8 @@ class User(UserMixin, db.Model):
 
     def __repr__(self):
         return f'<User {self.username}>'
-
+    def get_id(self):
+        return str(self.user_id) 
     @staticmethod
     def create_user(username, 
                     password_hash, 

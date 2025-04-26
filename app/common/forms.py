@@ -111,7 +111,6 @@ class RegisterForm(FlaskForm):
     ])
     first_name = StringField('First Name', validators=[Length(max=50)])
     last_name = StringField('Last Name', validators=[Length(max=50)])
-    role = SelectField('Role', choices=[(role.name, role.name.title()) for role in Role], validators=[DataRequired()])
     submit = SubmitField('Register')
     
 class LoginForm(FlaskForm):

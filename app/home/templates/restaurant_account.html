@@ -24,29 +24,18 @@
                         <div class="row g-3">
                             <div class="col-12">
                                 <div>
-                                    <label for="account-email" class="form-label">User Name Or Email Address</label>
-                                    {{ login_form.username_or_email(class="form-control", id="account-email", placeholder="Enter your user name or email", required=True) }}
+                                    <label for="account-email" class="form-label">User Name </label>
+                                    {{ login_form.username_or_email(class="form-control", id="account-email", placeholder="Enter your user name", required=True) }}
                                 </div>
                             </div>
                             <div class="col-12">
                                 <div class="form-pass">
                                     <label for="account-pass" class="form-label">Password</label>
-                                    {{ login_form.password(class="form-control showhide-pass", id="account-pass", placeholder="Password", required=True) }}
+                                    {{ login_form.password(class="form-control", id="account-email", placeholder="Enter your user name", required=True) }}
                                 </div>
                             </div>
                         </div>
-                        <div class="account__check">
-                            <div class="account__check-remember">
-                                <input type="checkbox" class="form-check-input" value="" id="terms-check">
-                                <label for="terms-check" class="form-check-label">
-                                    Remember for 30 days
-                                </label>
-                            </div>
-                            <div class="account__check-forgot">
-                                <a href="forgot-pass.html">Forgot Password?</a>
-                            </div>
-                        </div>
-                        <button type="submit" class="trk-btn trk-btn--border trk-btn--primary d-block mt-4">Login your account</button>
+                        {{ login_form.submit(class="trk-btn trk-btn--border trk-btn--primary d-block mt-4") }}
                     </form>
                 </div>
 
@@ -57,8 +46,8 @@
                         <div class="row g-3">
                             <div class="col-12">
                                 <div>
-                                    <label for="first-name" class="form-label">Full name</label>
-                                    {{ register_form.first_name(class="form-control", id="first-name", placeholder="Enter Your Name") }}
+                                    <label for="first-name" class="form-label">Username</label>
+                                    {{ register_form.username(class="form-control", id="username", placeholder="Enter Your Username") }}
                                 </div>
                             </div>
                             <div class="col-12">
@@ -88,11 +77,9 @@
                             </div>
                         </div>
 
-                        <button type="submit" class="trk-btn trk-btn--border trk-btn--primary d-block mt-4">Create an account</button>
+                        {{ register_form.submit(class="trk-btn trk-btn--border trk-btn--primary d-block mt-4") }}
 
-                        <div class="account-switch text-center mt-3">
-                            <p>Already have an account? <a href="#pills-login" data-bs-toggle="pill">Log in</a></p>
-                        </div>
+                        
                     </form>
                 </div>
             </div>
