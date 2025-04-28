@@ -117,3 +117,13 @@ class LoginForm(FlaskForm):
     username_or_email = StringField('Username or Email', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Login')
+
+class CustomerInfoForm(FlaskForm):
+    first_name = StringField('First Name', validators=[DataRequired(), Length(max=50)])
+    last_name = StringField('Last Name', validators=[DataRequired(), Length(max=50)])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    phone_number = StringField('Phone Number', validators=[Length(max=20)])  
+    address = StringField('Address', validators=[Length(max=100)])
+    image = FileField('Upload Image', validators=[Optional(), FileAllowed(['jpg', 'png', 'jpeg'], 'Images only!')])
+    contribution = DecimalField('Contribution', places=2, validators=[Optional(), NumberRange(min=0)])
+    submit = SubmitField('Update')

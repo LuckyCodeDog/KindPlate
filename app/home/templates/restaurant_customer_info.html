@@ -1,0 +1,66 @@
+{% extends "restaurant_base.html" %}
+{% block title %}{{restaurant_profile.description}}{% endblock %}
+{% block content %}
+
+
+<div class="account-pill padding-top padding-bottom">
+    <div class="container">
+        <div class="account-pill__wrapper">
+            <!-- image -->
+            <div class="account-pill__image">
+                <img src="{{ current_user.image_url}}" alt="Avantar" style="width: 100px; height: 75px;">
+            </div>
+            <form method="POST" action="{{ url_for('home.customer_info') }}" class="account__form needs-validation" enctype="multipart/form-data" novalidate>
+                {{ form.hidden_tag() }}
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label for="first_name" class="form-label">First Name</label>
+                        {{ form.first_name(class="form-control", id="first_name", placeholder="Enter your first name", required=True) }}
+                    </div>
+            
+                    <div class="col-12">
+                        <label for="last_name" class="form-label">Last Name</label>
+                        {{ form.last_name(class="form-control", id="last_name", placeholder="Enter your last name", required=True) }}
+                    </div>
+            
+                    <div class="col-12">
+                        <label for="email" class="form-label">Email</label>
+                        {{ form.email(class="form-control", id="email", placeholder="Enter your email", required=True) }}
+                    </div>
+            
+                    <div class="col-12">
+                        <label for="phone_number" class="form-label">Phone Number</label>
+                        {{ form.phone_number(class="form-control", id="phone_number", placeholder="Enter your phone number") }}
+                    </div>
+            
+                    <div class="col-12">
+                        <label for="address" class="form-label">Address</label>
+                        {{ form.address(class="form-control", id="address", placeholder="Enter your address") }}
+                    </div>
+            
+                    <div class="col-12">
+                        <label for="image" class="form-label">Upload Image</label>
+                        {{ form.image(class="form-control", id="image") }}
+                    </div>
+            
+                    <div class="col-12">
+                        <label for="contribution" class="form-label">Contribution</label>
+                        {{ form.contribution(class="form-control", id="contribution", placeholder="Enter contribution amount") }}
+                    </div>
+                </div>
+            
+                {{ form.submit(class="trk-btn trk-btn--border trk-btn--primary d-block mt-4") }}
+            </form>
+            
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+{% endblock %}
+{% block scripts %}
+{% endblock %}

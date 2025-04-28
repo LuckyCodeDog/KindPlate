@@ -39,9 +39,9 @@
     <div class="container">
       <div class="header__wrapper">
         <div class="header__brand">
-          <a href="{{url_for('home.index')}}" style="font-size: larger; font-weight: bold;"><img src="{{ restaurant_profile.image_url}}" style="width: 100px; height: 75px;" alt="logo">   {{ restaurant_profile.description}}</a>
+          <a href="{{url_for('home.index')}}" style="font-size: larger; font-weight: bold;"><img src="{{ restaurant_profile.image_url}}" style="width: 75px; height: 50px;" alt="logo">   {{ restaurant_profile.description}}</a>
         </div>
-
+        
         <!-- section navbar Menu -->
         <div class="header__navbar">
           <div class="header__overlay"></div>
@@ -51,9 +51,13 @@
               <div class="menu-mobile-title"></div>
               <button type="button" class="menu-mobile-close"><i class="fa-solid fa-xmark"></i></button>
             </div>
+            <ul class="menu-section">
+              <li><a href="flash-sale.html">About Us</a></li>
+              <li><a href="contact.html">Meet Our Team</a></li>
+
+            </ul>
           </nav>
         </div>
-
         <div class="header__action">
           <a class="header__action-btn d-none d-xl-grid" href="{{ url_for('home.view_cart') }}">
             <svg width="24" height="24" viewbox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="cart-icon">
@@ -64,11 +68,16 @@
             </svg>
           </a>
           <a href="{{ url_for('home.view_cart') }}" class="header__action-btn menu-icon d-xl-none"><i class="fa-solid fa-cart-shopping"></i></a>
-          <a class="header__action-btn d-none d-xl-grid" href="login.html"><i class="fa-regular fa-user"></i></a>
+          <a class="header__action-btn d-none d-xl-grid" href="{{url_for('home.customer_info')}}"><i class="fa-regular fa-user"></i></a>
          
           {% if current_user.is_authenticated %}
             <!-- 已登录，显示 Logout 链接 -->
+            <img src="{{ current_user.image_url }}" alt="Avatar" style="width: 30px; height: 30px; border-radius: 50%;">
+
+   
              <span >Hi {{current_user.first_name }}</span>
+            <!-- imge -->
+    
             <a href="{{ url_for('home.logout') }}" class="d-none d-xl-grid">Logout</a>
           {% else %}
             <!-- 未登录，显示 Register/Login 链接 -->

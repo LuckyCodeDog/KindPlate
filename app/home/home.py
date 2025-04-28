@@ -1,3 +1,4 @@
+import datetime
 from flask import Blueprint, jsonify, session
 from flask import render_template
 from flask import request
@@ -6,13 +7,14 @@ from flask import url_for
 from flask import flash
 from sqlalchemy import or_
 from app import db
+from flask import current_app as app
 from app.common.MyEnum import Role
 from app.common.salt import password_salt
 from app.models.user import User
 from app.models.order import Order
 from app.models.menu_item import MenuItem
 from app.models.dto.cart_item_dto import cart_item_dto
-from app.common.forms import CheckoutForm , RegisterForm, LoginForm
+from app.common.forms import CheckoutForm, RegisterForm, LoginForm, CustomerInfoForm
 from flask_login import login_user, logout_user, current_user
 from app.common.MyEnum import Role
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -41,7 +43,6 @@ def add_to_cart(menu_item_id):
     cart = session['cart']
     menu_item_id_str = str(menu_item_id)
 
-    # 检查该 item 是否已在购物车中
     found = False
     for item in cart:
         if item['id'] == menu_item_id_str:
@@ -49,13 +50,11 @@ def add_to_cart(menu_item_id):
             found = True
             break
 
-    # 如果没找到，添加新项
     if not found:
         cart.append({'id': menu_item_id_str, 'quantity': 1})
 
     session['cart'] = cart
 
-    # 查询菜单项并返回响应
     menu_item = MenuItem.query.get(menu_item_id)
     print(menu_item)
 
@@ -72,7 +71,6 @@ def view_cart():
     cart = session.get("cart", [])
     print("Cart:", cart)
 
-    # 如果购物车为空
     if not cart:
         return render_template("restaurant_cart.html", cartItems=[], total_price=0)
 
@@ -166,7 +164,7 @@ def account():
             user = User.query.filter_by(username=login_form.username_or_email.data).first()
             if user and check_password_hash(user.password_hash, login_form.password.data):
                 login_user(user)
-                flash("Login successful", "success")
+                flash(f"Login successful, welcome !", "success")
                 return redirect(url_for("home.index"))
             else:
                 flash("Invalid credentials", "danger")
@@ -181,7 +179,7 @@ def account():
                     username=register_form.username.data,
                     email=register_form.email.data,
                     password_hash=generate_password_hash(register_form.password.data),
-                    role=Role.Customer.value,  # 根据 Role 选择注册角色
+                    role=Role.Customer.value, 
                     first_name=register_form.first_name.data,
                     last_name=register_form.last_name.data
                 )
@@ -194,7 +192,6 @@ def account():
 @home.route("/logout")
 @roles_required(Role.Customer.value)
 def logout():
-    print("Logout")
     logout_user()
     flash("You have been logged out.", "success")
     return redirect(url_for("home.index"))
@@ -213,3 +210,42 @@ def logout():
 #             db.session.add(item)
 #     db.session.commit()
 #     session.pop('cart', None)  # 清空 session 中的购物车
+
+@home.route('/customer_info', methods=['GET', 'POST'])
+@roles_required(Role.Customer.value)
+def customer_info():
+    customerform = CustomerInfoForm()
+    if request.method == 'POST' and customerform.validate_on_submit():
+        # Get the form data
+        first_name = customerform.first_name.data
+        last_name = customerform.last_name.data
+        email = customerform.email.data
+        phone = customerform.phone_number.data
+        contribution = customerform.contribution.data
+        address = customerform.address.data
+        # save the image if provided
+        image = customerform.image.data
+        if image:
+            # Save the image to the server and get the URL
+            file = customerform.image.data
+            filpath = app.config['UPLOAD_FOLDER'] + datetime.datetime.now().strftime("%Y%m%d%H%M%S")+file.filename
+            file.save(filpath)
+            image_url = url_for('static', filename='uploads/' + datetime.datetime.now().strftime("%Y%m%d%H%M%S")) + file.filename 
+            current_user.image_url = image_url
+
+        # Update the current user's information
+        current_user.first_name = first_name
+        current_user.last_name = last_name
+        current_user.email = email
+        current_user.phone_number = phone
+
+        # Commit the changes to the database
+        db.session.commit()
+        flash('Your information has been updated!', 'success')
+        return redirect(url_for('home.customer_info'))
+    customerform.first_name.data = current_user.first_name
+    customerform.last_name.data = current_user.last_name
+    customerform.email.data = current_user.email
+    customerform.phone_number.data = current_user.phone_number
+    customerform.contribution.data = current_user.contribution
+    return render_template('restaurant_customer_info.html', user=current_user, form=customerform)
