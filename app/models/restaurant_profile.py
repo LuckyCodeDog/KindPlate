@@ -5,7 +5,7 @@ from sqlalchemy import Column, Integer, Text, DECIMAL, String, Date, Time, JSON,
 
 class RestaurantProfile(db.Model):
     __tablename__ = 'restaurant_profile'
-
+    
     profile_id = db.Column(Integer, primary_key=True, autoincrement=True)
     description = db.Column(Text)
     rating = db.Column(DECIMAL(3, 2), default=0.00)
