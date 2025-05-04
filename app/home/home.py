@@ -190,7 +190,6 @@ def account():
 
 #logout the user
 @home.route("/logout")
-@roles_required(Role.Customer.value)
 def logout():
     logout_user()
     flash("You have been logged out.", "success")

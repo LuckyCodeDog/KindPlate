@@ -190,6 +190,12 @@ VALUES
  'Trained over 200 guests to use basic ASL greetings at the door.',
  'Hana', 'Nguyen', 'https://example.com/images/hana.jpg', 0.00, '111 Cypress St, City, Country'),
 
+('admin1', 'hashed_password_13', 'hana@email.com', '1234567802', 'Admin',
+ 'Greets guests using ASL and digital menus, ensuring all feel welcomed.',
+ 'My joy comes from helping first-time ASL users order confidently.',
+ 'Trained over 200 guests to use basic ASL greetings at the door.',
+ 'Hana', 'Nguyen', 'https://example.com/images/hana.jpg', 0.00, '111 Cypress St, City, Country'),
+ 
 ('kai_dishwasher', 'hashed_password_14', 'kai@email.com', '1234567803', 'Waiter',
  'Manages eco-friendly dishwashing systems with visual load indicators.',
  'I may be behind the scenes, but I know I’m helping keep the kitchen moving silently and smoothly.',

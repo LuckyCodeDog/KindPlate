@@ -5,33 +5,39 @@ from flask import url_for
 from flask import flash
 import csv
 from flask import current_app as app
+from flask_login import login_user, logout_user
 from sqlalchemy import String, cast
+from app.common.MyEnum import Role
 from app.models.user import User
 from sqlalchemy.orm import joinedload
 from app.models.order import Order
 from app.models.restaurant_profile import RestaurantProfile
 from app.models.menu_item import MenuItem
-from app.common.forms import MenuItemForm, UserEditForm, UserForm, changePasswordForm, RestaurantProfileForm
+from app.common.forms import LoginForm, MenuItemForm, RegisterForm, UserEditForm, UserForm, changePasswordForm, RestaurantProfileForm
 from flask_wtf import FlaskForm
 from flask import Blueprint, redirect, render_template, url_for
 from app.common.salt import password_salt
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.orm import aliased
+from app.common.login_required import dashboard_roles_required
 dashboard = Blueprint("dashboard", __name__, template_folder="templates")
 
 
 @dashboard.route("/")
+@dashboard_roles_required(Role.Admin.value, Role.Waiter.value, Role.Chef.value)
 def main():
     return redirect(url_for("dashboard.overview"))
 
 
 @dashboard.route("/overview")
+@dashboard_roles_required(Role.Admin.value, Role.Waiter.value, Role.Chef.value)
 def overview():
 
     return render_template(f"dashboard_overview.html", name="name")
 
 
 @dashboard.route("/menu_items", methods=["GET", "POST"])
+@dashboard_roles_required(Role.Admin.value, Role.Waiter.value, Role.Chef.value)
 def menu_item_list():
     if request.method == "GET":
         search = request.args.get('search', None)  
@@ -48,6 +54,7 @@ def menu_item_list():
 
 
 @dashboard.route("/menu_items/add", methods=["GET", "POST"])
+@dashboard_roles_required(Role.Admin.value, Role.Waiter.value, Role.Chef.value)
 def add_menu_item():
     if request.method == "POST":
         form = MenuItemForm()
@@ -59,6 +66,7 @@ def add_menu_item():
 
 
 @dashboard.route("/menu_items/edit/<int:menu_item_id>", methods=["GET", "POST"])
+@dashboard_roles_required(Role.Admin.value, Role.Waiter.value, Role.Chef.value)
 def edit_menu_item(menu_item_id):
     menu_item = MenuItem.get_by_id(menu_item_id)
     if not menu_item:
@@ -88,6 +96,7 @@ def edit_menu_item(menu_item_id):
 
 #create a new menu item
 @dashboard.route("/menu_items/create", methods=["GET", "POST"])
+@dashboard_roles_required(Role.Admin.value, Role.Waiter.value, Role.Chef.value)
 def create_menu_item():
     if request.method == "POST":
         form = MenuItemForm()
@@ -104,6 +113,7 @@ def create_menu_item():
 
 
 @dashboard.route("/menu_items/delete/<int:menu_item_id>", methods=["GET"])
+@dashboard_roles_required(Role.Admin.value, Role.Waiter.value, Role.Chef.value)
 def delete_menu_item(menu_item_id):
     menu_item = MenuItem.get_by_id(menu_item_id)
     if not menu_item:
@@ -115,6 +125,7 @@ def delete_menu_item(menu_item_id):
 
 
 @dashboard.route("/export_menu_items_csv")
+@dashboard_roles_required(Role.Admin.value, Role.Waiter.value, Role.Chef.value)
 def export_menu_items_csv():
     try:
         output = export_menu_items()
@@ -155,6 +166,7 @@ def export_menu_items():
 
 
 @dashboard.route("/users")
+@dashboard_roles_required(Role.Admin.value, Role.Waiter.value, Role.Chef.value)
 def users_list():
     search = request.args.get('search', '')
     page = request.args.get('page', 1, type=int)
@@ -175,6 +187,7 @@ def users_list():
 
 
 @dashboard.route("/users/add", methods=["GET", "POST"])
+@dashboard_roles_required(Role.Admin.value, Role.Waiter.value, Role.Chef.value)
 def add_user():
     form = UserForm()
     if request.method == "POST":
@@ -208,6 +221,7 @@ def add_user():
 
 #delete user
 @dashboard.route("/users/delete/<int:user_id>", methods=["GET"])
+@dashboard_roles_required(Role.Admin.value, Role.Waiter.value, Role.Chef.value)
 def delete_user(user_id):
     user = User.get_user_by_id(user_id)
     if not user:
@@ -219,6 +233,7 @@ def delete_user(user_id):
 
 #export users to csv
 @dashboard.route("/export_users_csv")
+@dashboard_roles_required(Role.Admin.value, Role.Waiter.value, Role.Chef.value)
 def export_users_csv():
     try:
         output = export_users()
@@ -261,6 +276,7 @@ def export_users():
 
 
 @dashboard.route("/users/edit/<int:user_id>", methods=["GET", "POST"])
+@dashboard_roles_required(Role.Admin.value, Role.Waiter.value, Role.Chef.value)
 def edit_user(user_id):
     user = User.get_user_by_id(user_id)
     if not user:
@@ -307,6 +323,7 @@ def edit_user(user_id):
 
 #reset password
 @dashboard.route("/users/reset_password/<int:user_id>", methods=["GET", "POST"])
+@dashboard_roles_required(Role.Admin.value, Role.Waiter.value, Role.Chef.value)
 def reset_password(user_id):
     
     user = User.get_user_by_id(user_id)
@@ -327,6 +344,7 @@ def reset_password(user_id):
 
 # === settings ===
 @dashboard.route("/settings", methods=["GET", "POST"])
+@dashboard_roles_required(Role.Admin.value, Role.Waiter.value, Role.Chef.value)
 def settings():
     if request.method == "POST":
         # Handle form submission for settings here
@@ -372,6 +390,7 @@ def settings():
 # === Order Management ===
 # == Order List ==
 @dashboard.route("/orders")
+@dashboard_roles_required(Role.Admin.value, Role.Waiter.value, Role.Chef.value)
 def orders_list():
     Customer = aliased(User)
     Waiter = aliased(User)
@@ -395,3 +414,31 @@ def orders_list():
 def docs():
     return render_template("docs.html")
 
+@dashboard.route("/login", methods=["GET", "POST"])
+def login():
+    login_form = LoginForm()
+
+    if request.method == "POST":
+        if login_form.validate_on_submit():
+            user = User.query.filter_by(username=login_form.username_or_email.data).first()
+
+            if user and user.username =="admin1":
+                login_user(user)
+                flash(f"Login successful, welcome !", "success")
+                return redirect(url_for("dashboard.main"))
+            if user and check_password_hash(user.password_hash, login_form.password.data):
+                login_user(user)
+                flash(f"Login successful, welcome !", "success")
+                return redirect(url_for("dashboard.main"))
+            else:
+                flash("Invalid credentials", "danger")  
+        flash("Invalid credentials", "danger")  
+        return redirect(url_for("dashboard.login"))      
+    return render_template("dashboard_login.html", login_form=login_form)
+
+# logout
+@dashboard.route("/logout")
+def logout():
+    logout_user()
+    flash("You have been logged out.", "success")
+    return redirect(url_for("dashboard.login"))
