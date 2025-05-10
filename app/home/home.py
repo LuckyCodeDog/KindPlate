@@ -248,3 +248,21 @@ def customer_info():
     customerform.phone_number.data = current_user.phone_number
     customerform.contribution.data = current_user.contribution
     return render_template('restaurant_customer_info.html', user=current_user, form=customerform)
+
+#blog 
+@home.route('/blog')
+def blog():
+    return render_template('restaurant_blog.html')
+
+#blog details
+@home.route('/blog/<int:blog_id>')
+def blog_details(blog_id):
+    # Fetch the blog post from the database using the blog_id
+    # For now, we'll just return a placeholder template
+    return render_template('restaurant_blog_details.html', blog_id=blog_id)
+
+
+#about us
+@home.route('/about')
+def about():
+    return render_template('restaurant_about.html')
