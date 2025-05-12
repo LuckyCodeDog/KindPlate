@@ -288,3 +288,19 @@ def book():
         return jsonify(success=False, message="Failed to create booking"), 500
 
   
+
+
+@home.route("/menu_items", methods=["GET", "POST"])
+def menu():
+    if request.method == "GET":
+        search = request.args.get('search', None)  
+        page = request.args.get('page', 1, type=int)  
+        per_page = 12  
+        if search:
+            items = MenuItem.query.filter(
+                (MenuItem.name.ilike(f"%{search}%"))
+            ).paginate(page=page, per_page=per_page)
+        else:
+            items = MenuItem.query.paginate(page=page, per_page=per_page)
+
+        return render_template("restaurant_menu.html", items=items, search=search)

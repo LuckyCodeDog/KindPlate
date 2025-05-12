@@ -1,6 +1,0 @@
-Username,Email,Phone Number,Role,First Name,Last Name,Contribution,Status
-admin_user,admin@example.com,1234567890,Role.Admin,Alice,Smith,150.00,active
-waiter_john,john.waiter@example.com,2345678901,Role.Waiter,John,Doe,50.25,active
-chef_maria,maria.chef@example.com,3456789012,Role.Chef,Maria,Lopez,75.50,inactive
-customer_lee,lee.customer@example.com,4567890123,Role.Customer,Lee,Wang,20.00,active
-customer_kate,kate.customer@example.com,5678901234,Role.Customer,Kate,Brown,0.00,inactive

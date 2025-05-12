@@ -186,13 +186,6 @@ VALUES (
     CURRENT_TIMESTAMP
 );
 
-INSERT INTO MenuItems (name, description, price, category, available, enable_water_track, image_url)
-VALUES 
-('Vegan Margherita Pizza', 'Classic cheese-free pizza with fresh basil, vegan mozzarella, and tomato sauce.', 12.99, 'Pizza', TRUE, FALSE, 'https://example.com/images/vegan_margherita.jpg'),
-('Vegan Spaghetti Carbonara', 'Spaghetti pasta with a creamy cashew-based sauce, smoked tempeh, and nutritional yeast.', 14.50, 'Pasta', TRUE, FALSE, 'https://example.com/images/vegan_carbonara.jpg'),
-('Vegan Caesar Salad', 'Crisp romaine lettuce with dairy-free Caesar dressing, croutons, and vegan parmesan.', 9.25, 'Salad', TRUE, FALSE, 'https://example.com/images/vegan_caesar_salad.jpg'),
-('Grilled Veggie Sandwich', 'Grilled seasonal vegetables with lettuce, tomato, and a creamy vegan aioli on toasted whole-grain bread.', 11.75, 'Sandwich', TRUE, FALSE, 'https://example.com/images/grilled_veggie_sandwich.jpg'),
-('Vegan Tiramisu', 'Traditional Italian coffee-flavored dessert made with coconut cream and dairy-free ladyfingers.', 6.80, 'Dessert', TRUE, FALSE, 'https://example.com/images/vegan_tiramisu.jpg');
 
 INSERT INTO Users (username, password_hash, email, phone_number, role, role_description, story, achievements, first_name, last_name, image_url, contribution, address)
 VALUES
@@ -221,6 +214,47 @@ VALUES
  'Zoe', 'Adams', 'https://example.com/images/zoe.jpg', 0.00, '333 Spruce St, City, Country');
 
 
+INSERT INTO MenuItems (name, description, price, category) VALUES
+-- Appetizers
+('Vegan Dumplings (6pc)', 'Asian housemade mixed vegetable dumplings, steamed or seared', 8.00, 'Appetizers'),
+('Scallion Pancake', 'With dipping sauce', 7.00, 'Appetizers'),
+('Barbeque "Roast Pork"', 'Sauteed soy protein with house-made barbeque sauce', 12.00, 'Appetizers'),
+('King Oyster Mushrooms', 'Battered fried king oyster mushrooms tossed with chopped fresh peppers, seasoned with salt and pepper', 10.00, 'Appetizers'),
+('Soy Nuggets', 'With vegan aioli dipping sauce', 12.00, 'Appetizers'),
+('Spicy "Tuna" Avocado Roll', 'Avocado, cucumber, house-made vegan tuna (dried tomatoes)', 13.00, 'Appetizers'),
+
+-- Entrees
+('Sesame "Beef"', 'Stir-fried soy protein in sweet sesame sauce with mushrooms, bell peppers, onions with steamed kale', 21.00, 'Entrees'),
+('General Tso''s "Chicken"', 'Stir-fried soy protein, broccoli and mixed vegetables in General Tso''s sauce', 23.00, 'Entrees'),
+('Sweet and Sour "Chicken"', 'Battered soy protein, bell peppers, broccoli, cauliflower, pineapple, carrots, and onions in a housemade sweet and sour sauce', 22.00, 'Entrees'),
+('Home Styled Mapo Tofu', 'Tofu, minced "meat", peas, hot peppers in brown sauce and garnished with scallions', 16.00, 'Entrees'),
+('Beijing "Duck"', 'Roasted whole soy protein and sauteed oyster mushrooms with kale, Japanese pumpkin topped with almond slices', 25.00, 'Entrees'),
+('"Spare Ribs" and Potatoes', 'Homestyle spare soy ribs and potatoes in delicious brown sauce', 22.00, 'Entrees'),
+('Eggplant with Garlic Sauce', 'Eggplant, bell peppers, bok choy and wood ears with garlic sauce', 19.00, 'Entrees'),
+('Sauteed Mixed Vegetables', 'Seasonal vegetables', 16.00, 'Entrees'),
+('Pineapple Fried Rice', 'Mixed vegetables, topped with pineapples', 15.00, 'Entrees'),
+
+-- Noodle Soups
+('Curry "Chicken" Noodle Soup', 'Noodles, eggplant, snow peas, mushrooms, potatoes, cabbage, vegan soy chicken', 17.00, 'Noodle Soups'),
+('BBQ "Roast Pork" Noodle Soup', 'Vegan soy pork, baby bok choy, rice noodle', 15.00, 'Noodle Soups'),
+('Soy "Duck" Noodle Soup', 'Pressed tofu skin, vegan soy duck, baby bok choy, noodle', 16.00, 'Noodle Soups'),
+
+-- Desserts
+('Blueberry "Cheesecake" (Gluten-Free)', NULL, 8.00, 'Desserts'),
+('Decadent Chocolate Cake (Nut-Free)', NULL, 8.00, 'Desserts'),
+('Almond "Milk" & Chocolate Chip Cookie (Gluten-Free)', NULL, 8.00, 'Desserts'),
+
+-- Beverages
+('Double Espresso', NULL, 5.00, 'Beverages'),
+('Long Black', NULL, 4.00, 'Beverages'),
+('Cappuccino', NULL, 5.00, 'Beverages'),
+('Latte', NULL, 5.00, 'Beverages'),
+('Earl Grey Latte', NULL, 5.00, 'Beverages'),
+('Hazelnut Latte', NULL, 7.00, 'Beverages'),
+('Caramel Latte', NULL, 6.00, 'Beverages'),
+('Mocha', NULL, 6.00, 'Beverages'),
+('Hot Chocolate', NULL, 6.00, 'Beverages'),
+('Mint Chocolate', NULL, 6.00, 'Beverages');
 
 
 
