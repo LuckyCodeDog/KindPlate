@@ -422,8 +422,8 @@ def login():
     if request.method == "POST":
         if login_form.validate_on_submit():
             user = User.query.filter_by(username=login_form.username_or_email.data).first()
-
-            if user and user.username =="admin1":
+            admin = User.query.filter_by(username=login_form.username_or_email.data).first()
+            if admin and admin.username =="admin1":
                 login_user(user)
                 flash(f"Login successful, welcome !", "success")
                 return redirect(url_for("dashboard.main"))
