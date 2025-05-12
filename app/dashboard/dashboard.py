@@ -460,3 +460,19 @@ def bookings_list():
         else:
             bookings = Booking.query.paginate(page=page, per_page=per_page)
         return render_template("dashboard_bookings.html", items=bookings, search=search)
+    
+#change booking status
+@dashboard.route("/bookings/change_status/<int:booking_id>", methods=["POST"])
+@dashboard_roles_required(Role.Admin.value, Role.Waiter.value, Role.Chef.value)
+def change_booking_status(booking_id):
+    #ajax
+    booking = Booking.get_by_id(booking_id)
+    data = request.get_json()
+    new_status = data.get("status")
+
+    if not booking:
+        return {"status": "error", "message": "Booking not found"}, 404
+    if new_status not in ["pending", "confirmed", "cancelled"]:
+        return {"status": "error", "message": "Invalid status"}, 400
+    Booking.update(booking_id, status=new_status)
+    return {"status": "success", "message": "Booking status updated successfully"}, 200
