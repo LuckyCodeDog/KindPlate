@@ -8,6 +8,7 @@ from flask import current_app as app
 from flask_login import login_user, logout_user
 from sqlalchemy import String, cast
 from app.common.MyEnum import Role
+from app.models.booking import Booking
 from app.models.user import User
 from sqlalchemy.orm import joinedload
 from app.models.order import Order
@@ -442,3 +443,20 @@ def logout():
     logout_user()
     flash("You have been logged out.", "success")
     return redirect(url_for("dashboard.login"))
+
+# bookings
+@dashboard.route("/bookings")
+@dashboard_roles_required(Role.Admin.value, Role.Waiter.value, Role.Chef.value)
+def bookings_list():
+    if request.method == "GET":
+        search = request.args.get('search', None)  
+        page = request.args.get('page', 1, type=int)  
+        per_page = 5 
+        bookings = None
+        if search:
+            bookings = Booking.query.filter(
+                (Booking.first_name.ilike(f"%{search}%")) | (Booking.last_name.ilike(f"%{search}%"))
+            ).paginate(page=page, per_page=per_page)
+        else:
+            bookings = Booking.query.paginate(page=page, per_page=per_page)
+        return render_template("dashboard_bookings.html", items=bookings, search=search)
