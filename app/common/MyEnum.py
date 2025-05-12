@@ -30,3 +30,8 @@ class PaymentMethod(Enum):
     CARD = "card"
     PAYPAL = "paypal"
     CASH = "cash"
+
+class BookingStatus(Enum):
+    PENDING = "pending"
+    CONFIRMED = "confirmed"
+    CANCELLED = "cancelled"

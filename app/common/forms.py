@@ -1,10 +1,10 @@
 from flask_wtf import FlaskForm
-from wtforms import DateField, RadioField, StringField, TextAreaField, DecimalField, SelectField, BooleanField, FileField, PasswordField, EmailField, SubmitField, TimeField
+from wtforms import DateField, IntegerField, RadioField, StringField, TextAreaField, DecimalField, SelectField, BooleanField, FileField, PasswordField, EmailField, SubmitField, TimeField
 from wtforms.validators import DataRequired, Optional, NumberRange
 from wtforms.validators import DataRequired, Length, Email, EqualTo
 from flask_wtf.file import FileAllowed
 from flask import current_app
-from app.common.MyEnum import PaymentMethod, Role
+from app.common.MyEnum import PaymentMethod, Role, BookingStatus
 class MenuItemForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired()])
     description = TextAreaField('Description', validators=[Optional()])
@@ -127,3 +127,16 @@ class CustomerInfoForm(FlaskForm):
     image = FileField('Upload Image', validators=[Optional(), FileAllowed(['jpg', 'png', 'jpeg'], 'Images only!')])
     contribution = DecimalField('Contribution', places=2, validators=[Optional(), NumberRange(min=0)])
     submit = SubmitField('Update')
+
+
+class BookingForm(FlaskForm):
+    first_name = StringField("First Name", validators=[DataRequired(), Length(max=100)])
+    last_name = StringField("Last Name", validators=[DataRequired(), Length(max=100)])
+    phone = StringField("Phone", validators=[DataRequired(), Length(max=20)])
+    email = StringField("Email", validators=[Email(), Length(max=120)])
+    guests = IntegerField("Number of Guests", validators=[DataRequired(), NumberRange(min=1, max=100)])
+    date = DateField("Date", validators=[DataRequired()])
+    time = TimeField("Time", validators=[DataRequired()])
+    message = TextAreaField("Message", validators=[Length(max=1000)])
+    status = SelectField("Status", choices=[(status.value, status.name.capitalize()) for status in BookingStatus], default=BookingStatus.PENDING.value)
+    submit = SubmitField("Book Now")

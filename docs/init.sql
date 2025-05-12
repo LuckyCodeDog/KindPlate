@@ -1,5 +1,3 @@
-
-
 DROP DATABASE IF EXISTS RestaurantDB;
 
 CREATE DATABASE RestaurantDB;
@@ -137,7 +135,20 @@ CREATE TABLE CartItems (
     FOREIGN KEY (menu_item_id) REFERENCES MenuItems(menu_item_id) 
 );
 
-
+CREATE TABLE booking (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    phone VARCHAR(20) NOT NULL,
+    email VARCHAR(120),
+    guests INT NOT NULL,
+    date DATE NOT NULL,
+    time TIME NOT NULL,
+    message TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    status ENUM('pending', 'confirmed', 'cancelled') NOT NULL DEFAULT 'pending',
+    reference_number VARCHAR(36) UNIQUE NOT NULL
+);
 
 CREATE TABLE restaurant_profile (
     profile_id SERIAL PRIMARY KEY,
@@ -151,6 +162,7 @@ CREATE TABLE restaurant_profile (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
+
 INSERT INTO restaurant_profile (
     description,
     rating,
@@ -207,6 +219,12 @@ VALUES
  'I came for the food, stayed for the team spirit—and now I teach!',
  'Organized weekly ASL practice sessions improving inter-staff communication by 50%.',
  'Zoe', 'Adams', 'https://example.com/images/zoe.jpg', 0.00, '333 Spruce St, City, Country');
+
+
+
+
+
+
 
 
 

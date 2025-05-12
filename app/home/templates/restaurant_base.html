@@ -12,6 +12,8 @@
   <!-- OG meta data -->
   
   <link rel="shortcut icon" href="../../../static/assets/picture/favicon.png" type="image/x-icon">
+<!-- 引入 jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
   <link rel="stylesheet" href="../../../static/assets/css/bootstrap.min.css">
   <link rel="stylesheet" href="../../../static/assets/css/aos.css">
@@ -54,6 +56,7 @@
             <ul class="menu-section">
               <li><a href="{{ url_for('home.about')}}">About Us</a></li>
               <li><a href="{{ url_for('home.blog')}}">Meet Our Team</a></li>
+             <li><a href="#" data-bs-toggle="modal" data-bs-target="#bookingModal">Booking</a></li>
 
             </ul>
           </nav>
@@ -162,6 +165,70 @@
       </div>
     </div>
 
+    <div class="modal fade" id="bookingModal" tabindex="-1" aria-labelledby="bookingModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="bookingModalLabel">Booking</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body ">
+              <form id="bookingForm">
+  <div class="row mb-3">
+    <div class="col">
+      <label for="first_name" class="form-label">First Name</label>
+      <input type="text" class="form-control" id="first_name" name="first_name" required>
+    </div>
+    <div class="col">
+      <label for="last_name" class="form-label">Last Name</label>
+      <input type="text" class="form-control" id="last_name" name="last_name" required>
+    </div>
+  </div>
+
+  <div class="row mb-3">
+    <div class="col">
+    <label for="email" class="form-label">Email</label>
+    <input type="email" class="form-control" id="email" name="email" required>
+    </div>
+    <div class="col">
+    <label for="phone" class="form-label">Phone</label>
+    <input type="tel" class="form-control" id="phone" name="phone" required>
+    </div>
+  </div>
+
+
+  <div class="mb-3">
+    <label for="guests" class="form-label">Number of Guests</label>
+    <input type="number" class="form-control" id="guests" name="guests" min="1" required>
+  </div>
+
+  <div class="mb-3">
+    <label for="date" class="form-label">Date</label>
+    <input type="date" class="form-control" id="date" name="date" required>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Choose a Time</label>
+    <div id="time-buttons" class="d-flex flex-wrap gap-2">
+      {% for t in time_slots %}
+        <button type="button" class="btn btn-outline-primary time-button" data-time="{{ t }}">{{ t }}</button>
+      {% endfor %}
+    </div>
+    <input type="hidden" id="selected-time" name="time" value="">
+  </div>
+
+  <div class="mb-3">
+    <label for="message" class="form-label">Message</label>
+    <textarea class="form-control" id="message" name="message" rows="3"></textarea>
+  </div>
+
+  <div id="form-alert" class="alert alert-danger d-none"></div>
+  <button type="submit" id="submitBooking" class="btn btn-primary">Submit Booking</button>
+</form>
+</div>
+</div>
+
+
 
 
     <div class="footer__shape">
@@ -194,5 +261,46 @@
   <script src="../../../static/assets/js/custom.js"></script>
 
 </body>
+
+<script>
+$(document).ready(function () {
+  // 时间按钮点击处理
+  $('.time-button').click(function () {
+    const selectedTime = $(this).data('time');
+    $('#selected-time').val(selectedTime);
+
+    $('.time-button').removeClass('btn-primary').addClass('btn-outline-primary');
+    $(this).removeClass('btn-outline-primary').addClass('btn-primary');
+  });
+
+  // 表单提交处理
+  $('#bookingForm').submit(function (e) {
+    e.preventDefault();
+    const formData = $('#bookingForm').serialize();
+
+
+    $.ajax({
+      url: '/booking',
+      method: 'POST',
+      data: formData,
+      success: function (response) {
+        if (response.success) {
+          alert('Booking successful!');
+          $('#bookingModal').modal('hide');
+          $('#bookingForm')[0].reset();
+          $('#selected-time').val('');
+          $('.time-button').removeClass('btn-primary').addClass('btn-outline-primary');
+          $('#form-alert').addClass('d-none');
+        } else {
+          $('#form-alert').removeClass('d-none').text(response.error || 'Unknown error.');
+        }
+      },
+      error: function () {
+        $('#form-alert').removeClass('d-none').text('There was an error. Please try again.');
+      }
+    });
+  });
+});
+</script>
 
 </html>

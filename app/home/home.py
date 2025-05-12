@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from flask import Blueprint, jsonify, session
 from flask import render_template
 from flask import request
@@ -8,13 +8,14 @@ from flask import flash
 from sqlalchemy import or_
 from app import db
 from flask import current_app as app
-from app.common.MyEnum import Role
+from app.common.MyEnum import BookingStatus, Role
 from app.common.salt import password_salt
+from app.models.booking import Booking
 from app.models.user import User
 from app.models.order import Order
 from app.models.menu_item import MenuItem
 from app.models.dto.cart_item_dto import cart_item_dto
-from app.common.forms import CheckoutForm, RegisterForm, LoginForm, CustomerInfoForm
+from app.common.forms import BookingForm, CheckoutForm, RegisterForm, LoginForm, CustomerInfoForm
 from flask_login import login_user, logout_user, current_user
 from app.common.MyEnum import Role
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -266,3 +267,24 @@ def blog_details(blog_id):
 @home.route('/about')
 def about():
     return render_template('restaurant_about.html')
+
+@home.route('/booking', methods=['POST'])
+def book():
+    try:
+        data = request.form
+        new_booking = Booking.create(
+            first_name=data['first_name'],
+            last_name=data['last_name'],
+            phone=data['phone'],
+            email=data.get('email'),
+            guests=int(data['guests']),
+            date=datetime.strptime(data['date'], "%Y-%m-%d").date(),
+            time=datetime.strptime(data['time'], "%H:%M").time(),
+            message=data.get('message'),
+        )
+        return jsonify(success=True, reference_number=new_booking.reference_number), 200
+    except Exception as e:
+        print("Error creating booking:", e)
+        return jsonify(success=False, message="Failed to create booking"), 500
+
+  
