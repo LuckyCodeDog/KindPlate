@@ -75,6 +75,7 @@ class RestaurantProfileForm(FlaskForm):
     description = TextAreaField('Description', validators=[Optional()])
     rating = DecimalField('Rating', places=2, validators=[Optional(), NumberRange(min=0, max=5)])
     image = FileField('Upload Image', validators=[Optional(), FileAllowed(['jpg', 'png', 'jpeg'], 'Images only!')])
+    story = TextAreaField('Story', validators=[Optional()])
     facilities = TextAreaField('Facilities', validators=[Optional()])
     opening_date = DateField('Opening Date', validators=[Optional()])
     opening_time = TimeField('Opening Time', validators=[Optional()])

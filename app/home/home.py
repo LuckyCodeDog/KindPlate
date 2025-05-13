@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask import Blueprint, jsonify, session
+from flask import Blueprint, jsonify, session, send_from_directory, current_app
 from flask import render_template
 from flask import request
 from flask import redirect
@@ -20,6 +20,8 @@ from flask_login import login_user, logout_user, current_user
 from app.common.MyEnum import Role
 from werkzeug.security import generate_password_hash, check_password_hash
 from app.common.login_required import roles_required
+import os
+
 home = Blueprint("home", __name__, template_folder="templates")
 
 
@@ -309,3 +311,17 @@ def menu():
             items = MenuItem.query.paginate(page=page, per_page=per_page)
 
         return render_template("restaurant_menu.html", items=items, search=search)
+
+@home.route('/download-menu')
+def download_menu():
+    """Download the restaurant menu PDF."""
+    try:
+        return send_from_directory(
+            directory=os.path.join(current_app.root_path, 'static', 'download'),
+            path='menu.pdf',
+            as_attachment=True,
+            download_name='restaurant_menu.pdf'
+        )
+    except Exception as e:
+        flash('Error downloading menu. Please try again later.', 'error')
+        return redirect(url_for('home.restaurant_menu'))

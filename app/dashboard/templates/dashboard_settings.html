@@ -1,67 +1,197 @@
 {% extends "dashboard_base.html" %}
 
-{% block title %}Restaurant Settings{% endblock %}
+{% block title %}{{ pagetitle or 'Restaurant Settings' }}{% endblock %}
 
 {% block content %}
 <div class="app-content pt-3 p-md-3 p-lg-4">
     <div class="container-xl">
-        <!-- Card Component for the Form -->
         <div class="card shadow-sm">
-            <div class="card-header bg-primary text-white">
-                <h5 class="card-title mb-0">{{ pagetitle or 'Restaurant Profile Settings' }}</h5>
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-cog me-2"></i>{{ pagetitle or 'Restaurant Profile Settings' }}
+                </h5>
             </div>
             <div class="card-body">
-                <form method="POST" enctype="multipart/form-data">
+                <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
                     {{ form.hidden_tag() }}
 
-                    <div class="mb-3">
-                        {% if restaurant.image_url %}
-                            <img src="{{ restaurant.image_url }}" alt="logo Image" class="menu-item-image" style="max-width: 200px; max-height: 150px;">
-                        {% endif %}
-                    </div>    
-                    
-                    <div class="mb-3">
-                        <label class="form-label">{{ form.description.label }}</label>
-                        {{ form.description(class="form-control") }}
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">{{ form.rating.label }}</label>
-                        {{ form.rating(class="form-control") }}
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">{{ form.image.label }}</label>
-                        {{ form.image(class="form-control") }}
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">{{ form.facilities.label }}</label>
-                        {{ form.facilities(class="form-control") }}
-                    </div>
-
                     <div class="row">
-                        <div class="col-md-4 mb-3">
-                            <label class="form-label">{{ form.opening_date.label }}</label>
-                            {{ form.opening_date(class="form-control") }}
+                        <!-- Left Column - Basic Information -->
+                        <div class="col-md-8">
+                            <div class="card mb-4">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0"><i class="fas fa-info-circle me-2"></i>Basic Information</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label class="form-label">Restaurant Name <span class="text-danger">*</span></label>
+                                        {{ form.description(class="form-control", placeholder="Enter restaurant name", required=true) }}
+                                        {% if form.description.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {% for error in form.description.errors %}
+                                                    {{ error }}
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Restaurant Story</label>
+                                        {{ form.story(class="form-control", rows=4, placeholder="Tell your restaurant's story...") }}
+                                        <div class="form-text">Share your restaurant's history, mission, and values.</div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Rating</label>
+                                        <div class="input-group">
+                                            {{ form.rating(class="form-control", placeholder="0.0", type="number", step="0.1", min="0", max="5") }}
+                                            <span class="input-group-text">
+                                                <i class="fas fa-star text-warning"></i>
+                                            </span>
+                                        </div>
+                                        <div class="form-text">Enter a rating between 0 and 5</div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Facilities</label>
+                                        {{ form.facilities(class="form-control", placeholder="e.g., Parking, WiFi, Outdoor Seating") }}
+                                        <div class="form-text">List the facilities and amenities your restaurant offers</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-md-4 mb-3">
-                            <label class="form-label">{{ form.opening_time.label }}</label>
-                            {{ form.opening_time(class="form-control") }}
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label class="form-label">{{ form.closing_time.label }}</label>
-                            {{ form.closing_time(class="form-control") }}
+
+                        <!-- Right Column - Image and Hours -->
+                        <div class="col-md-4">
+                            <div class="card mb-4">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0"><i class="fas fa-image me-2"></i>Restaurant Logo</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="text-center mb-3">
+                                        {% if restaurant.image_url %}
+                                            <img src="{{ restaurant.image_url }}" alt="Restaurant Logo" class="img-thumbnail mb-2" style="max-width: 100%; height: auto;">
+                                            <p class="text-muted small">Current Logo</p>
+                                        {% else %}
+                                            <div class="border rounded p-4 text-center">
+                                                <i class="fas fa-image fa-3x text-muted mb-2"></i>
+                                                <p class="text-muted mb-0">No logo uploaded</p>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Upload New Logo</label>
+                                        {{ form.image(class="form-control", accept="image/*") }}
+                                        <div class="form-text">Recommended size: 800x600 pixels</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0"><i class="fas fa-clock me-2"></i>Operating Hours</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label class="form-label">Opening Date</label>
+                                        {{ form.opening_date(class="form-control", type="date") }}
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Opening Time</label>
+                                                {{ form.opening_time(class="form-control", type="time") }}
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Closing Time</label>
+                                                {{ form.closing_time(class="form-control", type="time") }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="mt-4">
-                        {{ form.submit(class="btn btn-primary text-white") }}
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>Save Changes
+                        </button>
                     </div>
                 </form>
             </div>
         </div>
-        <!-- End of Card Component -->
-    </div><!--//container-xl-->
+    </div>
 </div>
+
+<style>
+    .form-control:focus, .form-select:focus {
+        border-color: #80bdff;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+    
+    .card {
+        border: none;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+    
+    .card-header {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+    }
+    
+    .invalid-feedback {
+        font-size: 0.875em;
+    }
+    
+    .btn {
+        padding: 0.5rem 1rem;
+    }
+    
+    .img-thumbnail {
+        border: 1px solid #dee2e6;
+        padding: 0.25rem;
+    }
+
+    .input-group-text {
+        background-color: #f8f9fa;
+    }
+</style>
+
+<script>
+// Form validation
+(function () {
+    'use strict'
+    var forms = document.querySelectorAll('.needs-validation')
+    Array.prototype.slice.call(forms).forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+            if (!form.checkValidity()) {
+                event.preventDefault()
+                event.stopPropagation()
+            }
+            form.classList.add('was-validated')
+        }, false)
+    })
+})()
+
+// Time validation
+document.addEventListener('DOMContentLoaded', function() {
+    const openingTime = document.querySelector('input[name="opening_time"]');
+    const closingTime = document.querySelector('input[name="closing_time"]');
+
+    function validateTimes() {
+        if (openingTime.value && closingTime.value) {
+            if (openingTime.value >= closingTime.value) {
+                closingTime.setCustomValidity('Closing time must be after opening time');
+            } else {
+                closingTime.setCustomValidity('');
+            }
+        }
+    }
+
+    openingTime.addEventListener('change', validateTimes);
+    closingTime.addEventListener('change', validateTimes);
+});
+</script>
 {% endblock %}

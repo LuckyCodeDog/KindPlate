@@ -153,6 +153,7 @@ CREATE TABLE booking (
 CREATE TABLE restaurant_profile (
     profile_id SERIAL PRIMARY KEY,
     description TEXT,
+    story TEXT,
     rating DECIMAL(3,2) DEFAULT 0.00,
     image_url VARCHAR(255),
     facilities TEXT,
@@ -165,6 +166,7 @@ CREATE TABLE restaurant_profile (
 
 INSERT INTO restaurant_profile (
     description,
+    story,
     rating,
     image_url,
     facilities,
@@ -176,6 +178,7 @@ INSERT INTO restaurant_profile (
 )
 VALUES (
     'Kind Plate',
+    "Born from a belief that food can heal both people and the planet, Kind Plate began as a small kitchen run by a team of passionate chefs and advocates for social equity. Today, we’ve grown into a thriving hub where 70% of our staff are deaf or mute individuals, proving that great food needs no words—just heart.",
     4.95,
     'https://example.com/images/kind_plate_fancy_image.jpg',
     'Wheelchair Accessible, Pet-Friendly, Outdoor Seating, ASL Services, Vegan/Gluten-Free Options, Free Wi-Fi, Zero-Waste Practices, Live Music Nights, Community Cooking Classes',

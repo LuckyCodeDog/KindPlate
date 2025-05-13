@@ -1,0 +1,32 @@
+Name,Description,Price,Category,Available
+Vegan Dumplings (6pc),"Asian housemade mixed vegetable dumplings, steamed or seared",8.00,appetizer,True
+Scallion Pancake,With dipping sauce,7.00,Appetizers,True
+"Barbeque ""Roast Pork""",Sauteed soy protein with house-made barbeque sauce,12.00,Appetizers,True
+King Oyster Mushrooms,"Battered fried king oyster mushrooms tossed with chopped fresh peppers, seasoned with salt and pepper",10.00,Appetizers,True
+Soy Nuggets,With vegan aioli dipping sauce,12.00,Appetizers,True
+"Spicy ""Tuna"" Avocado Roll","Avocado, cucumber, house-made vegan tuna (dried tomatoes)",13.00,Appetizers,True
+"Sesame ""Beef""","Stir-fried soy protein in sweet sesame sauce with mushrooms, bell peppers, onions with steamed kale",21.00,Entrees,True
+"General Tso's ""Chicken""","Stir-fried soy protein, broccoli and mixed vegetables in General Tso's sauce",23.00,Entrees,True
+"Sweet and Sour ""Chicken""","Battered soy protein, bell peppers, broccoli, cauliflower, pineapple, carrots, and onions in a housemade sweet and sour sauce",22.00,Entrees,True
+Home Styled Mapo Tofu,"Tofu, minced ""meat"", peas, hot peppers in brown sauce and garnished with scallions",16.00,Entrees,True
+"Beijing ""Duck""","Roasted whole soy protein and sauteed oyster mushrooms with kale, Japanese pumpkin topped with almond slices",25.00,Entrees,True
+"""Spare Ribs"" and Potatoes",Homestyle spare soy ribs and potatoes in delicious brown sauce,22.00,Entrees,True
+Eggplant with Garlic Sauce,"Eggplant, bell peppers, bok choy and wood ears with garlic sauce",19.00,Entrees,True
+Sauteed Mixed Vegetables,Seasonal vegetables,16.00,Entrees,True
+Pineapple Fried Rice,"Mixed vegetables, topped with pineapples",15.00,Entrees,True
+"Curry ""Chicken"" Noodle Soup","Noodles, eggplant, snow peas, mushrooms, potatoes, cabbage, vegan soy chicken",17.00,Noodle Soups,True
+"BBQ ""Roast Pork"" Noodle Soup","Vegan soy pork, baby bok choy, rice noodle",15.00,Noodle Soups,True
+"Soy ""Duck"" Noodle Soup","Pressed tofu skin, vegan soy duck, baby bok choy, noodle",16.00,Noodle Soups,True
+"Blueberry ""Cheesecake"" (Gluten-Free)",,8.00,Desserts,True
+Decadent Chocolate Cake (Nut-Free),,8.00,Desserts,True
+"Almond ""Milk"" & Chocolate Chip Cookie (Gluten-Free)",,8.00,Desserts,True
+Double Espresso,,5.00,Beverages,True
+Long Black,,4.00,Beverages,True
+Cappuccino,,5.00,Beverages,True
+Latte,,5.00,Beverages,True
+Earl Grey Latte,,5.00,Beverages,True
+Hazelnut Latte,,7.00,Beverages,True
+Caramel Latte,,6.00,Beverages,True
+Mocha,,6.00,Beverages,True
+Hot Chocolate,,6.00,Beverages,True
+Mint Chocolate,,6.00,Beverages,True
