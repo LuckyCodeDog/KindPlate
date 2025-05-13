@@ -1,10 +1,9 @@
 from enum import Enum
-from enum import Enum
 
 class Role(Enum):
     Admin = 'admin'
-    Waiter = 'waiter'
-    Chef = 'chef'
+    Manager = 'manager'
+    Staff = 'staff'
     Customer = 'customer'
 
 

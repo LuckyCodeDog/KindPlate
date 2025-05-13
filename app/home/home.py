@@ -29,8 +29,8 @@ def index():
     menu_items = MenuItem.query.limit(5).all()
     employees = User.query.filter(
         or_(
-            User.role == Role.Waiter,
-            User.role == Role.Chef
+            User.role == Role.Manager,
+            User.role == Role.Staff
         )
     ).limit(5).all()
     print(current_user.is_authenticated)
@@ -55,13 +55,18 @@ def add_to_cart(menu_item_id):
         cart.append({'id': menu_item_id_str, 'quantity': 1})
 
     session['cart'] = cart
-
     menu_item = MenuItem.query.get(menu_item_id)
-    print(menu_item)
+
+    # Calculate total items in cart
+    cart_count = sum(item['quantity'] for item in cart)
 
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         msg = f"{menu_item.name} has been added to your cart!"
-        return jsonify({"message": msg})
+        return jsonify({
+            "message": msg,
+            "cart_count": cart_count,
+            "success": True
+        })
 
     flash("Item added to cart!")
     return redirect(request.referrer or url_for("home.index"))

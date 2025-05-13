@@ -10,7 +10,7 @@ CREATE TABLE Users (
     password_hash VARCHAR(255) NOT NULL,
     email VARCHAR(100),
     phone_number VARCHAR(20),
-    role ENUM('Admin', 'Waiter', 'Chef', 'Customer') NOT NULL,
+    role ENUM('Admin', 'Manager', 'Staff', 'Customer') NOT NULL,
     role_description TEXT,                 
     story TEXT,                             
     achievements TEXT,
@@ -189,7 +189,7 @@ VALUES (
 
 INSERT INTO Users (username, password_hash, email, phone_number, role, role_description, story, achievements, first_name, last_name, image_url, contribution, address)
 VALUES
-('hana_greeter', 'hashed_password_13', 'hana@email.com', '1234567802', 'Waiter',
+('hana_greeter', 'hashed_password_13', 'hana@email.com', '1234567802', 'Manager',
  'Greets guests using ASL and digital menus, ensuring all feel welcomed.',
  'My joy comes from helping first-time ASL users order confidently.',
  'Trained over 200 guests to use basic ASL greetings at the door.',
@@ -201,17 +201,18 @@ VALUES
  'Trained over 200 guests to use basic ASL greetings at the door.',
  'Hana', 'Nguyen', 'https://example.com/images/hana.jpg', 0.00, '111 Cypress St, City, Country'),
  
-('kai_dishwasher', 'hashed_password_14', 'kai@email.com', '1234567803', 'Waiter',
+('kai_dishwasher', 'hashed_password_14', 'kai@email.com', '1234567803', 'Manager',
  'Manages eco-friendly dishwashing systems with visual load indicators.',
  'I may be behind the scenes, but I know I’m helping keep the kitchen moving silently and smoothly.',
  'Reduced water use by 30% with new dish cycle techniques.',
  'Kai', 'Chen', 'https://example.com/images/kai.jpg', 0.00, '222 Palm St, City, Country'),
 
-('zoe_signcoach', 'hashed_password_15', 'zoe@email.com', '1234567804', 'Waiter',
+('zoe_signcoach', 'hashed_password_15', 'zoe@email.com', '1234567804', 'Manager',
  'Leads ASL lunch breaks where staff practice signs together.',
  'I came for the food, stayed for the team spirit—and now I teach!',
  'Organized weekly ASL practice sessions improving inter-staff communication by 50%.',
  'Zoe', 'Adams', 'https://example.com/images/zoe.jpg', 0.00, '333 Spruce St, City, Country');
+ 
 
 
 INSERT INTO MenuItems (name, description, price, category) VALUES

@@ -25,20 +25,20 @@ dashboard = Blueprint("dashboard", __name__, template_folder="templates")
 
 
 @dashboard.route("/")
-@dashboard_roles_required(Role.Admin.value, Role.Waiter.value, Role.Chef.value)
+@dashboard_roles_required(Role.Admin.value, Role.Manager.value, Role.Staff.value)        
 def main():
     return redirect(url_for("dashboard.overview"))
 
 
 @dashboard.route("/overview")
-@dashboard_roles_required(Role.Admin.value, Role.Waiter.value, Role.Chef.value)
+@dashboard_roles_required(Role.Admin.value, Role.Manager.value, Role.Staff.value)
 def overview():
 
     return render_template(f"dashboard_overview.html", name="name")
 
 
 @dashboard.route("/menu_items", methods=["GET", "POST"])
-@dashboard_roles_required(Role.Admin.value, Role.Waiter.value, Role.Chef.value)
+@dashboard_roles_required(Role.Admin.value, Role.Manager.value, Role.Staff.value)
 def menu_item_list():
     if request.method == "GET":
         search = request.args.get('search', None)  
@@ -55,7 +55,7 @@ def menu_item_list():
 
 
 @dashboard.route("/menu_items/add", methods=["GET", "POST"])
-@dashboard_roles_required(Role.Admin.value, Role.Waiter.value, Role.Chef.value)
+@dashboard_roles_required(Role.Admin.value, Role.Manager.value, Role.Staff.value)
 def add_menu_item():
     if request.method == "POST":
         form = MenuItemForm()
@@ -67,7 +67,7 @@ def add_menu_item():
 
 
 @dashboard.route("/menu_items/edit/<int:menu_item_id>", methods=["GET", "POST"])
-@dashboard_roles_required(Role.Admin.value, Role.Waiter.value, Role.Chef.value)
+@dashboard_roles_required(Role.Admin.value, Role.Manager.value, Role.Staff.value)
 def edit_menu_item(menu_item_id):
     menu_item = MenuItem.get_by_id(menu_item_id)
     if not menu_item:
@@ -97,7 +97,7 @@ def edit_menu_item(menu_item_id):
 
 #create a new menu item
 @dashboard.route("/menu_items/create", methods=["GET", "POST"])
-@dashboard_roles_required(Role.Admin.value, Role.Waiter.value, Role.Chef.value)
+@dashboard_roles_required(Role.Admin.value, Role.Manager.value)
 def create_menu_item():
     if request.method == "POST":
         form = MenuItemForm()
@@ -114,7 +114,7 @@ def create_menu_item():
 
 
 @dashboard.route("/menu_items/delete/<int:menu_item_id>", methods=["GET"])
-@dashboard_roles_required(Role.Admin.value, Role.Waiter.value, Role.Chef.value)
+@dashboard_roles_required(Role.Admin.value, Role.Manager.value)
 def delete_menu_item(menu_item_id):
     menu_item = MenuItem.get_by_id(menu_item_id)
     if not menu_item:
@@ -126,7 +126,7 @@ def delete_menu_item(menu_item_id):
 
 
 @dashboard.route("/export_menu_items_csv")
-@dashboard_roles_required(Role.Admin.value, Role.Waiter.value, Role.Chef.value)
+@dashboard_roles_required(Role.Admin.value, Role.Manager.value, Role.Staff.value)
 def export_menu_items_csv():
     try:
         output = export_menu_items()
@@ -167,7 +167,7 @@ def export_menu_items():
 
 
 @dashboard.route("/users")
-@dashboard_roles_required(Role.Admin.value, Role.Waiter.value, Role.Chef.value)
+@dashboard_roles_required(Role.Admin.value, Role.Manager.value, Role.Staff.value)
 def users_list():
     search = request.args.get('search', '')
     page = request.args.get('page', 1, type=int)
@@ -188,7 +188,7 @@ def users_list():
 
 
 @dashboard.route("/users/add", methods=["GET", "POST"])
-@dashboard_roles_required(Role.Admin.value, Role.Waiter.value, Role.Chef.value)
+@dashboard_roles_required(Role.Admin.value, Role.Manager.value, Role.Staff.value)
 def add_user():
     form = UserForm()
     if request.method == "POST":
@@ -222,7 +222,7 @@ def add_user():
 
 #delete user
 @dashboard.route("/users/delete/<int:user_id>", methods=["GET"])
-@dashboard_roles_required(Role.Admin.value, Role.Waiter.value, Role.Chef.value)
+@dashboard_roles_required(Role.Admin.value, Role.Manager.value, Role.Staff.value)
 def delete_user(user_id):
     user = User.get_user_by_id(user_id)
     if not user:
@@ -234,7 +234,7 @@ def delete_user(user_id):
 
 #export users to csv
 @dashboard.route("/export_users_csv")
-@dashboard_roles_required(Role.Admin.value, Role.Waiter.value, Role.Chef.value)
+@dashboard_roles_required(Role.Admin.value, Role.Manager.value, Role.Staff.value)
 def export_users_csv():
     try:
         output = export_users()
@@ -277,7 +277,7 @@ def export_users():
 
 
 @dashboard.route("/users/edit/<int:user_id>", methods=["GET", "POST"])
-@dashboard_roles_required(Role.Admin.value, Role.Waiter.value, Role.Chef.value)
+@dashboard_roles_required(Role.Admin.value, Role.Manager.value, Role.Staff.value)
 def edit_user(user_id):
     user = User.get_user_by_id(user_id)
     if not user:
@@ -324,7 +324,7 @@ def edit_user(user_id):
 
 #reset password
 @dashboard.route("/users/reset_password/<int:user_id>", methods=["GET", "POST"])
-@dashboard_roles_required(Role.Admin.value, Role.Waiter.value, Role.Chef.value)
+@dashboard_roles_required(Role.Admin.value, Role.Manager.value, Role.Staff.value)
 def reset_password(user_id):
     
     user = User.get_user_by_id(user_id)
@@ -345,7 +345,7 @@ def reset_password(user_id):
 
 # === settings ===
 @dashboard.route("/settings", methods=["GET", "POST"])
-@dashboard_roles_required(Role.Admin.value, Role.Waiter.value, Role.Chef.value)
+@dashboard_roles_required(Role.Admin.value, Role.Manager.value, Role.Staff.value)
 def settings():
     if request.method == "POST":
         # Handle form submission for settings here
@@ -391,7 +391,7 @@ def settings():
 # === Order Management ===
 # == Order List ==
 @dashboard.route("/orders")
-@dashboard_roles_required(Role.Admin.value, Role.Waiter.value, Role.Chef.value)
+@dashboard_roles_required(Role.Admin.value, Role.Manager.value, Role.Staff.value)
 def orders_list():
     Customer = aliased(User)
     Waiter = aliased(User)
@@ -446,7 +446,7 @@ def logout():
 
 # bookings
 @dashboard.route("/bookings")
-@dashboard_roles_required(Role.Admin.value, Role.Waiter.value, Role.Chef.value)
+@dashboard_roles_required(Role.Admin.value, Role.Manager.value, Role.Staff.value)     
 def bookings_list():
     if request.method == "GET":
         search = request.args.get('search', None)  
@@ -463,7 +463,7 @@ def bookings_list():
     
 #change booking status
 @dashboard.route("/bookings/change_status/<int:booking_id>", methods=["POST"])
-@dashboard_roles_required(Role.Admin.value, Role.Waiter.value, Role.Chef.value)
+@dashboard_roles_required(Role.Admin.value, Role.Manager.value, Role.Staff.value) 
 def change_booking_status(booking_id):
     #ajax
     booking = Booking.get_by_id(booking_id)
