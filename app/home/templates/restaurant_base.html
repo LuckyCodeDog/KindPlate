@@ -150,21 +150,31 @@
             <div class="col-xl-2 col-md-3 col-sm-6 col-6">
               <div class="footer__links">
                 <div class="footer__links-tittle">
-                  <h4>Account</h4>
+                  <h4>Restaurant Info</h4>
                 </div>
                 <div class="footer__links-content">
                   <ul class="footer__linklist">
-                    <li class="footer__linklist-item"> <a href="login.html">Sign In</a>
+                    <li class="footer__linklist-item">
+                      <i class="fas fa-map-marker-alt me-2"></i>
+                      <span>{{ restaurant_profile.address }}</span>
                     </li>
-                    <li class="footer__linklist-item"> <a href="cart.html">View Cart</a>
+                    <li class="footer__linklist-item">
+                      <i class="fas fa-clock me-2"></i>
+                      <span>Opening Hours: {{ restaurant_profile.opening_time.strftime('%I:%M %p') }} - {{ restaurant_profile.closing_time.strftime('%I:%M %p') }}</span>
                     </li>
-                    <li class="footer__linklist-item"> <a href="wishlist.html">My Wishlist</a></li>
-                    <li class="footer__linklist-item"> <a href="invoice.html">Shipping Details</a> </li>
+                    <li class="footer__linklist-item">
+                      <i class="fas fa-phone me-2"></i>
+                      <span>{{ restaurant_profile.phone_number }}</span>
+                    </li>
+                    <li class="footer__linklist-item">
+                      <i class="fas fa-envelope me-2"></i>
+                      <span>{{ restaurant_profile.email }}</span>
+                    </li>
                   </ul>
                 </div>
               </div>
             </div>
-         
+
           </div>
         </div>
       </div>

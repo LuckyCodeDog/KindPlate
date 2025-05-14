@@ -9,6 +9,8 @@ class RestaurantProfile(db.Model):
     profile_id = db.Column(Integer, primary_key=True, autoincrement=True)
     description = db.Column(Text)
     story = db.Column(Text)
+    address = db.Column(String(255))
+    phone_number = db.Column(String(20))
     rating = db.Column(DECIMAL(3, 2), default=0.00)
     image_url = db.Column(String(255))
     facilities = db.Column(Text)
@@ -30,7 +32,7 @@ class RestaurantProfile(db.Model):
     @staticmethod
     def create_profile(description=None, story=None, rating=0.0, image_url=None,
                        facilities=None, opening_date=None, opening_time=None,
-                       closing_time=None, social_media_links=None):
+                       closing_time=None, social_media_links=None, address=None, phone_number=None):
         new_profile = RestaurantProfile(
             description=description,
             story=story,
@@ -40,7 +42,9 @@ class RestaurantProfile(db.Model):
             opening_date=opening_date,
             opening_time=opening_time,
             closing_time=closing_time,
-            social_media_links=social_media_links
+            social_media_links=social_media_links,
+            address=address,
+            phone_number=phone_number
         )
         db.session.add(new_profile)
         db.session.commit()
@@ -48,7 +52,7 @@ class RestaurantProfile(db.Model):
 
     @staticmethod
     def update_profile(profile_id, description=None, story=None, rating=None, image_url=None,
-                       facilities=None, opening_date=None, opening_time=None, closing_time=None):
+                       facilities=None, opening_date=None, opening_time=None, closing_time=None, address=None, phone_number=None):
         profile = RestaurantProfile.query.get(profile_id)
         if profile:
             if description is not None:
@@ -67,8 +71,10 @@ class RestaurantProfile(db.Model):
                 profile.closing_time = closing_time
             if story is not None:
                 profile.story = story
-
-
+            if address is not None: 
+                profile.address = address
+            if phone_number is not None:
+                profile.phone_number = phone_number
             profile.updated_at = datetime.datetime.now()  
             db.session.commit()
             return profile

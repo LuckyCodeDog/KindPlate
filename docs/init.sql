@@ -153,6 +153,8 @@ CREATE TABLE booking (
 CREATE TABLE restaurant_profile (
     profile_id SERIAL PRIMARY KEY,
     description TEXT,
+    address TEXT,
+    phone_number VARCHAR(20),
     story TEXT,
     rating DECIMAL(3,2) DEFAULT 0.00,
     image_url VARCHAR(255),
@@ -166,6 +168,8 @@ CREATE TABLE restaurant_profile (
 
 INSERT INTO restaurant_profile (
     description,
+    address,
+    phone_number,
     story,
     rating,
     image_url,
@@ -178,6 +182,8 @@ INSERT INTO restaurant_profile (
 )
 VALUES (
     'Kind Plate',
+    '123 Main St, Anytown, NZ',
+    '1234567890',
     "Born from a belief that food can heal both people and the planet, Kind Plate began as a small kitchen run by a team of passionate chefs and advocates for social equity. Today, we’ve grown into a thriving hub where 70% of our staff are deaf or mute individuals, proving that great food needs no words—just heart.",
     4.95,
     'https://example.com/images/kind_plate_fancy_image.jpg',
