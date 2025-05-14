@@ -81,7 +81,7 @@ CREATE TABLE Orders (
     zip_code VARCHAR(20),
     email VARCHAR(255),
     
-    FOREIGN KEY (customer_id) REFERENCES Users(user_id),
+    FOREIGN KEY (customer_id) REFERENCES Users(user_id)
 );
 
 
