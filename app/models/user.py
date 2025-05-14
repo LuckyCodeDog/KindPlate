@@ -14,6 +14,8 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(100))
     phone_number = db.Column(db.String(20))
     role = db.Column(SqlEnum(Role), nullable=False)
+    role_description = db.Column(db.String(255))
+    story = db.Column(db.String(255))
     first_name = db.Column(db.String(50))
     last_name = db.Column(db.String(50))
     contribution = db.Column(db.Numeric(10, 2), default=0) 

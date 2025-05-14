@@ -7,67 +7,52 @@
     <div class="container">
       <div class="blog-details__wrapper">
         <div class="row g-5">
-          <div class="col-lg-8">
+          <div class="col-lg-12">
             <div class="blog-details__item">
               <div class="blog-details__item-inner">
                 <div class="blog-details__thumb">
                   <div class="blog-details__thumb-inner" data-aos="fade-up" data-aos-duration="800">
-                    <img src="assets/picture/blog-details.png" alt="blog-image">
+                    <img src="{{restaurant_profile.image_url}}" alt="blog-image">
                   </div>
                 </div>
                 <div class="blog-details__content">
-                  <h2>Comprehensive Guide to Crafting a Healthy, and Personalized Meal Strategy</h2>
+                  <h2>{{restaurant_profile.description}}</h2>
                   <div class="blog-details__meta">
                     <ul>
-                      <li><img src="assets/picture/118.png" alt="user-icon">
-                        John Doe</li>
-                      <li><img src="assets/picture/213.png" alt="date-icon">
-                        April 25, 2024</li>
-                      <li>
-                        <a href="#"><img src="assets/picture/313.png" alt="comment-icon">
-                          4 Comments</a>
-                      </li>
+                      <li><img src="../../../static/assets/picture/118.png" alt="user-icon">
+                        Galaxy Sun</li>
+                      <li><img src="../../../static/assets/picture/213.png" alt="date-icon">
+                        {{restaurant_profile.created_at}}</li>
+
                     </ul>
                   </div>
-                  <p class="mb-0">Embark on a transformative journey to optimal health with our Comprehensive Guide to
-                    Crafting a Healthy, and Personalized Meal Strategy. Discover the art of balanced nutrition,
-                    personalized meal planning, and sustainable habits.</p>
+                  <p class="mb-0">{{restaurant_profile.story}}</p>
                 </div>
 
                 <div class="blog-details__quote">
-                  <p>Juicy and flavorful, the strawberries from this grocery website exceeded my expectations. Each
-                    berry was plump and sweet, elevating my recipes. Freshness delivered to my doorstep—highly
-                    recommended!</p>
-                  <h5><span>—</span> John Doe</h5>
+                  <p>At Kind Plate, we’re more than a vegan restaurant—we’re a movement. Founded in 2021, our mission is to redefine dining by blending bold plant-based flavors with radical inclusivity, environmental stewardship, and community empowerment.</p>
+                  <h5><span>—</span> Galaxy Sun </h5>
                   <div class="blog-details__quote-icon">
                     <span><i class="fa-solid fa-quote-right"></i></span>
                   </div>
                 </div>
                 <div class="blog-details__content">
-                  <h4>Constructing a Comprehensive Meal Plan for Your Health</h4>
-                  <p>Journey to well-being by constructing a comprehensive meal plan tailored to your health needs. Our
-                    guide navigates the intricacies of nutrition, empowering you to make informed choices and foster a
-                    balanced, nourishing lifestyle for lasting health benefits.</p>
+                  <h4>Our Mission</h4>
+                  <p>{{restaurant_profile.story}}</p>
                 </div>
                 <div class="blog-details__segment" data-aos="fade-up" data-aos-duration="1000">
                   <div class="row g-4">
                     <div class="col-md-6">
                       <div class="blog-details__segment-video">
-                        <img src="assets/picture/Video_thumbnail.png" alt="blog-image">
+                        <img src="../../../static/assets/picture/Video_thumbnail.png" alt="blog-image">
                       </div>
                     </div>
                     <div class="col-md-6">
                       <div class="blog-details__segment-thumb">
-                        <img src="assets/picture/blog-details-sm.png" alt="blog-image">
+                        <img src="../../../static/assets/picture/blog-details-sm.png" alt="blog-image">
                       </div>
                     </div>
                   </div>
-                </div>
-                <div class="blog-details__content mt-4">
-                  <h4>Healthy Meal Strategy for Lasting Well-being</h4>
-                  <p>Elevate your well-being with our guide to crafting a healthy meal strategy. Explore sustainable
-                    practices, nutritional insights, and personalized approaches, empowering you to cultivate habits
-                    that foster lasting health and vitality for a thriving and balanced lifestyle.</p>
                 </div>
                 <div class="blog-details__action" data-aos="fade-up" data-aos-duration="1000">
                   <div class="blog-details__action-inner">
@@ -77,321 +62,11 @@
                           <li>
                             <h4 class="mb-0">Tags</h4>
                           </li>
-                          <li><a href="#">Organic Grocery</a></li>
-                          <li><a href="#" class="active">FreshProduce</a></li>
+                          <li><a href="#">Vegan Restaurant</a></li>
+                          <li><a href="#">Plant-Based</a></li>
                         </ul>
                       </div>
                     </div>
-                    <div class="blog-details__social">
-                      <ul class="social">
-                        <li>
-                          <h4 class="mb-0">Share</h4>
-                        </li>
-                        <li class="social__item">
-                          <a href="#" class="social__link  active"><i class="fab fa-facebook-f"></i></a>
-                        </li>
-                        <li class="social__item">
-                          <a href="#" class="social__link  "><i class="fab fa-instagram"></i></a>
-                        </li>
-                        <li class="social__item">
-                          <a href="#" class="social__link  "><i class="fa-brands fa-linkedin-in"></i></a>
-                        </li>
-                        <li class="social__item">
-                          <a href="#" class="social__link "><i class="fa-brands fa-x-twitter"></i></a>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-                <div class="blog-details__comment" data-aos="fade-up" data-aos-duration="1000">
-                  <div class="sidebar">
-                    <div class="sidebar__comment">
-                      <div class="sidebar__head">
-                        <h3>Comment</h3>
-                      </div>
-                      <div class="sidebar__comment-body">
-                        <ul>
-                          <li class="sidebar__comment-item">
-                            <div class="comment">
-                              <div class="comment__inner">
-                                <div class="comment__head">
-                                  <div class="comment__author">
-                                    <div class="comment__author-thumb">
-                                      <img src="assets/picture/314.png" alt="comment-author">
-                                    </div>
-                                    <div class="comment__author-info">
-                                      <h6 class="mb-0">Mark Johnson</h6>
-                                      <span>March 12, 2024</span>
-                                    </div>
-                                  </div>
-                                  <div class="comment__action">
-                                    <a href="#post"> <img src="assets/picture/replay.svg" alt="reply-icon">
-                                      reply</a>
-                                  </div>
-                                </div>
-                                <div class="comment__body">
-                                  <div class="comment__body-inner">
-                                    <p class="mb-0">We invite you to explore our trading blog for the latest industry
-                                      insights and expert analysis and make decisions.</p>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </li>
-                          <li class="sidebar__comment-item sidebar__comment-item--reply">
-                            <div class="comment">
-                              <div class="comment__inner">
-                                <div class="comment__head">
-                                  <div class="comment__author">
-                                    <div class="comment__author-thumb">
-                                      <img src="assets/picture/119.png" alt="comment-author">
-                                    </div>
-                                    <div class="comment__author-info">
-                                      <h6 class="mb-0">Tommy Reed</h6>
-                                      <span>April 02, 2024</span>
-                                    </div>
-                                  </div>
-                                  <div class="comment__action">
-                                    <a href="#post"> <img src="assets/picture/replay.svg" alt="reply-icon">
-                                      reply</a>
-                                  </div>
-                                </div>
-                                <div class="comment__body">
-                                  <div class="comment__body-inner">
-                                    <p class="mb-0">Absolutely! Delving into your trading blog for invaluable insights.
-                                      Staying informed for smarter decisions.</p>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </li>
-                          <li class="sidebar__comment-item sidebar__comment-item--reply">
-                            <div class="comment">
-                              <div class="comment__inner">
-                                <div class="comment__head">
-                                  <div class="comment__author">
-                                    <div class="comment__author-thumb">
-                                      <img src="assets/picture/214.png" alt="comment-author">
-                                    </div>
-                                    <div class="comment__author-info">
-                                      <h6 class="mb-0">Max Adams.</h6>
-                                      <span>April 16, 2024</span>
-                                    </div>
-                                  </div>
-                                  <div class="comment__action">
-                                    <a href="#post"> <img src="assets/picture/replay.svg" alt="reply-icon">
-                                      reply</a>
-                                  </div>
-                                </div>
-                                <div class="comment__body">
-                                  <div class="comment__body-inner">
-                                    <p class="mb-0">Staying informed for smarter decisions. Grateful for the expert
-                                      analysis you provide.</p>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </li>
-                          <li class="sidebar__comment-item">
-                            <div class="comment">
-                              <div class="comment__inner">
-                                <div class="comment__head">
-                                  <div class="comment__author">
-                                    <div class="comment__author-thumb">
-                                      <img src="assets/picture/48.png" alt="comment-author">
-                                    </div>
-                                    <div class="comment__author-info">
-                                      <h6 class="mb-0">Chris Scott</h6>
-                                      <span>May 20, 2024</span>
-                                    </div>
-                                  </div>
-                                  <div class="comment__action">
-                                    <a href="#post"> <img src="assets/picture/replay.svg" alt="reply-icon">
-                                      reply</a>
-                                  </div>
-                                </div>
-                                <div class="comment__body">
-                                  <div class="comment__body-inner">
-                                    <p class="mb-0">Delving into your trading blog for invaluable insights. Staying
-                                      informed for smarter decisions. Stay informed and make informed decisions.</p>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </li>
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="blog-details__commentform " data-aos="fade-up" data-aos-duration="1000">
-                  <div class="sidebar">
-                    <div class="sidebar__commentform" id="post">
-                      <div class="sidebar__head">
-                        <h3>Leave A Comment</h3>
-                      </div>
-                      <div class="sidebar__commentform-body pt-25">
-                        <form action="javascript:;">
-                          <div class="row g-4">
-                            <div class="col-md-6">
-                              <div>
-                                <label for="name" class="form-label">Name</label>
-                                <input class="form-control" type="text" id="name" placeholder="Full Name">
-                              </div>
-                            </div>
-                            <div class="col-md-6">
-                              <div>
-                                <label for="email" class="form-label">Email</label>
-                                <input class="form-control" type="email" id="email" placeholder="Email here">
-                              </div>
-                            </div>
-                            <div class="col-md-12">
-                              <div>
-                                <label for="textarea" class="form-label">Message</label>
-                                <textarea cols="30" rows="5" class="form-control" id="textarea" placeholder="Enter Your Message"></textarea>
-                              </div>
-                            </div>
-                          </div>
-                          <button type="submit" class="trk-btn trk-btn--border trk-btn--primary mt-4">Send
-                            message</button>
-                        </form>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-lg-4 col-md-8  col-12">
-            <div class="sidebar" data-aos="fade-left" data-aos-duration="1000">
-              <div class="row g-4">
-                <div class="col-12">
-                  <div class="sidebar__categorie">
-                    <div class="sidebar__head">
-                      <h3>Categories</h3>
-                    </div>
-                    <div class="sidebar__categorie-body">
-                      <div class="sidebar__categorie-content">
-                        <ul>
-                          <li>
-                            <a href="#">
-                              Fresh Finds</a>
-                            <span>12</span>
-                          </li>
-                          <li class="active">
-                            <a href="#">
-                              Cooking Adventures</a>
-                            <span>06</span>
-                          </li>
-                          <li>
-                            <a href="#">
-                              Sustainable Choices</a>
-                            <span>17</span>
-                          </li>
-                          <li>
-                            <a href="#">
-                              Smart Shopping Tips</a>
-                            <span>08</span>
-                          </li>
-                          <li>
-                            <a href="#">
-                              Wellness Insights</a>
-                            <span>02</span>
-                          </li>
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-12">
-                  <div class="sidebar__recentpost">
-                    <div class="sidebar__head">
-                      <h3>Recent posts</h3>
-                    </div>
-                    <div class="sidebar__recentpost-body">
-                      <ul>
-                        <li>
-                          <div class="sidebar__recentpost-item">
-                            <div class="sidebar__recentpost-inner">
-                              <div class="sidebar__recentpost-thumb">
-                                <a href=""><img src="assets/picture/117.png" alt="recentpost-image"></a>
-                              </div>
-                              <div class="sidebar__recentpost-content">
-                                <p><a href="">Necessity to Use Container</a></p>
-                                <span>Dec 22, 2024</span>
-                              </div>
-                            </div>
-                          </div>
-                        </li>
-                        <li>
-                          <div class="sidebar__recentpost-item">
-                            <div class="sidebar__recentpost-inner">
-                              <div class="sidebar__recentpost-thumb">
-                                <a href=""><img src="assets/picture/212.png" alt="recentpost-image"></a>
-                              </div>
-                              <div class="sidebar__recentpost-content">
-                                <p><a href="">Benefits to Eat Grains</a></p>
-                                <span>July 28, 2024</span>
-                              </div>
-                            </div>
-                          </div>
-                        </li>
-                        <li>
-                          <div class="sidebar__recentpost-item">
-                            <div class="sidebar__recentpost-inner">
-                              <div class="sidebar__recentpost-thumb">
-                                <a href=""><img src="assets/picture/312.png" alt="recentpost-image"></a>
-                              </div>
-                              <div class="sidebar__recentpost-content">
-                                <p><a href="">How to Make Secure Payment</a></p>
-                                <span>May 18, 2024</span>
-                              </div>
-                            </div>
-                          </div>
-                        </li>
-                        <li>
-                          <div class="sidebar__recentpost-item">
-                            <div class="sidebar__recentpost-inner">
-                              <div class="sidebar__recentpost-thumb">
-                                <a href=""><img src="assets/picture/47.png" alt="recentpost-image"></a>
-                              </div>
-                              <div class="sidebar__recentpost-content">
-                                <p><a href="">Method of Preserving Vegs</a></p>
-                                <span>Feb 16, 2024</span>
-                              </div>
-                            </div>
-                          </div>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-12">
-                  <div class="sidebar__tags">
-                    <div class="sidebar__head">
-                      <h3>Popular Tags</h3>
-                    </div>
-                    <div class="sidebar__tags-body">
-                      <div class="tags">
-                        <ul>
-                          <li><a href="#">Organic</a></li>
-                          <li><a href="#" class="active">Fresh</a></li>
-                          <li><a href="#">Torganic</a></li>
-                          <li><a href="#">Nutrient</a></li>
-                          <li><a href="#">Green</a></li>
-                          <li><a href="#">Culinary</a></li>
-                          <li><a href="#">Grocery</a></li>
-                          <li><a href="#">Vegetables</a></li>
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-12">
-                  <div class="sidebar__sale-banner">
-                    <p>Big sale this week</p>
-                    <h4>Exquisite Fruit Medley Package. Taste the Tropical Bliss in Every mouthwatering Bite!</h4>
-                    <a href="shop.html" class="trk-btn trk-btn--yellow">Shop Now</a>
                   </div>
                 </div>
               </div>

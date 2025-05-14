@@ -1,99 +1,212 @@
 {% extends "restaurant_base.html" %}
 {% block title %}{{restaurant_profile.description}}{% endblock %}
 {% block content %}
-
-  <!-- ===============>>Flash Product section start here <<================= -->
-  <section class="product padding-top padding-bottom ">
+  <!-- ===============>> Menu section start here <<================= -->
+  <section class="blog-details padding-top padding-bottom section-bg">
     <div class="container">
-      <!-- Download Menu Button -->
-      <div class="row mb-4">
-        <div class="col-12 d-flex justify-content-end">
-          <a href="{{ url_for('home.download_menu') }}" class="trk-btn trk-btn--border">
-            <i class="fas fa-download me-2"></i>Download Menu
-          </a>
-        </div>
-      </div>
-      <div class="product__wrapper">
-        <div class="row justify-content-center flex-lg-row-reverse g-5">
-          <div class="col-lg-9">
-            <div class="row row-cols-xl-4 row-cols-md-3 row-cols-2 row-cols-1 justify-content-center g-3">
-              {% for menu_item in items.items %}
-              <div class="col">
-                <div class="product__item product__item--style2">
-                  <div class="product__item-inner">
-                    <div class="product__item-thumb">
-                      <img src="{{menu_item.image_url}}" alt="Popular Product Images">
-                    </div>
-                    <div class="product__item-content">
-                      <h5><a href="product-details.html">{{menu_item.name}}</a></h5>
-                      <div class="product__item-footer">
-                        <div class="product__item-price">
-                          <h4>${{menu_item.price}}</h4>
-                        </div>
-                        <div class="product__item-action">
-                          <button 
-                            onclick="addToCart('{{ menu_item.menu_item_id }}')" 
-                            class="trk-btn trk-btn--outline"
-                            id="add-to-cart-btn-{{ menu_item.menu_item_id }}"
-                          >Add to Order</button>
+      <div class="blog-details__wrapper">
+        <div class="row g-5">
+          <div class="col-lg-12">
+            <div class="blog-details__item">
+              <div class="blog-details__item-inner">
+                <!-- Header Section -->
+                <div class="blog-details__content text-center mb-5">
+                  <h2 class="mb-4">Our Menu</h2>
+                  <p class="lead mb-4">Discover our carefully crafted selection of dishes, made with the finest ingredients and prepared with passion.</p>
+                  <a href="{{ url_for('home.download_menu') }}" class="trk-btn trk-btn--border2">
+                    <i class="fas fa-download me-2"></i>Download Full Menu
+                  </a>
+                </div>
+
+                <!-- Menu Items Grid -->
+                <div class="menu-items-grid">
+                  <div class="row row-cols-xl-4 row-cols-md-3 row-cols-2 row-cols-1 justify-content-center g-4">
+                    {% for menu_item in items.items %}
+                    <div class="col">
+                      <div class="product__item product__item--style2" data-aos="fade-up" data-aos-duration="800">
+                        <div class="product__item-inner">
+                          <div class="product__item-thumb">
+                            <img src="{{menu_item.image_url}}" alt="{{menu_item.name}}">
+                          </div>
+                          <div class="product__item-content">
+                            <h5><a href="#">{{menu_item.name}}</a></h5>
+                            <div class="product__item-footer">
+                              <div class="product__item-price">
+                                <h4>${{menu_item.price}}</h4>
+                              </div>
+                              <div class="product__item-action">
+                                <button 
+                                  onclick="addToCart('{{ menu_item.menu_item_id }}')" 
+                                  class="trk-btn trk-btn--outline"
+                                  id="add-to-cart-btn-{{ menu_item.menu_item_id }}"
+                                >Add to Order</button>
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    </div>                      
+                    {% endfor %}
                   </div>
                 </div>
-              </div>                      
-              {% endfor %}
+
+                <!-- Pagination -->
+                <div class="pagination-container mt-5">
+                  <div class="pagination">
+                    {% if items.has_prev %}
+                      <a href="{{ url_for('home.menu', page=items.prev_num) }}" class="pagination-link" title="Previous Page">
+                        <i class="fas fa-chevron-left"></i>
+                      </a>
+                    {% else %}
+                      <span class="pagination-link disabled">
+                        <i class="fas fa-chevron-left"></i>
+                      </span>
+                    {% endif %}
+
+                    {% for page in items.iter_pages(left_edge=2, left_current=2, right_current=3, right_edge=2) %}
+                      {% if page %}
+                        {% if page == items.page %}
+                          <span class="pagination-link active">{{ page }}</span>
+                        {% else %}
+                          <a href="{{ url_for('home.menu', page=page) }}" class="pagination-link">
+                            {{ page }}
+                          </a>
+                        {% endif %}
+                      {% else %}
+                        <span class="pagination-ellipsis">...</span>
+                      {% endif %}
+                    {% endfor %}
+
+                    {% if items.has_next %}
+                      <a href="{{ url_for('home.menu', page=items.next_num) }}" class="pagination-link" title="Next Page">
+                        <i class="fas fa-chevron-right"></i>
+                      </a>
+                    {% else %}
+                      <span class="pagination-link disabled">
+                        <i class="fas fa-chevron-right"></i>
+                      </span>
+                    {% endif %}
+                  </div>
+                  <div class="pagination-info">
+                    Showing {{ items.items|length }} of {{ items.total }} items
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-
-    <!-- pagination -->
-    <div class="pagination-container">
-      <div class="pagination">
-        {% if items.has_prev %}
-          <a href="{{ url_for('home.menu', page=items.prev_num) }}" class="pagination-link" title="Previous Page">
-            <i class="fas fa-chevron-left"></i>
-          </a>
-        {% else %}
-          <span class="pagination-link disabled">
-            <i class="fas fa-chevron-left"></i>
-          </span>
-        {% endif %}
-
-        {% for page in items.iter_pages(left_edge=2, left_current=2, right_current=3, right_edge=2) %}
-          {% if page %}
-            {% if page == items.page %}
-              <span class="pagination-link active">{{ page }}</span>
-            {% else %}
-              <a href="{{ url_for('home.menu', page=page) }}" class="pagination-link">
-                {{ page }}
-              </a>
-            {% endif %}
-          {% else %}
-            <span class="pagination-ellipsis">...</span>
-          {% endif %}
-        {% endfor %}
-
-        {% if items.has_next %}
-          <a href="{{ url_for('home.menu', page=items.next_num) }}" class="pagination-link" title="Next Page">
-            <i class="fas fa-chevron-right"></i>
-          </a>
-        {% else %}
-          <span class="pagination-link disabled">
-            <i class="fas fa-chevron-right"></i>
-          </span>
-        {% endif %}
-      </div>
-      <div class="pagination-info">
-        Showing {{ items.items|length }} of {{ items.total }} items
-      </div>
-    </div>
   </section>
-  <!-- ===============>>Flash Product section end here <<================= -->
+  <!-- ===============>> Menu section end here <<================= -->
 
 <style>
+  .section-bg {
+    background-color: #f8f9fa;
+  }
+
+  .blog-details__content {
+    padding: 2rem 0;
+  }
+
+  .blog-details__content h2 {
+    color: #2d3748;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+
+  .blog-details__content .lead {
+    color: #4a5568;
+    font-size: 1.2rem;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .trk-btn--border2 {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.75rem 1.5rem;
+    background: transparent;
+    color: #4a5568;
+    border: 2px solid #4a5568;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-decoration: none;
+  }
+
+  .trk-btn--border2:hover {
+    background: #4a5568;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(74, 85, 104, 0.2);
+  }
+
+  .menu-items-grid {
+    margin-top: 3rem;
+  }
+
+  .product__item {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+  }
+
+  .product__item:hover {
+    transform: translateY(-5px);
+  }
+
+  .product__item-thumb img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+  }
+
+  .product__item-content {
+    padding: 1.5rem;
+  }
+
+  .product__item-content h5 {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    color: #2d3748;
+  }
+
+  .product__item-content h5 a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .product__item-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .product__item-price h4 {
+    color: #4a5568;
+    font-size: 1.25rem;
+    margin: 0;
+  }
+
+  .trk-btn--outline {
+    padding: 0.5rem 1rem;
+    border: 2px solid #4a5568;
+    color: #4a5568;
+    background: transparent;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+  }
+
+  .trk-btn--outline:hover {
+    background: #4a5568;
+    color: white;
+  }
+
+  /* Pagination styles */
   .pagination-container {
     display: flex;
     flex-direction: column;
@@ -115,7 +228,7 @@
     height: 2.5rem;
     padding: 0 0.5rem;
     border-radius: 0.375rem;
-    background-color: #fff;
+    background-color: white;
     border: 1px solid #e2e8f0;
     color: #4a5568;
     text-decoration: none;
@@ -131,7 +244,7 @@
   .pagination-link.active {
     background-color: #4a5568;
     border-color: #4a5568;
-    color: #fff;
+    color: white;
     font-weight: 600;
   }
 
@@ -153,19 +266,6 @@
     margin-top: 1rem;
     color: #718096;
     font-size: 0.875rem;
-  }
-
-  /* Download button styles */
-  .trk-btn--border {
-    border: 2px solid #4a5568;
-    color: #4a5568;
-    background: transparent;
-    transition: all 0.3s ease;
-  }
-
-  .trk-btn--border:hover {
-    background: #4a5568;
-    color: #fff;
   }
 </style>
 
@@ -251,7 +351,6 @@ async function addToCart(menuItemId) {
             }
         });
     } finally {
-        // Reset button state
         const button = document.getElementById(`add-to-cart-btn-${menuItemId}`);
         button.disabled = false;
         button.textContent = 'Add to Order';

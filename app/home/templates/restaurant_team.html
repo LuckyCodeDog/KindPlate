@@ -1,0 +1,440 @@
+{% extends "restaurant_base.html" %}
+{% block title %}{{restaurant_profile.description}}{% endblock %}
+{% block content %}
+  <!-- ===============>> Team section start here <<================= -->
+  <section class="blog-details padding-top padding-bottom section-bg">
+    <div class="container">
+      <div class="blog-details__wrapper">
+        <div class="row g-5">
+          <div class="col-lg-12">
+            <div class="blog-details__item">
+              <div class="blog-details__item-inner">
+                <!-- Header Section -->
+                <div class="blog-details__content text-center mb-5">
+                  <h2 class="mb-4">Our Team</h2>
+                  <p class="lead mb-4">Meet our dedicated team of culinary professionals</p>
+                </div>
+
+                <!-- Team Members Grid -->
+                <div class="team-members-grid">
+                  <div class="row row-cols-xl-4 row-cols-md-3 row-cols-2 row-cols-1 justify-content-center g-4">
+                    {% for user in items.items %}
+                    <div class="col">
+                      <div class="team-member" data-aos="fade-up" data-aos-duration="800">
+                        <div class="team-member__inner">
+                          <div class="team-member__thumb">
+                            <img src="{{ user.image_url or url_for('static', filename='assets/picture/default-avatar.png') }}" 
+                                 alt="{{ user.first_name }} {{ user.last_name }}">
+                          </div>
+                          <div class="team-member__content">
+                            <h5>{{ user.first_name }} {{ user.last_name }}</h5>
+                            <p class="team-member__role">{{ user.role.value.title() }}</p>
+                            <div class="team-member__info">
+                              {% if user.email %}
+                              <p class="team-member__email">
+                                <i class="fas fa-envelope me-2"></i>{{ user.email }}
+                              </p>
+                              {% endif %}
+                              {% if user.phone_number %}
+                              <p class="team-member__phone">
+                                <i class="fas fa-phone me-2"></i>{{ user.phone_number }}
+                              </p>
+                              {% endif %}
+                            </div>
+                            <button class="trk-btn trk-btn--primary mt-3" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#storyModal{{ user.user_id }}">
+                              View Story
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Story Modal -->
+                    <div class="modal fade" id="storyModal{{ user.user_id }}" tabindex="-1" aria-labelledby="storyModalLabel{{ user.user_id }}" aria-hidden="true">
+                      <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="storyModalLabel{{ user.user_id }}">
+                              {{ user.first_name }} {{ user.last_name }}'s Profile
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                            <div class="team-member__modal-content">
+                              <div class="team-member__modal-image">
+                                <img src="{{ user.image_url }}" 
+                                     alt="{{ user.first_name }} {{ user.last_name }}">
+                              </div>
+                              <div class="team-member__modal-info">
+                                <h4>{{ user.first_name }} {{ user.last_name }}</h4>
+                                <p class="role">{{ user.role.value.title() }}</p>
+                                <div class="contact-info">
+                                  {% if user.email %}
+                                  <p><i class="fas fa-envelope"></i> {{ user.email }}</p>
+                                  {% endif %}
+                                  {% if user.phone_number %}
+                                  <p><i class="fas fa-phone"></i> {{ user.phone_number }}</p>
+                                  {% endif %}
+                                </div>
+                                <div class="story-content">
+                                  <h5>Profile Information</h5>
+                                  <ul>
+                                    <li><strong>Role:</strong> {{ user.role.value.title() }}</li>
+                                    <li><strong>Member Since:</strong> {{ user.created_at.strftime('%B %d, %Y') }}</li>
+                                    {% if user.contribution %}
+                                    <li><strong>Contribution:</strong> ${{ "%.2f"|format(user.contribution) }}</li>
+                                    {% endif %}
+                                    <li><strong>Description:</strong> {{ user.role_description }}</li>
+                                    <li><strong>Story:</strong> {{ user.story }}</li>
+
+                                  </ul>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="trk-btn trk-btn--primary mt-3" data-bs-dismiss="modal">Close</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    {% endfor %}
+                  </div>
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination-container mt-5">
+                  <div class="pagination">
+                    {% if items.has_prev %}
+                      <a href="{{ url_for('home.team', page=items.prev_num) }}" class="pagination-link" title="Previous Page">
+                        <i class="fas fa-chevron-left"></i>
+                      </a>
+                    {% else %}
+                      <span class="pagination-link disabled">
+                        <i class="fas fa-chevron-left"></i>
+                      </span>
+                    {% endif %}
+
+                    {% for page in items.iter_pages(left_edge=2, left_current=2, right_current=3, right_edge=2) %}
+                      {% if page %}
+                        {% if page == items.page %}
+                          <span class="pagination-link active">{{ page }}</span>
+                        {% else %}
+                          <a href="{{ url_for('home.team', page=page) }}" class="pagination-link">
+                            {{ page }}
+                          </a>
+                        {% endif %}
+                      {% else %}
+                        <span class="pagination-ellipsis">...</span>
+                      {% endif %}
+                    {% endfor %}
+
+                    {% if items.has_next %}
+                      <a href="{{ url_for('home.team', page=items.next_num) }}" class="pagination-link" title="Next Page">
+                        <i class="fas fa-chevron-right"></i>
+                      </a>
+                    {% else %}
+                      <span class="pagination-link disabled">
+                        <i class="fas fa-chevron-right"></i>
+                      </span>
+                    {% endif %}
+                  </div>
+                  <div class="pagination-info">
+                    Showing {{ items.items|length }} of {{ items.total }} team members
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- ===============>> Team section end here <<================= -->
+
+<style>
+  .section-bg {
+    background-color: #f8f9fa;
+  }
+
+  .blog-details__content {
+    padding: 2rem 0;
+  }
+
+  .blog-details__content h2 {
+    color: #2d3748;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+
+  .blog-details__content .lead {
+    color: #4a5568;
+    font-size: 1.2rem;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .team-members-grid {
+    margin-top: 3rem;
+  }
+
+  .team-member {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+  }
+
+  .team-member:hover {
+    transform: translateY(-5px);
+  }
+
+  .team-member__thumb {
+    position: relative;
+    padding-top: 100%;
+    overflow: hidden;
+  }
+
+  .team-member__thumb img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .team-member__content {
+    padding: 1.5rem;
+    text-align: center;
+  }
+
+  .team-member__content h5 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    color: #2d3748;
+  }
+
+  .team-member__role {
+    color: #4a5568;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    font-weight: 500;
+  }
+
+  .team-member__info {
+    margin-bottom: 1rem;
+  }
+
+  .team-member__email,
+  .team-member__phone {
+    color: #718096;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .team-member__social {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .social-link {
+    color: #4a5568;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+  }
+
+  .social-link:hover {
+    color: #2d3748;
+    transform: translateY(-2px);
+  }
+
+  /* Modal Styles */
+  .modal-content {
+    border-radius: 12px;
+    border: none;
+  }
+
+  .modal-header {
+    border-bottom: 1px solid #e2e8f0;
+    padding: 1.5rem;
+  }
+
+  .modal-title {
+    color: #2d3748;
+    font-weight: 600;
+  }
+
+  .modal-body {
+    padding: 1.5rem;
+  }
+
+  .team-member__modal-content {
+    display: flex;
+    gap: 2rem;
+  }
+
+  .team-member__modal-image {
+    flex: 0 0 200px;
+  }
+
+  .team-member__modal-image img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+
+  .team-member__modal-info {
+    flex: 1;
+  }
+
+  .team-member__modal-info h4 {
+    color: #2d3748;
+    margin-bottom: 0.5rem;
+  }
+
+  .team-member__modal-info .role {
+    color: #4a5568;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+  }
+
+  .contact-info {
+    margin-bottom: 1.5rem;
+  }
+
+  .contact-info p {
+    color: #718096;
+    margin-bottom: 0.5rem;
+  }
+
+  .contact-info i {
+    width: 20px;
+    color: #4a5568;
+  }
+
+  .story-content h5 {
+    color: #2d3748;
+    margin: 1.5rem 0 1rem;
+    font-size: 1.1rem;
+  }
+
+  .story-content p {
+    color: #4a5568;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+
+  .story-content ul {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 1rem;
+  }
+
+  .story-content ul li {
+    color: #4a5568;
+    margin-bottom: 0.5rem;
+    padding-left: 1.5rem;
+    position: relative;
+  }
+
+  .story-content ul li:before {
+    content: "•";
+    color: #4a5568;
+    position: absolute;
+    left: 0;
+  }
+
+  .modal-footer {
+    border-top: 1px solid #e2e8f0;
+    padding: 1.5rem;
+  }
+
+  @media (max-width: 768px) {
+    .team-member__modal-content {
+      flex-direction: column;
+    }
+
+    .team-member__modal-image {
+      flex: 0 0 auto;
+      margin-bottom: 1.5rem;
+    }
+
+    .team-member__modal-image img {
+      height: 250px;
+    }
+  }
+
+  /* Pagination styles */
+  .pagination-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 2rem 0;
+  }
+
+  .pagination {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .pagination-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.5rem;
+    height: 2.5rem;
+    padding: 0 0.5rem;
+    border-radius: 0.375rem;
+    background-color: white;
+    border: 1px solid #e2e8f0;
+    color: #4a5568;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .pagination-link:hover:not(.disabled):not(.active) {
+    background-color: #f7fafc;
+    border-color: #cbd5e0;
+    color: #2d3748;
+  }
+
+  .pagination-link.active {
+    background-color: #4a5568;
+    border-color: #4a5568;
+    color: white;
+    font-weight: 600;
+  }
+
+  .pagination-link.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .pagination-ellipsis {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.5rem;
+    height: 2.5rem;
+    color: #718096;
+  }
+
+  .pagination-info {
+    margin-top: 1rem;
+    color: #718096;
+    font-size: 0.875rem;
+  }
+</style>
+
+{% endblock %}
+{% block scripts %}
+{% endblock %}

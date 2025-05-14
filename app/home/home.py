@@ -325,3 +325,14 @@ def download_menu():
     except Exception as e:
         flash('Error downloading menu. Please try again later.', 'error')
         return redirect(url_for('home.restaurant_menu'))
+
+
+# pagination for team
+@home.route('/team')
+def team():
+    page = request.args.get('page', 1, type=int)
+    per_page = 12
+    items = User.query.filter(
+        User.role == Role.Manager.value or User.role == Role.Staff.value
+    ).paginate(page=page, per_page=per_page)
+    return render_template('restaurant_team.html', items=items)

@@ -190,33 +190,6 @@ VALUES (
 );
 
 
-INSERT INTO Users (username, password_hash, email, phone_number, role, role_description, story, achievements, first_name, last_name, image_url, contribution, address)
-VALUES
-('hana_greeter', 'hashed_password_13', 'hana@email.com', '1234567802', 'Manager',
- 'Greets guests using ASL and digital menus, ensuring all feel welcomed.',
- 'My joy comes from helping first-time ASL users order confidently.',
- 'Trained over 200 guests to use basic ASL greetings at the door.',
- 'Hana', 'Nguyen', 'https://example.com/images/hana.jpg', 0.00, '111 Cypress St, City, Country'),
-
-('admin1', 'hashed_password_13', 'hana@email.com', '1234567802', 'Admin',
- 'Greets guests using ASL and digital menus, ensuring all feel welcomed.',
- 'My joy comes from helping first-time ASL users order confidently.',
- 'Trained over 200 guests to use basic ASL greetings at the door.',
- 'Hana', 'Nguyen', 'https://example.com/images/hana.jpg', 0.00, '111 Cypress St, City, Country'),
- 
-('kai_dishwasher', 'hashed_password_14', 'kai@email.com', '1234567803', 'Manager',
- 'Manages eco-friendly dishwashing systems with visual load indicators.',
- 'I may be behind the scenes, but I know I’m helping keep the kitchen moving silently and smoothly.',
- 'Reduced water use by 30% with new dish cycle techniques.',
- 'Kai', 'Chen', 'https://example.com/images/kai.jpg', 0.00, '222 Palm St, City, Country'),
-
-('zoe_signcoach', 'hashed_password_15', 'zoe@email.com', '1234567804', 'Manager',
- 'Leads ASL lunch breaks where staff practice signs together.',
- 'I came for the food, stayed for the team spirit—and now I teach!',
- 'Organized weekly ASL practice sessions improving inter-staff communication by 50%.',
- 'Zoe', 'Adams', 'https://example.com/images/zoe.jpg', 0.00, '333 Spruce St, City, Country');
- 
-
 
 INSERT INTO MenuItems (name, description, price, category) VALUES
 -- Appetizers
@@ -261,8 +234,84 @@ INSERT INTO MenuItems (name, description, price, category) VALUES
 ('Mint Chocolate', NULL, 6.00, 'Beverages');
 
 
+INSERT INTO Users (
+    username, password_hash, email, phone_number, role, role_description, story, achievements,
+    first_name, last_name, image_url, contribution, address
+) VALUES
+('admin1', 'hashed_password_13', 'hana@email.com', '1234567802', 'Admin',
+ 'Greets guests using ASL and digital menus, ensuring all feel welcomed.',
+ 'My joy comes from helping first-time ASL users order confidently.',
+ 'Trained over 200 guests to use basic ASL greetings at the door.',
+ 'Hana', 'Nguyen', 'https://example.com/images/hana.jpg', 0.00, '111 Cypress St, City, Country'),
 
+('emma', 'placeholder_hash', NULL, NULL, 'Manager',
+ 'Oversees operations and staff training in ASL/accessibility.',
+ 'I left corporate hospitality to work here—seeing deaf and hearing staff collaborate so seamlessly is magic.',
+ 'Increased deaf hires by 80% in 2026.',
+ 'Emma', '', 'Image', 0.00, NULL),
 
+('sofia', 'placeholder_hash', NULL, NULL, 'Staff',
+ 'Designs zero-waste menus and trains staff on composting.',
+ 'Created Kind Plate’s signature "Root-to-Stem" salad using typically discarded veggie parts.',
+ NULL,
+ 'Sofia', '', 'Image', 0.00, NULL),
 
+('malik', 'placeholder_hash', NULL, NULL, 'Staff',
+ 'Heads the open-fire grill station, specializing in smoked jackfruit and charred veggies.',
+ NULL,
+ 'Silent Smoke BBQ platter (voted Best Vegan BBQ by Eco Eats).',
+ 'Malik', '', 'Image', 0.00, NULL),
 
+('diego', 'placeholder_hash', NULL, NULL, 'Staff',
+ 'Crafts latte art with eco-friendly oat milk, using visual cues to take orders.',
+ 'Customers love when I ‘draw’ their requests—yesterday, a panda for a 6-year-old!',
+ 'His "ASL Alphabet Latte Series" (learn a sign with each order).',
+ 'Diego', '', 'Image', 0.00, NULL),
 
+('aisha', 'placeholder_hash', NULL, NULL, 'Staff',
+ 'Organizes deaf-awareness dinners and cooking classes.',
+ 'Our Silent Dinners sell out monthly—guests leave with new ASL skills and full bellies!',
+ 'Next "Vegan + ASL 101" workshop on July 20.',
+ 'Aisha', '', 'Image', 0.00, NULL),
+
+('tom', 'placeholder_hash', NULL, NULL, 'Staff',
+ 'Trains all staff on POS systems and customer service in ASL/English.',
+ 'I’ve worked 10+ restaurants—none made me prouder than hiring my first deaf trainee last month.',
+ 'His "Kindness Challenge" (round up your bill to donate to deaf youth programs).',
+ 'Tom', '', 'Image', 0.00, NULL),
+
+('priya', 'placeholder_hash', NULL, NULL, 'Staff',
+ 'Develops gluten-free desserts with staff-favorite: cashew cheesecake.',
+ 'I decorate cakes with edible flowers from Carlos’ garden.',
+ 'Try her "Surprise Dessert" and let her choose for you!',
+ 'Priya', '', 'Image', 0.00, NULL),
+
+('lena', 'placeholder_hash', NULL, NULL, 'Staff',
+ 'Trains new staff on digital order systems and ASL greetings.',
+ 'Lena’s smile lit up our anniversary dinner—she even taught us to sign ‘I love you’!',
+ 'Sketches dish recommendations with emoji ratings on tablets.',
+ 'Lena', '', 'Image', 0.00, NULL),
+
+('marco', 'placeholder_hash', NULL, NULL, 'Staff',
+ 'Serves bar drinks with illustrated tasting notes.',
+ 'Watch for my ‘spicy’ warning—it’s a chili pepper doodle!',
+ 'Leaves origami animals with drink orders (his crane means "enjoy!").',
+ 'Marco', '', 'Image', 0.00, NULL),
+
+('sarah', 'placeholder_hash', NULL, NULL, 'Staff',
+ 'Double-checks orders for allergies using color-coded flags.',
+ 'Deaf or hearing, everyone deserves to eat without fear—our visual allergen system ensures that.',
+ 'Reduced allergy incidents by 90% with her pictogram system.',
+ 'Sarah', '', 'Image', 0.00, NULL),
+
+('taro', 'placeholder_hash', NULL, NULL, 'Staff',
+ 'Masters high-volume shifts with light-up table alerts.',
+ 'Taro senses when tables need refills before they ask.',
+ 'Guests love his "mindful dining" reminders (a lotus card with the bill).',
+ 'Taro', '', 'Image', 0.00, NULL),
+
+('nia', 'placeholder_hash', NULL, NULL, 'Staff',
+ 'Runs the "Plant Pals" kids’ menu with ASL animal flashcards.',
+ 'Our toddler ate all her broccoli to learn the ASL sign—miracle!',
+ 'Draws cartoon veggies on receipts—carrots with superhero capes!',
+ 'Nia', '', 'Image', 0.00, NULL);
