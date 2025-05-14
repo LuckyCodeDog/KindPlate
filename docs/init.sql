@@ -68,7 +68,6 @@ CREATE TABLE MenuItemIngredients (
 CREATE TABLE Orders (
     order_id INT PRIMARY KEY AUTO_INCREMENT,
     customer_id INT,
-    waiter_id INT,
     order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     status ENUM('Pending', 'Preparing', 'Completed', 'Canceled') DEFAULT 'Pending',
     total_amount DECIMAL(10, 2) NOT NULL,
@@ -83,7 +82,6 @@ CREATE TABLE Orders (
     email VARCHAR(255),
     
     FOREIGN KEY (customer_id) REFERENCES Users(user_id),
-    FOREIGN KEY (waiter_id) REFERENCES Users(user_id)
 );
 
 
