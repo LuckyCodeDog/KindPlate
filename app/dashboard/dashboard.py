@@ -38,7 +38,7 @@ def overview():
 
 
 @dashboard.route("/menu_items", methods=["GET", "POST"])
-@dashboard_roles_required(Role.Admin.value, Role.Manager.value, Role.Staff.value)
+@dashboard_roles_required(Role.Admin.value, Role.Manager.value)
 def menu_item_list():
     if request.method == "GET":
         search = request.args.get('search', None)  
@@ -188,7 +188,7 @@ def users_list():
 
 
 @dashboard.route("/users/add", methods=["GET", "POST"])
-@dashboard_roles_required(Role.Admin.value, Role.Manager.value, Role.Staff.value)
+@dashboard_roles_required(Role.Admin.value, Role.Manager.value)
 def add_user():
     form = UserForm()
     if request.method == "POST":
@@ -222,7 +222,7 @@ def add_user():
 
 #delete user
 @dashboard.route("/users/delete/<int:user_id>", methods=["GET"])
-@dashboard_roles_required(Role.Admin.value, Role.Manager.value, Role.Staff.value)
+@dashboard_roles_required(Role.Admin.value, Role.Manager.value)
 def delete_user(user_id):
     user = User.get_user_by_id(user_id)
     if not user:
@@ -277,7 +277,7 @@ def export_users():
 
 
 @dashboard.route("/users/edit/<int:user_id>", methods=["GET", "POST"])
-@dashboard_roles_required(Role.Admin.value, Role.Manager.value, Role.Staff.value)
+@dashboard_roles_required(Role.Admin.value, Role.Manager.value)
 def edit_user(user_id):
     user = User.get_user_by_id(user_id)
     if not user:
@@ -324,7 +324,7 @@ def edit_user(user_id):
 
 #reset password
 @dashboard.route("/users/reset_password/<int:user_id>", methods=["GET", "POST"])
-@dashboard_roles_required(Role.Admin.value, Role.Manager.value, Role.Staff.value)
+@dashboard_roles_required(Role.Admin.value, Role.Manager.value)
 def reset_password(user_id):
     
     user = User.get_user_by_id(user_id)
@@ -345,7 +345,7 @@ def reset_password(user_id):
 
 # === settings ===
 @dashboard.route("/settings", methods=["GET", "POST"])
-@dashboard_roles_required(Role.Admin.value, Role.Manager.value, Role.Staff.value)
+@dashboard_roles_required(Role.Admin.value)
 def settings():
     if request.method == "POST":
         # Handle form submission for settings here
@@ -411,9 +411,6 @@ def orders_list():
                 .paginate(page=page, per_page=per_page)
         return render_template("dashboard_orders.html", items=orders, search=search)
 
-@dashboard.route("/docs")
-def docs():
-    return render_template("docs.html")
 
 @dashboard.route("/login", methods=["GET", "POST"])
 def login():
