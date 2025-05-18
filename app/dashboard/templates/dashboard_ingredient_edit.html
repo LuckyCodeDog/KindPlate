@@ -1,0 +1,81 @@
+{% extends "dashboard_base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">{{ pagetitle }}</h1>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <form method="POST" class="needs-validation" novalidate>
+                {{ form.csrf_token }}
+                
+                <div class="mb-3">
+                    <label for="name" class="form-label">Name</label>
+                    {{ form.name(class="form-control", id="name", required=true) }}
+                    {% if form.name.errors %}
+                    <div class="invalid-feedback d-block">
+                        {% for error in form.name.errors %}
+                        <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description</label>
+                    {{ form.description(class="form-control", id="description", rows="3") }}
+                    {% if form.description.errors %}
+                    <div class="invalid-feedback d-block">
+                        {% for error in form.description.errors %}
+                        <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label for="meat_id" class="form-label">Meat Type</label>
+                    {{ form.meat_id(class="form-control", id="meat_id") }}
+                    {% if form.meat_id.errors %}
+                    <div class="invalid-feedback d-block">
+                        {% for error in form.meat_id.errors %}
+                        <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-primary">Update</button>
+                    <a href="{{ url_for('dashboard.ingredient_list') }}" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Related Menu Items -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Used in Menu Items</h5>
+                </div>
+                <div class="card-body">
+                    {% if ingredient.menu_items %}
+                    <ul class="list-group list-group-flush">
+                        {% for menu_item_ingredient in ingredient.menu_items %}
+                        <li class="list-group-item">
+                            {{ menu_item_ingredient.menu_item.name }}
+                            <span class="badge bg-secondary">{{ menu_item_ingredient.quantity }}{{ menu_item_ingredient.unit }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p class="text-muted">This ingredient is not used in any menu items.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

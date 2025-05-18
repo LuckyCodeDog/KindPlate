@@ -35,8 +35,20 @@ def index():
             User.role == Role.Staff
         )
     ).limit(5).all()
+
+    search = request.args.get('search', None)  
+    page = request.args.get('page', 1, type=int)  
+    per_page = 12  
+    if search:
+        items = MenuItem.query.filter(
+                (MenuItem.name.ilike(f"%{search}%"))
+            ).paginate(page=page, per_page=per_page)
+    else:
+        items = MenuItem.query.paginate(page=page, per_page=per_page)
+
+
     print(current_user.is_authenticated)
-    return render_template("restaurant_index.html", employees=employees, menu_items=menu_items)
+    return render_template("restaurant_index.html", employees=employees, menu_items=menu_items, search=search, items=items)
 
 @home.route("/add_to_cart/<int:menu_item_id>", methods=["POST"])
 def add_to_cart(menu_item_id):

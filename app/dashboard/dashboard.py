@@ -14,8 +14,12 @@ from sqlalchemy.orm import joinedload
 from app.models.order import Order
 from app.models.restaurant_profile import RestaurantProfile
 from app.models.menu_item import MenuItem
+from app.models.ingredient import Ingredient
+from app.models.meat import Meat
 from app.common.forms import LoginForm, MenuItemForm, RegisterForm, UserEditForm, UserForm, changePasswordForm, RestaurantProfileForm
 from flask_wtf import FlaskForm
+from wtforms import StringField, TextAreaField, SelectField, DecimalField, BooleanField
+from wtforms.validators import DataRequired, Optional
 from flask import Blueprint, redirect, render_template, url_for
 from app.common.salt import password_salt
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -462,6 +466,7 @@ def bookings_list():
 @dashboard.route("/bookings/change_status/<int:booking_id>", methods=["POST"])
 @dashboard_roles_required(Role.Admin.value, Role.Manager.value, Role.Staff.value) 
 def change_booking_status(booking_id):
+
     #ajax
     booking = Booking.get_by_id(booking_id)
     data = request.get_json()
@@ -473,3 +478,125 @@ def change_booking_status(booking_id):
         return {"status": "error", "message": "Invalid status"}, 400
     Booking.update(booking_id, status=new_status)
     return {"status": "success", "message": "Booking status updated successfully"}, 200
+
+
+# === Ingredient Management Start ===
+
+class IngredientForm(FlaskForm):
+    name = StringField('Name', validators=[DataRequired()])
+    description = TextAreaField('Description', validators=[Optional()])
+    meat_id = SelectField('Meat Type', coerce=int, validators=[Optional()])
+
+@dashboard.route("/ingredients")
+@dashboard_roles_required(Role.Admin.value, Role.Manager.value)
+def ingredient_list():
+    search = request.args.get('search', '')
+    page = request.args.get('page', 1, type=int)
+    per_page = 10
+
+    query = Ingredient.query
+    if search:
+        query = query.filter(Ingredient.name.ilike(f"%{search}%"))
+    
+    ingredients = query.paginate(page=page, per_page=per_page)
+    return render_template("dashboard_ingredients.html", items=ingredients, search=search)
+
+@dashboard.route("/ingredients/create", methods=["GET", "POST"])
+@dashboard_roles_required(Role.Admin.value, Role.Manager.value)
+def create_ingredient():
+    form = IngredientForm()
+    # 獲取所有肉類選項
+    meats = Meat.get_all()
+    form.meat_id.choices = [(0, 'None')] + [(meat.meat_id, meat.meat_type) for meat in meats]
+
+    if request.method == "POST" and form.validate_on_submit():
+        meat_id = form.meat_id.data if form.meat_id.data != 0 else None
+        ingredient = Ingredient.create(
+            name=form.name.data,
+            description=form.description.data,
+            meat_id=meat_id
+        )
+        if ingredient:
+            flash("Ingredient added successfully", "success")
+            return redirect(url_for("dashboard.ingredient_list"))
+        else:
+            flash("Failed to add ingredient", "danger")
+
+    return render_template("dashboard_ingredient_add.html", form=form, pagetitle="Create Ingredient")
+
+@dashboard.route("/ingredients/edit/<int:ingredient_id>", methods=["GET", "POST"])
+@dashboard_roles_required(Role.Admin.value, Role.Manager.value)
+def edit_ingredient(ingredient_id):
+    ingredient = Ingredient.get_by_id(ingredient_id)
+    if not ingredient:
+        flash("Ingredient not found", "danger")
+        return redirect(url_for("dashboard.ingredient_list"))
+
+    form = IngredientForm()
+    meats = Meat.get_all()
+    form.meat_id.choices = [(0, 'None')] + [(meat.meat_id, meat.meat_type) for meat in meats]
+
+    if request.method == "POST" and form.validate_on_submit():
+        meat_id = form.meat_id.data if form.meat_id.data != 0 else None
+        if Ingredient.update(
+            ingredient_id=ingredient_id,
+            name=form.name.data,
+            description=form.description.data,
+            meat_id=meat_id
+        ):
+            flash("Ingredient updated successfully", "success")
+            return redirect(url_for("dashboard.ingredient_list"))
+        else:
+            flash("Failed to update ingredient", "danger")
+    else:
+        form.name.data = ingredient.name
+        form.description.data = ingredient.description
+        form.meat_id.data = ingredient.meat_id if ingredient.meat_id else 0
+
+    return render_template("dashboard_ingredient_edit.html", form=form, ingredient=ingredient, pagetitle="Edit Ingredient")
+
+@dashboard.route("/ingredients/delete/<int:ingredient_id>")
+@dashboard_roles_required(Role.Admin.value, Role.Manager.value)
+def delete_ingredient(ingredient_id):
+    if Ingredient.delete(ingredient_id):
+        flash("Ingredient deleted successfully", "success")
+    else:
+        flash("Failed to delete ingredient", "danger")
+    return redirect(url_for("dashboard.ingredient_list"))
+
+@dashboard.route("/export_ingredients_csv")
+@dashboard_roles_required(Role.Admin.value, Role.Manager.value)
+def export_ingredients_csv():
+    try:
+        output = export_ingredients()
+        
+        directory = os.path.join(os.getcwd(), "exports")
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+        
+        file_path = os.path.join(directory, "ingredients.csv")
+        
+        with open(file_path, mode='w', newline='') as file:
+            writer = csv.DictWriter(file, fieldnames=output[0].keys())
+            writer.writeheader()
+            for row in output:
+                writer.writerow(row)
+                
+        return send_file(file_path, as_attachment=True)
+    except Exception as e:
+        return Response(str(e), status=500)
+
+def export_ingredients():
+    ingredients = Ingredient.query.all()
+    output = []
+    for ingredient in ingredients:
+        meat_type = ingredient.meat.meat_type if ingredient.meat else None
+        output.append({
+            "Name": ingredient.name,
+            "Description": ingredient.description,
+            "Meat Type": meat_type,
+            "Created At": ingredient.created_at
+        })
+    return output
+
+# === Ingredient Management End ===

@@ -49,117 +49,385 @@
   <!-- ===============>>Flash Product section start here <<================= -->
   <section class="product padding-top padding-bottom section-bg" style="margin-top: 80px;">
     <div class="container">
-      <div class="section-header">
-        <div class="section-header__content">
-          <h2 class="mb-10 me-30">Popular Dish</h2>
 
+        <!-- ===============>> Menu section start here <<================= -->
+  <section class="blog-details padding-top padding-bottom section-bg">
+    <div class="container">
+      <div class="blog-details__wrapper">
+        <div class="row g-5">
+          <div class="col-lg-12">
+            <div class="blog-details__item">
+              <div class="blog-details__item-inner">
+                <!-- Header Section -->
+                <div class="blog-details__content text-center mb-1">
+                  <h2 class="mb-4">Our Menu</h2>
+                </div>
 
-        </div>
-        <div class="section-header__action order-sm-2">
-          <div class="swiper-nav swiper-nav--style1">
-            <button class="swiper-nav__btn product__slider-prev"><i class="fa-solid fa-arrow-left-long"></i></button>
-            <button class="swiper-nav__btn product__slider-next active"><i class="fa-solid fa-arrow-right-long"></i></button>
-          </div>
-        </div>
-      </div>
-      <div class="product__wrapper" data-aos="fade-up" data-aos-duration="1000">
-
-        
-        <div class="product__slider swiper">
-          <div class="swiper-wrapper">
-            {% for item in menu_items %}
-            <div class="swiper-slide">
-              <div class="product__item product__item--style1">
-                <div class="product__item-inner">
-                  <div class="product__item-thumb">
-                    <img  style="height: 200px; width: 100%;" src="{{ item.image_url}}" alt="Good food" class="dark">
+                <!-- Menu Items Grid -->
+                <div class="menu-items-grid">
+                  <div class="row row-cols-xl-4 row-cols-md-3 row-cols-2 row-cols-1 justify-content-center g-4">
+                    {% for menu_item in items.items %}
+                    <div class="col">
+                      <div class="product__item product__item--style2" data-aos="fade-up" data-aos-duration="800">
+                        <div class="product__item-inner">
+                          <div class="product__item-thumb">
+                            <img src="{{menu_item.image_url}}" alt="{{menu_item.name}}">
+                          </div>
+                          <div class="product__item-content">
+                            <h5><a href="#">{{menu_item.name}}</a></h5>
+                            <div class="product__item-footer">
+                              <div class="product__item-price">
+                                <h4>${{menu_item.price}}</h4>
+                              </div>
+                              <div class="product__item-action">
+                                <button 
+                                  onclick="addToCart('{{ menu_item.menu_item_id }}')" 
+                                  class="trk-btn trk-btn--outline"
+                                  id="add-to-cart-btn-{{ menu_item.menu_item_id }}"
+                                >Add to Order</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>                      
+                    {% endfor %}
                   </div>
-                  <div class="product__item-content">
-                    <h4><a href="product-details.html">{{ item.name }}</a>
-                    </h4>
-                    <div class="product__item-rating">
-                      <i class="fa-solid fa-star"></i> 5.0 <span>(12 Reviews)</span>
-                    </div>
-                    <div class="product__item-footer">
-                      <div class="product__item-price">
-                        <h4>{{ item.price }} </h4>
-                      </div>
-                      <div class="product__item-action">
-                        <!-- 修改按钮并去掉form -->
-                        <button type="button" class="trk-btn trk-btn--outline add-to-cart-btn" data-id="{{ item.menu_item_id }}">Add to cart</button>
-                      </div>
-                    </div>
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination-container mt-5">
+                  <div class="pagination">
+                    {% if items.has_prev %}
+                      <a href="{{ url_for('home.menu', page=items.prev_num) }}" class="pagination-link" title="Previous Page">
+                        <i class="fas fa-chevron-left"></i>
+                      </a>
+                    {% else %}
+                      <span class="pagination-link disabled">
+                        <i class="fas fa-chevron-left"></i>
+                      </span>
+                    {% endif %}
+
+                    {% for page in items.iter_pages(left_edge=2, left_current=2, right_current=3, right_edge=2) %}
+                      {% if page %}
+                        {% if page == items.page %}
+                          <span class="pagination-link active">{{ page }}</span>
+                        {% else %}
+                          <a href="{{ url_for('home.menu', page=page) }}" class="pagination-link">
+                            {{ page }}
+                          </a>
+                        {% endif %}
+                      {% else %}
+                        <span class="pagination-ellipsis">...</span>
+                      {% endif %}
+                    {% endfor %}
+
+                    {% if items.has_next %}
+                      <a href="{{ url_for('home.menu', page=items.next_num) }}" class="pagination-link" title="Next Page">
+                        <i class="fas fa-chevron-right"></i>
+                      </a>
+                    {% else %}
+                      <span class="pagination-link disabled">
+                        <i class="fas fa-chevron-right"></i>
+                      </span>
+                    {% endif %}
+                  </div>
+                  <div class="pagination-info">
+                    Showing {{ items.items|length }} of {{ items.total }} items
                   </div>
                 </div>
               </div>
             </div>
-            {% endfor %}
           </div>
         </div>
       </div>
+    </div>
+  </section>
+  <!-- ===============>> Menu section end here <<================= -->
+
+<style>
+  .section-bg {
+    background-color: #f8f9fa;
+  }
+
+  .blog-details__content {
+    padding: 2rem 0;
+  }
+
+  .blog-details__content h2 {
+    color: #2d3748;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+
+  .blog-details__content .lead {
+    color: #4a5568;
+    font-size: 1.2rem;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .trk-btn--border2 {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.75rem 1.5rem;
+    background: transparent;
+    color: #4a5568;
+    border: 2px solid #4a5568;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-decoration: none;
+  }
+
+  .trk-btn--border2:hover {
+    background: #4a5568;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(74, 85, 104, 0.2);
+  }
+
+  .menu-items-grid {
+    margin-top: 3rem;
+  }
+
+  .product__item {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+  }
+
+  .product__item:hover {
+    transform: translateY(-5px);
+  }
+
+  .product__item-thumb img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+  }
+
+  .product__item-content {
+    padding: 1.5rem;
+  }
+
+  .product__item-content h5 {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    color: #2d3748;
+  }
+
+  .product__item-content h5 a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .product__item-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .product__item-price h4 {
+    color: #4a5568;
+    font-size: 1.25rem;
+    margin: 0;
+  }
+
+  .trk-btn--outline {
+    padding: 0.5rem 1rem;
+    border: 2px solid #4a5568;
+    color: #4a5568;
+    background: transparent;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+  }
+
+  .trk-btn--outline:hover {
+    background: #4a5568;
+    color: white;
+  }
+
+  /* Pagination styles */
+  .pagination-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 2rem 0;
+  }
+
+  .pagination {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .pagination-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.5rem;
+    height: 2.5rem;
+    padding: 0 0.5rem;
+    border-radius: 0.375rem;
+    background-color: white;
+    border: 1px solid #e2e8f0;
+    color: #4a5568;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .pagination-link:hover:not(.disabled):not(.active) {
+    background-color: #f7fafc;
+    border-color: #cbd5e0;
+    color: #2d3748;
+  }
+
+  .pagination-link.active {
+    background-color: #4a5568;
+    border-color: #4a5568;
+    color: white;
+    font-weight: 600;
+  }
+
+  .pagination-link.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .pagination-ellipsis {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.5rem;
+    height: 2.5rem;
+    color: #718096;
+  }
+
+  .pagination-info {
+    margin-top: 1rem;
+    color: #718096;
+    font-size: 0.875rem;
+  }
+</style>
+
+<script>
+async function addToCart(menuItemId) {
+    try {
+        const button = document.getElementById(`add-to-cart-btn-${menuItemId}`);
+        button.disabled = true;
+        button.textContent = 'Adding...';
+
+        const url = `/add_to_cart/${menuItemId}`;
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            credentials: 'same-origin'
+        });
+
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+        
+        // Enhanced success notification
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 1500,
+            timerProgressBar: true,
+            background: '#4CAF50',
+            color: '#fff',
+            iconColor: '#fff',
+            customClass: {
+                popup: 'colored-toast'
+            },
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer);
+                toast.addEventListener('mouseleave', Swal.resumeTimer);
+            }
+        });
+
+        await Toast.fire({
+            icon: 'success',
+            title: data.message || 'Item added to your order!',
+            showClass: {
+                popup: 'animate__animated animate__fadeInRight'
+            },
+            hideClass: {
+                popup: 'animate__animated animate__fadeOutRight'
+            }
+        });
+
+        // Update cart count if available
+        const cartCountElement = document.querySelector('.cart-count');
+        if (cartCountElement && data.cart_count !== undefined) {
+            cartCountElement.textContent = data.cart_count;
+        }
+
+    } catch (error) {
+        console.error('Error:', error);
+        // Enhanced error notification
+        await Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Something went wrong! Please try again.',
+            timer: 500,
+            showConfirmButton: false,
+            background: '#ff6b6b',
+            color: '#fff',
+            iconColor: '#fff',
+            customClass: {
+                popup: 'colored-toast'
+            },
+            showClass: {
+                popup: 'animate__animated animate__fadeInDown'
+            },
+            hideClass: {
+                popup: 'animate__animated animate__fadeOutUp'
+            }
+        });
+    } finally {
+        const button = document.getElementById(`add-to-cart-btn-${menuItemId}`);
+        button.disabled = false;
+        button.textContent = 'Add to Order';
+    }
+}
+
+// Add custom styles for the notifications
+const style = document.createElement('style');
+style.textContent = `
+    .colored-toast.swal2-icon-success {
+        background: #4CAF50 !important;
+    }
+    .colored-toast.swal2-icon-error {
+        background: #ff6b6b !important;
+    }
+    .colored-toast .swal2-title {
+        color: white;
+    }
+    .colored-toast .swal2-close {
+        color: white;
+    }
+    .colored-toast .swal2-html-container {
+        color: white;
+    }
+`;
+document.head.appendChild(style);
+</script>
+
     </div>
   </section>
   <!-- ===============>>Flash Product section end here <<================= -->
 
-
-
-
-  <!-- ===============>> Blog section start here <<================= -->
-  <section class="blog padding-top padding-bottom section-bg " >
-    <div class="container">
-      <div class="section-header d-md-flex align-items-center justify-content-between">
-        <div class="section-header__content">
-          <h2 class="mb-10">Our Employees Stories</h2>
-        </div>
-        <div class="section-header__action">
-          <div class="swiper-nav swiper-nav--style1">
-            <button class="swiper-nav__btn blog__slider-prev"><i class="fa-solid fa-arrow-left-long"></i></button>
-            <button class="swiper-nav__btn blog__slider-next active"><i class="fa-solid fa-arrow-right-long"></i></button>
-          </div>
-        </div>
-      </div>
-      <div class="blog__wrapper" data-aos="fade-up" data-aos-duration="1000">
-        <div class="blog__slider swiper">
-          <div class="swiper-wrapper">
-            {% for employee in employees %}
-            <div class="swiper-slide">
-              <div class="blog__item blog__item--style2">
-                <div class="blog__item-inner">
-                  <div class="blog__thumb">
-                    <img style="height: 250px; width: 100%;" src="{{ employee.image_url }}" alt="blog Images">
-                  </div>
-
-                  <div class="blog__content">
-                    <div class="blog__meta">
-                      <a href="#">
-                        <span class="blog__meta-tag blog__meta-tag--style3">{{ employee.role.value}}</span>
-                      </a>
-                    </div>
-                    <h4> <a href="blog-details.html">It is my story.</a> </h4>
-
-                    <div class="blog__admin">
-                      <div class="blog__admin-name">
-                        <span><i class="fa-regular fa-user"></i></span> By {{ employee.first_name }}  {{ employee.last_name }}
-                      </div>
-                      <div class="blog__admin-date">
-                        <span><i class="fa-regular fa-calendar-check"></i></span> Sep 20, 2024
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {% endfor %}
-
-          </div>
-        </div>
-      </div>
-      <div class="section-btn mt-4 text-center">
-        <a class="trk-btn trk-btn--primary " href="blogs.html">View More</a>
-      </div>
-    </div>
-  </section>
   <!-- ===============>> Blog section start here <<================= -->
    <!-- Modal -->
 <div class="modal fade" id="cartSuccessModal" tabindex="-1" aria-labelledby="cartSuccessModalLabel" aria-hidden="true">

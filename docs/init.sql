@@ -182,7 +182,7 @@ VALUES (
     'Kind Plate',
     '123 Main St, Anytown, NZ',
     '1234567890',
-    "Born from a belief that food can heal both people and the planet, Kind Plate began as a small kitchen run by a team of passionate chefs and advocates for social equity. Today, we’ve grown into a thriving hub where 70% of our staff are deaf or mute individuals, proving that great food needs no words—just heart.",
+    "Born from a belief that food can heal both people and the planet, Kind Plate began as a small kitchen run by a team of passionate chefs and advocates for social equity. Today, we've grown into a thriving hub where 70% of our staff are deaf or mute individuals, proving that great food needs no words—just heart.",
     4.95,
     'https://example.com/images/kind_plate_fancy_image.jpg',
     'Wheelchair Accessible, Pet-Friendly, Outdoor Seating, ASL Services, Vegan/Gluten-Free Options, Free Wi-Fi, Zero-Waste Practices, Live Music Nights, Community Cooking Classes',
@@ -256,7 +256,7 @@ INSERT INTO Users (
 
 ('sofia', 'placeholder_hash', NULL, NULL, 'Staff',
  'Designs zero-waste menus and trains staff on composting.',
- 'Created Kind Plate’s signature "Root-to-Stem" salad using typically discarded veggie parts.',
+ 'Created Kind Plate's signature "Root-to-Stem" salad using typically discarded veggie parts.',
  NULL,
  'Sofia', '', 'Image', 0.00, NULL),
 
@@ -268,7 +268,7 @@ INSERT INTO Users (
 
 ('diego', 'placeholder_hash', NULL, NULL, 'Staff',
  'Crafts latte art with eco-friendly oat milk, using visual cues to take orders.',
- 'Customers love when I ‘draw’ their requests—yesterday, a panda for a 6-year-old!',
+ 'Customers love when I 'draw' their requests—yesterday, a panda for a 6-year-old!',
  'His "ASL Alphabet Latte Series" (learn a sign with each order).',
  'Diego', '', 'Image', 0.00, NULL),
 
@@ -280,25 +280,25 @@ INSERT INTO Users (
 
 ('tom', 'placeholder_hash', NULL, NULL, 'Staff',
  'Trains all staff on POS systems and customer service in ASL/English.',
- 'I’ve worked 10+ restaurants—none made me prouder than hiring my first deaf trainee last month.',
+ 'I've worked 10+ restaurants—none made me prouder than hiring my first deaf trainee last month.',
  'His "Kindness Challenge" (round up your bill to donate to deaf youth programs).',
  'Tom', '', 'Image', 0.00, NULL),
 
 ('priya', 'placeholder_hash', NULL, NULL, 'Staff',
  'Develops gluten-free desserts with staff-favorite: cashew cheesecake.',
- 'I decorate cakes with edible flowers from Carlos’ garden.',
+ 'I decorate cakes with edible flowers from Carlos' garden.',
  'Try her "Surprise Dessert" and let her choose for you!',
  'Priya', '', 'Image', 0.00, NULL),
 
 ('lena', 'placeholder_hash', NULL, NULL, 'Staff',
  'Trains new staff on digital order systems and ASL greetings.',
- 'Lena’s smile lit up our anniversary dinner—she even taught us to sign ‘I love you’!',
+ 'Lena's smile lit up our anniversary dinner—she even taught us to sign 'I love you'!',
  'Sketches dish recommendations with emoji ratings on tablets.',
  'Lena', '', 'Image', 0.00, NULL),
 
 ('marco', 'placeholder_hash', NULL, NULL, 'Staff',
  'Serves bar drinks with illustrated tasting notes.',
- 'Watch for my ‘spicy’ warning—it’s a chili pepper doodle!',
+ 'Watch for my 'spicy' warning—it's a chili pepper doodle!',
  'Leaves origami animals with drink orders (his crane means "enjoy!").',
  'Marco', '', 'Image', 0.00, NULL),
 
@@ -315,7 +315,55 @@ INSERT INTO Users (
  'Taro', '', 'Image', 0.00, NULL),
 
 ('nia', 'placeholder_hash', NULL, NULL, 'Staff',
- 'Runs the "Plant Pals" kids’ menu with ASL animal flashcards.',
+ 'Runs the "Plant Pals" kids' menu with ASL animal flashcards.',
  'Our toddler ate all her broccoli to learn the ASL sign—miracle!',
  'Draws cartoon veggies on receipts—carrots with superhero capes!',
  'Nia', '', 'Image', 0.00, NULL);
+
+
+ INSERT INTO Meats (meat_type, description) VALUES 
+('Chicken', 'Fresh chicken'),
+('Duck', 'Tender duck'),
+('Fish', 'Wild fish'),
+('Pork', 'Lean pork'),
+('Beef', 'Grass-fed beef'),
+('Egg', 'Organic eggs');
+
+-- Insert sample ingredients
+INSERT INTO Ingredients (name, description, meat_id) VALUES
+('Rice Noodles', 'Thin rice noodles perfect for soups', NULL),
+('Mushroom Mix', 'Mixed variety of fresh mushrooms', NULL),
+('Soy Sauce', 'Traditional fermented soy sauce', NULL),
+('Tofu', 'Firm organic tofu', NULL),
+('Seaweed', 'Dried seaweed sheets', NULL),
+('Bamboo Shoots', 'Fresh bamboo shoots', NULL),
+('Green Onions', 'Fresh chopped green onions', NULL),
+('Ginger', 'Fresh grated ginger', NULL),
+('Plant-based Chicken', 'Soy-based chicken alternative', NULL),
+('Vegan Fish Sauce', 'Plant-based fish sauce alternative', NULL),
+('Coconut Milk', 'Fresh coconut milk', NULL),
+('Rice', 'Premium jasmine rice', NULL);
+
+-- Link ingredients to menu items (MenuItemIngredients)
+INSERT INTO MenuItemIngredients (menu_item_id, ingredient_id, quantity, unit) VALUES
+-- For Vegan Dumplings
+(1, 4, 100, 'g'),  -- Tofu
+(1, 7, 50, 'g'),   -- Green Onions
+(1, 3, 0.05, 'l'), -- Soy Sauce
+
+-- For Sesame "Beef"
+(7, 3, 0.1, 'l'),   -- Soy Sauce
+(7, 8, 30, 'g'),    -- Ginger
+(7, 7, 50, 'g'),    -- Green Onions
+
+-- For Curry "Chicken" Noodle Soup
+(16, 1, 200, 'g'),   -- Rice Noodles
+(16, 9, 150, 'g'),   -- Plant-based Chicken
+(16, 11, 0.4, 'l'),  -- Coconut Milk
+(16, 7, 30, 'g'),    -- Green Onions
+
+-- For Home Styled Mapo Tofu
+(10, 4, 300, 'g'),   -- Tofu
+(10, 3, 0.08, 'l'),  -- Soy Sauce
+(10, 7, 30, 'g'),    -- Green Onions
+(10, 8, 20, 'g');    -- Ginger
