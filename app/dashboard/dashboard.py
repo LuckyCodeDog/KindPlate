@@ -16,10 +16,11 @@ from app.models.restaurant_profile import RestaurantProfile
 from app.models.menu_item import MenuItem
 from app.models.ingredient import Ingredient
 from app.models.meat import Meat
+from app.models.menu_item_ingredient import MenuItemIngredient
 from app.common.forms import LoginForm, MenuItemForm, RegisterForm, UserEditForm, UserForm, changePasswordForm, RestaurantProfileForm
 from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, SelectField, DecimalField, BooleanField
-from wtforms.validators import DataRequired, Optional
+from wtforms import StringField, TextAreaField, SelectField, DecimalField, BooleanField, FloatField
+from wtforms.validators import DataRequired, Optional, NumberRange
 from flask import Blueprint, redirect, render_template, url_for
 from app.common.salt import password_salt
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -96,7 +97,13 @@ def edit_menu_item(menu_item_id):
             MenuItem.update(menu_item_id, name=form.name.data, description=form.description.data, price=form.price.data, category=form.category.data,image_url= image_url, available=form.available.data)
             flash("Menu item updated successfully", "success")
         return redirect(url_for("dashboard.menu_item_list"))
-    return render_template("dashboard_menu_item_edit.html", form=menu_item_form, image_url=menu_item.image_url, pagetitle="Edit "+ menu_item.name)
+    return render_template(
+        "dashboard_menu_item_edit.html", 
+        form=menu_item_form, 
+        image_url=menu_item.image_url, 
+        menu_item_id=menu_item_id,
+        pagetitle="Edit "+ menu_item.name
+    )
 
 
 #create a new menu item
@@ -600,3 +607,79 @@ def export_ingredients():
     return output
 
 # === Ingredient Management End ===
+
+class MenuItemIngredientForm(FlaskForm):
+    ingredient_id = SelectField('Ingredient', coerce=int, validators=[DataRequired()])
+    quantity = FloatField('Quantity', validators=[DataRequired(), NumberRange(min=0.01)])
+    unit = SelectField('Unit', choices=[('g', 'Grams'), ('kg', 'Kilograms'), ('l', 'Liters'), ('gallon', 'Gallons')], validators=[DataRequired()])
+
+@dashboard.route("/menu_items/<int:menu_item_id>/ingredients", methods=["GET", "POST"])
+@dashboard_roles_required(Role.Admin.value, Role.Manager.value)
+def manage_menu_item_ingredients(menu_item_id):
+    menu_item = MenuItem.get_by_id(menu_item_id)
+    if not menu_item:
+        flash("Menu item not found", "danger")
+        return redirect(url_for("dashboard.menu_item_list"))
+
+    form = MenuItemIngredientForm()
+    # 获取所有可用的原材料作为选项
+    ingredients = Ingredient.get_all()
+    form.ingredient_id.choices = [(i.ingredient_id, i.name) for i in ingredients]
+
+    if request.method == "POST" and form.validate_on_submit():
+        ingredient_id = form.ingredient_id.data
+        quantity = form.quantity.data
+        unit = form.unit.data
+
+        # 检查是否已存在该原材料
+        existing = MenuItemIngredient.query.filter_by(
+            menu_item_id=menu_item_id,
+            ingredient_id=ingredient_id
+        ).first()
+
+        if existing:
+            # 更新现有的原材料数量和单位
+            if menu_item.update_ingredient(ingredient_id, quantity, unit):
+                flash("Ingredient updated successfully", "success")
+            else:
+                flash("Failed to update ingredient", "danger")
+        else:
+            # 添加新的原材料
+            if menu_item.add_ingredient(ingredient_id, quantity, unit):
+                flash("Ingredient added successfully", "success")
+            else:
+                flash("Failed to add ingredient", "danger")
+
+        return redirect(url_for("dashboard.manage_menu_item_ingredients", menu_item_id=menu_item_id))
+
+    # 获取当前菜品的所有原材料
+    current_ingredients = menu_item.get_ingredients()
+    ingredient_quantities = {
+        mi.ingredient_id: {'quantity': mi.quantity, 'unit': mi.unit}
+        for mi in MenuItemIngredient.query.filter_by(menu_item_id=menu_item_id).all()
+    }
+
+    return render_template(
+        "dashboard_menu_item_ingredients.html",
+        menu_item=menu_item,
+        form=form,
+        current_ingredients=current_ingredients,
+        ingredient_quantities=ingredient_quantities,
+        pagetitle=f"Manage Ingredients - {menu_item.name}",
+        menu_item_id=menu_item_id
+    )
+
+@dashboard.route("/menu_items/<int:menu_item_id>/ingredients/<int:ingredient_id>/delete", methods=["POST"])
+@dashboard_roles_required(Role.Admin.value, Role.Manager.value)
+def delete_menu_item_ingredient(menu_item_id, ingredient_id):
+    menu_item = MenuItem.get_by_id(menu_item_id)
+    if not menu_item:
+        flash("Menu item not found", "danger")
+        return redirect(url_for("dashboard.menu_item_list"))
+
+    if menu_item.remove_ingredient(ingredient_id):
+        flash("Ingredient removed successfully", "success")
+    else:
+        flash("Failed to remove ingredient", "danger")
+
+    return redirect(url_for("dashboard.manage_menu_item_ingredients", menu_item_id=menu_item_id))

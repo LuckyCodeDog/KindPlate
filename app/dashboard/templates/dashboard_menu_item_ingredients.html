@@ -1,0 +1,134 @@
+{% extends "dashboard_base.html" %}
+
+{% block title %}{{ pagetitle }}{% endblock %}
+
+{% block content %}
+<div class="app-content pt-3 p-md-3 p-lg-4">
+    <div class="container-xl">
+        <div class="row g-3 mb-4 align-items-center justify-content-between">
+            <div class="col-auto">
+                <h1 class="app-page-title mb-0">
+                    <i class="fas fa-utensils me-2"></i>{{ menu_item.name }}
+                </h1>
+            </div>
+            <div class="col-auto">
+                <a href="{{ url_for('dashboard.edit_menu_item', menu_item_id=menu_item.menu_item_id) }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Menu Item
+                </a>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Current Ingredients List -->
+            <div class="col-12 col-lg-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Current Ingredients</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if current_ingredients %}
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Ingredient</th>
+                                        <th>Quantity</th>
+                                        <th>Unit</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for ingredient in current_ingredients %}
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-leaf text-success me-2"></i>
+                                                {{ ingredient.name }}
+                                            </div>
+                                        </td>
+                                        <td>{{ ingredient_quantities[ingredient.ingredient_id]['quantity'] }}</td>
+                                        <td>{{ ingredient_quantities[ingredient.ingredient_id]['unit'] }}</td>
+                                        <td>
+                                            <form action="{{ url_for('dashboard.delete_menu_item_ingredient', menu_item_id=menu_item.menu_item_id, ingredient_id=ingredient.ingredient_id) }}" 
+                                                  method="POST" 
+                                                  class="d-inline"
+                                                  onsubmit="return confirm('Are you sure you want to remove this ingredient?');">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-leaf text-muted fa-3x mb-3"></i>
+                            <p class="text-muted">No ingredients added yet.</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add/Edit Ingredient Form -->
+            <div class="col-12 col-lg-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Add Ingredient</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST">
+                            {{ form.hidden_tag() }}
+                            
+                            <div class="mb-3">
+                                <label for="ingredient_id" class="form-label">Select Ingredient</label>
+                                {{ form.ingredient_id(class="form-select") }}
+                                {% if form.ingredient_id.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.ingredient_id.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="quantity" class="form-label">Quantity</label>
+                                {{ form.quantity(class="form-control", type="number", step="0.01", min="0.01") }}
+                                {% if form.quantity.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.quantity.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="unit" class="form-label">Unit</label>
+                                {{ form.unit(class="form-select") }}
+                                {% if form.unit.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.unit.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="text-end">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-plus me-1"></i>Add Ingredient
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
