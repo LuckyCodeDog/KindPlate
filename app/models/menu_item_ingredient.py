@@ -75,4 +75,20 @@ class MenuItemIngredient(db.Model):
             return True
         except Exception as e:
             db.session.rollback()
-            return False 
+            return False
+
+    def calculate_water_usage(self):
+        """计算该原材料的用水量"""
+        # 获取原材料的每千克用水量
+        water_usage_per_kg = float(self.ingredient.water_usage_l_per_kg)
+        
+        # 根据单位转换数量到千克
+        quantity_in_kg = float(self.quantity)
+        if self.unit == 'g':
+            quantity_in_kg /= 1000
+        elif self.unit == 'l':
+            quantity_in_kg *= 1  # 假设1升水等于1千克
+        elif self.unit == 'gallon':
+            quantity_in_kg *= 3.78541  # 1加仑 = 3.78541升
+        
+        return quantity_in_kg * water_usage_per_kg 

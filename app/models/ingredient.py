@@ -8,6 +8,7 @@ class Ingredient(db.Model):
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text)
     meat_id = db.Column(db.Integer, db.ForeignKey('Meats.meat_id'))
+    water_usage_l_per_kg = db.Column(db.Numeric(10, 2), nullable=False, default=0)
     created_at = db.Column(db.TIMESTAMP, default=datetime.utcnow)
 
     # Relationships
@@ -17,11 +18,12 @@ class Ingredient(db.Model):
         return f'<Ingredient {self.name}>'
 
     @staticmethod
-    def create(name, description=None, meat_id=None):
+    def create(name, description=None, meat_id=None, water_usage_l_per_kg=0):
         ingredient = Ingredient(
             name=name,
             description=description,
-            meat_id=meat_id
+            meat_id=meat_id,
+            water_usage_l_per_kg=water_usage_l_per_kg
         )
         db.session.add(ingredient)
         try:
@@ -40,7 +42,7 @@ class Ingredient(db.Model):
         return Ingredient.query.get(ingredient_id)
 
     @staticmethod
-    def update(ingredient_id, name=None, description=None, meat_id=None):
+    def update(ingredient_id, name=None, description=None, meat_id=None, water_usage_l_per_kg=None):
         ingredient = Ingredient.query.get(ingredient_id)
         if not ingredient:
             return None
@@ -51,6 +53,8 @@ class Ingredient(db.Model):
             ingredient.description = description
         if meat_id is not None:
             ingredient.meat_id = meat_id
+        if water_usage_l_per_kg is not None:
+            ingredient.water_usage_l_per_kg = water_usage_l_per_kg
         
         try:
             db.session.commit()

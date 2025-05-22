@@ -65,7 +65,7 @@ CREATE TABLE MenuItemIngredients (
     menu_item_id INT,
     ingredient_id INT,
     quantity DECIMAL(10, 2) NOT NULL,  
-    unit ENUM('l', 'g', 'kg', 'gallon') NOT NULL, 
+    unit ENUM('l', 'g', 'kg', 'gallon') NOT NULL,
     PRIMARY KEY (menu_item_id, ingredient_id),
     FOREIGN KEY (menu_item_id) REFERENCES MenuItems(menu_item_id),
     FOREIGN KEY (ingredient_id) REFERENCES Ingredients(ingredient_id)

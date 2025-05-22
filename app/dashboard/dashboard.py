@@ -497,6 +497,7 @@ class IngredientForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired()])
     description = TextAreaField('Description', validators=[Optional()])
     meat_id = SelectField('Meat Type', coerce=int, validators=[Optional()])
+    water_usage_l_per_kg = DecimalField('Water Usage (L/kg)', validators=[DataRequired(), NumberRange(min=0)], places=2)
 
 @dashboard.route("/ingredients")
 @dashboard_roles_required(Role.Admin.value, Role.Manager.value)

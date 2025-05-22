@@ -36,6 +36,19 @@
                 </div>
 
                 <div class="mb-3">
+                    <label for="water_usage_l_per_kg" class="form-label">Water Usage (L/kg)</label>
+                    {{ form.water_usage_l_per_kg(class="form-control", id="water_usage_l_per_kg", type="number", step="0.01", min="0") }}
+                    {% if form.water_usage_l_per_kg.errors %}
+                    <div class="invalid-feedback d-block">
+                        {% for error in form.water_usage_l_per_kg.errors %}
+                        <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    <div class="form-text">Water usage in liters per kilogram of this ingredient</div>
+                </div>
+
+                <div class="mb-3">
                     <label for="meat_id" class="form-label">Meat Type</label>
                     {{ form.meat_id(class="form-control", id="meat_id") }}
                     {% if form.meat_id.errors %}

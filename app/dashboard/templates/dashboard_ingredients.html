@@ -57,6 +57,7 @@
                             <th class="fw-bold">Name</th>
                             <th class="fw-bold">Description</th>
                             <th class="fw-bold">Meat Type</th>
+                            <th class="fw-bold">Water Usage (L/kg)</th>
                             <th class="fw-bold">Created At</th>
                             <th class="fw-bold text-center">Actions</th>
                         </tr>
@@ -79,6 +80,9 @@
                                 {% else %}
                                     <span class="badge bg-secondary">N/A</span>
                                 {% endif %}
+                            </td>
+                            <td>
+                                {{ item.water_usage_l_per_kg }}
                             </td>
                             <td>
                                 <small class="text-muted">
