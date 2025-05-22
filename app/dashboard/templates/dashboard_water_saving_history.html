@@ -1,0 +1,61 @@
+{% extends "dashboard_base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Water Saving History</h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Water Saved (L)</th>
+                                    <th>Order ID</th>
+                                    <th>Badge Earned</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for record in history %}
+                                <tr>
+                                    <td>{{ record.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                    <td>{{ record.water_saved }}</td>
+                                    <td>
+                                        {% if record.order_id %}
+                                        <a href="{{ url_for('dashboard.orders_list') }}?search={{ record.order_id }}">{{ record.order_id }}</a>
+                                        {% else %}
+                                        -
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if record.badge %}
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-medal me-1"></i>
+                                            {{ record.badge.name }}
+                                        </span>
+                                        {% else %}
+                                        -
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    {% if not history %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-tint fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">No water saving history found.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

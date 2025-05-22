@@ -1,0 +1,111 @@
+{% extends "dashboard_base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Water Saving Badges</h3>
+                    <div class="card-tools">
+                        <a href="{{ url_for('dashboard.add_badge') }}" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Add Badge
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <form method="GET" class="form-inline">
+                                <div class="input-group">
+                                    <input type="text" name="search" class="form-control" placeholder="Search badges..." value="{{ search }}">
+                                    <div class="input-group-append">
+                                        <button type="submit" class="btn btn-default">
+                                            <i class="fas fa-search"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Description</th>
+                                    <th>Required Water Saved</th>
+                                    <th>Image</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for badge in items.items %}
+                                <tr>
+                                    <td>{{ badge.badge_id }}</td>
+                                    <td>{{ badge.name }}</td>
+                                    <td>{{ badge.description }}</td>
+                                    <td>{{ badge.required_water_saved }} L</td>
+                                    <td>
+                                        {% if badge.image_url %}
+                                        <img src="{{ badge.image_url }}" alt="{{ badge.name }}" style="max-width: 50px;">
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a href="{{ url_for('dashboard.edit_badge', badge_id=badge.badge_id) }}" class="btn btn-sm btn-info">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="#" onclick="setDeleteUrl('{{ url_for('dashboard.delete_badge', badge_id=badge.badge_id) }}')" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Pagination -->
+                    <div class="d-flex justify-content-center">
+                        {{ items.links|safe }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h5 class="modal-title" id="deleteModalLabel">
+                    <i class="fas fa-exclamation-triangle text-danger me-2"></i>
+                    Confirm Deletion
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-0">Are you sure you want to delete this badge? This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                <a id="confirmDeleteBtn" href="#" class="btn btn-danger">
+                    <i class="fas fa-trash-alt me-1"></i>Delete
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function setDeleteUrl(deleteUrl) {
+    document.getElementById('confirmDeleteBtn').href = deleteUrl;
+}
+</script>
+{% endblock %} 

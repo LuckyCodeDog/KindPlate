@@ -131,6 +131,16 @@
 				    <nav class="app-nav app-nav-footer">
 					    <ul class="app-menu footer-menu list-unstyled">
 						    <li class="nav-item">
+						        <a class="nav-link {% if 'badges' in request.path %} active {% endif %}" href="{{ url_for('dashboard.badge_list') }}">
+							        <span class="nav-icon">
+							            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-award" viewBox="0 0 16 16">
+  <path d="M9.669.864 8 0 6.331.864l-1.858.282-.842 1.68-1.337 1.32L2.6 6l-.306 1.854 1.337 1.32.842 1.68 1.858.282L8 12l1.669-.864 1.858-.282.842-1.68 1.337-1.32L13.4 6l.306-1.854-1.337-1.32-.842-1.68zM8 10.93a2.929 2.929 0 1 0 0-5.86 2.929 2.929 0 0 0 0 5.858z"/>
+</svg>
+							        </span>
+			                        <span class="nav-link-text">Badges</span>
+						        </a>
+						    </li>
+						    <li class="nav-item">
 						        <!--//Bootstrap Icons: https://icons.getbootstrap.com/ -->
 						        <a class="nav-link {% if 'settings' in request.path %} active {% endif %}" href="{{ url_for('dashboard.settings') }}">
 							        <span class="nav-icon">

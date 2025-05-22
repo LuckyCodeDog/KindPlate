@@ -26,6 +26,10 @@ from app.common.salt import password_salt
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.orm import aliased
 from app.common.login_required import dashboard_roles_required
+from app.models.water_saving_badge import WaterSavingBadge
+from app.models.user_badge import UserBadge
+from app.models.user_water_saving import UserWaterSavingHistory
+from app.forms.badge_form import BadgeForm
 dashboard = Blueprint("dashboard", __name__, template_folder="templates")
 
 
@@ -683,3 +687,92 @@ def delete_menu_item_ingredient(menu_item_id, ingredient_id):
         flash("Failed to remove ingredient", "danger")
 
     return redirect(url_for("dashboard.manage_menu_item_ingredients", menu_item_id=menu_item_id))
+
+# === Badge Management ===
+@dashboard.route("/badges")
+@dashboard_roles_required(Role.Admin.value, Role.Manager.value)
+def badge_list():
+    search = request.args.get('search', '')
+    page = request.args.get('page', 1, type=int)
+    per_page = 10
+    
+    query = WaterSavingBadge.query
+    if search:
+        query = query.filter(WaterSavingBadge.name.ilike(f"%{search}%"))
+    
+    badges = query.paginate(page=page, per_page=per_page)
+    return render_template("dashboard_badges.html", items=badges, search=search)
+
+@dashboard.route("/badges/add", methods=["GET", "POST"])
+@dashboard_roles_required(Role.Admin.value, Role.Manager.value)
+def add_badge():
+    form = BadgeForm()
+    if request.method == "POST":
+        if form.validate_on_submit():
+            file = form.image.data
+            filpath = app.config['UPLOAD_FOLDER'] + datetime.datetime.now().strftime("%Y%m%d%H%M%S")+file.filename
+            file.save(filpath)
+            image_url = url_for('static', filename='uploads/' + datetime.datetime.now().strftime("%Y%m%d%H%M%S")) + file.filename
+            
+            WaterSavingBadge.create_badge(
+                name=form.name.data,
+                description=form.description.data,
+                required_water_saved=form.required_water_saved.data,
+                image_url=image_url
+            )
+            flash("Badge added successfully", "success")
+            return redirect(url_for("dashboard.badge_list"))
+    return render_template("dashboard_badge_add.html", form=form, pagetitle="Add Badge")
+
+@dashboard.route("/badges/edit/<int:badge_id>", methods=["GET", "POST"])
+@dashboard_roles_required(Role.Admin.value, Role.Manager.value)
+def edit_badge(badge_id):
+    badge = WaterSavingBadge.get_badge_by_id(badge_id)
+    if not badge:
+        flash("Badge not found", "danger")
+        return redirect(url_for("dashboard.badge_list"))
+    
+    form = BadgeForm(
+        name=badge.name,
+        description=badge.description,
+        required_water_saved=badge.required_water_saved
+    )
+    
+    if request.method == "POST":
+        if form.validate_on_submit():
+            file = form.image.data
+            filpath = app.config['UPLOAD_FOLDER'] + datetime.datetime.now().strftime("%Y%m%d%H%M%S")+file.filename
+            file.save(filpath)
+            image_url = url_for('static', filename='uploads/' + datetime.datetime.now().strftime("%Y%m%d%H%M%S")) + file.filename
+            
+            WaterSavingBadge.update_badge(
+                badge_id=badge_id,
+                name=form.name.data,
+                description=form.description.data,
+                required_water_saved=form.required_water_saved.data,
+                image_url=image_url
+            )
+            flash("Badge updated successfully", "success")
+            return redirect(url_for("dashboard.badge_list"))
+    return render_template("dashboard_badge_edit.html", form=form, pagetitle="Edit Badge")
+
+@dashboard.route("/badges/delete/<int:badge_id>")
+@dashboard_roles_required(Role.Admin.value, Role.Manager.value)
+def delete_badge(badge_id):
+    if WaterSavingBadge.delete_badge(badge_id):
+        flash("Badge deleted successfully", "success")
+    else:
+        flash("Failed to delete badge", "danger")
+    return redirect(url_for("dashboard.badge_list"))
+
+@dashboard.route("/user_badges/<int:user_id>")
+@dashboard_roles_required(Role.Admin.value, Role.Manager.value, Role.Staff.value)
+def user_badges(user_id):
+    badges = UserBadge.get_user_badges(user_id)
+    return render_template("dashboard_user_badges.html", badges=badges, user_id=user_id)
+
+@dashboard.route("/water_saving_history/<int:user_id>")
+@dashboard_roles_required(Role.Admin.value, Role.Manager.value, Role.Staff.value)
+def water_saving_history(user_id):
+    history = UserWaterSavingHistory.get_user_history(user_id)
+    return render_template("dashboard_water_saving_history.html", history=history, user_id=user_id)
