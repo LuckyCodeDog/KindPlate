@@ -26,6 +26,7 @@ CREATE TABLE Users (
     water_saving_level INT DEFAULT 1 COMMENT 'User water saving level (1-5)',
     water_saving_points INT DEFAULT 0 COMMENT 'Points earned from water saving',
     last_water_saving_date TIMESTAMP NULL COMMENT 'Last time user earned water saving points',
+    badges VARCHAR(255) DEFAULT '' COMMENT 'User earned badges, comma separated',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );

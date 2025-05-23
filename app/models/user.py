@@ -5,6 +5,7 @@ from app.models.order import Order
 from sqlalchemy import Enum as SqlEnum
 from app.common.MyEnum import Role
 from flask_login import UserMixin
+
 class User(UserMixin, db.Model):
     __tablename__ = 'Users'
 
@@ -22,14 +23,19 @@ class User(UserMixin, db.Model):
     image_url = db.Column(db.String(255))
     is_deleted = db.Column(db.Boolean, default=False)
     status = db.Column(db.Enum('active', 'inactive', name='status_enum'), default='active')
+    address = db.Column(db.String(255))
     created_at = db.Column(db.TIMESTAMP, default=datetime.utcnow)
     updated_at = db.Column(db.TIMESTAMP, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+    # 添加与徽章的关系
+    badges = db.relationship('WaterSavingBadge', secondary='UserBadges', backref=db.backref('users', lazy='dynamic'))
 
     def __repr__(self):
         return f'<User {self.username}>'
+
     def get_id(self):
-        return str(self.user_id) 
+        return str(self.user_id)
+
     @staticmethod
     def create_user(username, 
                     password_hash, 
@@ -118,3 +124,15 @@ class User(UserMixin, db.Model):
     @staticmethod
     def get_users_by_status(status):
         return User.query.filter_by(status=status).all()
+
+    def has_badge(self, badge_name):
+        """检查用户是否拥有指定徽章"""
+        return any(badge.name == badge_name for badge in self.badges)
+
+    def add_badge(self, badge_name):
+        """添加徽章到用户"""
+        from app.models.badge import WaterSavingBadge
+        badge = WaterSavingBadge.query.filter_by(name=badge_name).first()
+        if badge and not self.has_badge(badge_name):
+            self.badges.append(badge)
+            db.session.commit()

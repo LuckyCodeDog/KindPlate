@@ -12,6 +12,7 @@
   <div class="cart padding-top padding-bottom section-bg">
     <div class="container">
       <div class="section-wrapper">
+        {% if cartItems %}
         <div class="row g-5">
           <!-- cart top product list -->
           <div class="col-lg-12">
@@ -27,7 +28,6 @@
                   </tr>
                 </thead>
                 <tbody>
-
                   {% for item in cartItems %}
                   <tr class="cart-item-row" data-id="{{ item.menu_item_id }}">
                     <td class="cart__item">
@@ -64,7 +64,6 @@
                         </div>
                       </div>
                     </td>
-                    
                   </tr>
                 </tbody>
               </table>
@@ -76,17 +75,29 @@
           <div class="col-lg-4">
             <div class="cart__total">
               <h3>Cart Total</h3>
-
               <div class="cart__total-data cart__total-data--total">
                 <span>Total</span>
                 <span>$<span id="cart-total">0.00</span></span>
               </div>
-
               <a href="{{ url_for('home.checkout') }}" class="trk-btn trk-btn--primary">Order Takeaway</a>
               <a href="{{ url_for('home.checkout') }}" class="trk-btn trk-btn--secondary">Dine In</a>
             </div>
           </div>
         </div>
+        {% else %}
+        <div class="empty-cart text-center py-5">
+          <div class="empty-cart__icon mb-4">
+            <i class="fas fa-shopping-cart fa-5x text-muted"></i>
+          </div>
+          <h2 class="empty-cart__title mb-3">Your Cart is Empty</h2>
+          <p class="empty-cart__text text-muted mb-4">Looks like you haven't added any items to your cart yet.</p>
+          <div class="empty-cart__buttons">
+            <a href="{{ url_for('home.menu') }}" class="trk-btn trk-btn--primary me-3">
+              <i class="fas fa-utensils me-2"></i>Browse Menu
+            </a>
+          </div>
+        </div>
+        {% endif %}
 
         <!-- Cart Update Modal -->
         <div class="modal fade" id="cartModal" tabindex="-1" aria-labelledby="cartModalLabel" aria-hidden="true">

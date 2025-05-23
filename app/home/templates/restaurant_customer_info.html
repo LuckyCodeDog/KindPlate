@@ -2,65 +2,796 @@
 {% block title %}{{restaurant_profile.description}}{% endblock %}
 {% block content %}
 
-
 <div class="account-pill padding-top padding-bottom">
-    <div class="container">
-        <div class="account-pill__wrapper">
-            <!-- image -->
-            <div class="account-pill__image">
-                <img src="{{ current_user.image_url}}" alt="Avantar" style="width: 100px; height: 75px;">
-            </div>
-            <form method="POST" action="{{ url_for('home.customer_info') }}" class="account__form needs-validation" enctype="multipart/form-data" novalidate>
-                {{ form.hidden_tag() }}
-                <div class="row g-3">
-                    <div class="col-12">
-                        <label for="first_name" class="form-label">First Name</label>
-                        {{ form.first_name(class="form-control", id="first_name", placeholder="Enter your first name", required=True) }}
-                    </div>
-            
-                    <div class="col-12">
-                        <label for="last_name" class="form-label">Last Name</label>
-                        {{ form.last_name(class="form-control", id="last_name", placeholder="Enter your last name", required=True) }}
-                    </div>
-            
-                    <div class="col-12">
-                        <label for="email" class="form-label">Email</label>
-                        {{ form.email(class="form-control", id="email", placeholder="Enter your email", required=True) }}
-                    </div>
-            
-                    <div class="col-12">
-                        <label for="phone_number" class="form-label">Phone Number</label>
-                        {{ form.phone_number(class="form-control", id="phone_number", placeholder="Enter your phone number") }}
-                    </div>
-            
-                    <div class="col-12">
-                        <label for="address" class="form-label">Address</label>
-                        {{ form.address(class="form-control", id="address", placeholder="Enter your address") }}
-                    </div>
-            
-                    <div class="col-12">
-                        <label for="image" class="form-label">Upload Image</label>
-                        {{ form.image(class="form-control", id="image") }}
-                    </div>
-            
-                    <div class="col-12">
-                        <label for="contribution" class="form-label">Contribution</label>
-                        {{ form.contribution(class="form-control", id="contribution", placeholder="Enter contribution amount") }}
+    <div class="container-fluid px-2">
+        <div class="account-pill__wrapper" style="width: 1500px;">
+            <div class="row g-4">
+                <!-- 左侧个人信息卡片 -->
+                <div class="col-lg-4">
+                    <div class="profile-card">
+                        <div class="profile-header">
+                            <div class="profile-image">
+                                <img src="{{ current_user.image_url or url_for('static', filename='images/default-avatar.png') }}" alt="Profile" class="rounded-circle">
+                                <div class="profile-image-overlay">
+                                    <i class="fas fa-camera"></i>
+                                </div>
+                            </div>
+                            <h3 class="profile-name">{{ current_user.first_name }} {{ current_user.last_name }}</h3>
+                            <p class="profile-email">{{ current_user.email }}</p>
+                        </div>
+                        <div class="profile-stats">
+                            <div class="stat-item">
+                                <div class="stat-icon">
+                                    <i class="fas fa-tint"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h4>{{ "%.2f"|format(current_user.contribution) }}L</h4>
+                                    <p>Water Saved</p>
+                                </div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-icon">
+                                    <i class="fas fa-medal"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h4>{{ current_user.badges|length }}</h4>
+                                    <p>Badges Earned</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            
-                {{ form.submit(class="trk-btn trk-btn--border trk-btn--primary d-block mt-4") }}
-            </form>
-            
+
+                <!-- 右侧内容区域 -->
+                <div class="col-lg-8">
+                    <div class="content-tabs">
+                        <ul class="nav nav-tabs" id="profileTabs" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="profile-tab" data-bs-toggle="tab" href="#profile" role="tab">
+                                    <i class="fas fa-user"></i> Profile
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="orders-tab" data-bs-toggle="tab" href="#orders" role="tab">
+                                    <i class="fas fa-shopping-bag"></i> Orders
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="achievements-tab" data-bs-toggle="tab" href="#achievements" role="tab">
+                                    <i class="fas fa-trophy"></i> Achievements
+                                </a>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content" id="profileTabsContent">
+                            <!-- 个人信息表单 -->
+                            <div class="tab-pane fade show active" id="profile" role="tabpanel">
+                                <form method="POST" action="{{ url_for('home.customer_info') }}" class="account__form needs-validation" enctype="multipart/form-data" novalidate>
+                                    {{ form.hidden_tag() }}
+                                    <div class="row g-4">
+                                        <div class="col-md-6">
+                                            <div class="form-floating">
+                                                {{ form.first_name(class="form-control", id="first_name", placeholder="Enter your first name", required=True) }}
+                                                <label for="first_name">First Name</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-floating">
+                                                {{ form.last_name(class="form-control", id="last_name", placeholder="Enter your last name", required=True) }}
+                                                <label for="last_name">Last Name</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-floating">
+                                                {{ form.email(class="form-control", id="email", placeholder="Enter your email", required=True) }}
+                                                <label for="email">Email</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-floating">
+                                                {{ form.phone_number(class="form-control", id="phone_number", placeholder="Enter your phone number") }}
+                                                <label for="phone_number">Phone Number</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="form-floating">
+                                                {{ form.address(class="form-control", id="address", placeholder="Enter your address") }}
+                                                <label for="address">Address</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="custom-file-upload">
+                                                <label for="image" class="form-label">Profile Image</label>
+                                                {{ form.image(class="form-control", id="image") }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {{ form.submit(class="trk-btn trk-btn--border trk-btn--primary d-block mt-5") }}
+                                </form>
+                            </div>
+
+                            <!-- 订单历史 -->
+                            <div class="tab-pane fade" id="orders" role="tabpanel">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h4 class="section-title mb-0">Order History</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        {% if current_user.orders_as_customer %}
+                                        <div class="order-list">
+                                            {% for order in current_user.orders_as_customer %}
+                                            <div class="card mb-4">
+                                                <div class="card-header bg-white">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <div class="order-info">
+                                                            <span class="order-id h5 mb-0">Order #{{ order.order_id }}</span>
+                                                            <span class="order-date text-muted d-block">{{ order.order_date.strftime('%Y-%m-%d %H:%M') }}</span>
+                                                        </div>
+                                                        <span class="order-status {{ order.status.lower() }}">
+                                                            <i class="fas fa-circle"></i> {{ order.status }}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="order-items">
+                                                        {% for item in order.order_items %}
+                                                        <div class="order-item py-2">
+                                                            <div class="item-info">
+                                                                <span class="item-name">{{ item.menu_item.name }}</span>
+                                                                <span class="item-quantity text-muted">x{{ item.quantity }}</span>
+                                                            </div>
+                                                            <span class="item-price">${{ "%.2f"|format(item.price) }}</span>
+                                                        </div>
+                                                        {% endfor %}
+                                                    </div>
+                                                    <div class="order-footer mt-3 pt-3 border-top">
+                                                        <div class="order-total d-flex justify-content-end align-items-center">
+                                                            <span class="me-3">Total Amount:</span>
+                                                            <span class="amount h4 mb-0">${{ "%.2f"|format(order.total_amount) }}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                        {% else %}
+                                        <div class="no-orders text-center py-5">
+                                            <i class="fas fa-shopping-bag fa-3x text-muted mb-3"></i>
+                                            <p class="h5 text-muted">No orders yet</p>
+                                            <a href="{{ url_for('home.menu') }}" class="btn btn-primary mt-3">Browse Menu</a>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 成就徽章 -->
+                            <div class="tab-pane fade" id="achievements" role="tabpanel">
+                                <div class="achievements-section">
+                                    <div class="water-savings-progress mb-5">
+                                        <h4 class="section-title">Water Saving Progress</h4>
+                                        <div class="progress-wrapper">
+                                            <div class="progress" style="height: 30px;">
+                                                {% set progress = (current_user.contribution / 10000) * 100 %}
+                                                <div class="progress-bar bg-primary" role="progressbar" 
+                                                     style="width: {{ progress }}%;" 
+                                                     aria-valuenow="{{ progress }}" 
+                                                     aria-valuemin="0" 
+                                                     aria-valuemax="100">
+                                                    {{ "%.2f"|format(current_user.contribution) }}L Saved
+                                                    {% if next_badge %}
+                                                    <span class="next-badge-text">Next: {{ next_badge.name }} ({{ next_badge.required_water_saved }}L)</span>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <div class="progress-milestones mt-3">
+                                                <div class="d-flex justify-content-between">
+                                                    {% for badge in all_badges %}
+                                                    <div class="milestone {% if badge in user_badges %}earned{% endif %}">
+                                                        <span class="milestone-value">{{ "%.0f"|format(badge.required_water_saved) }}L</span>
+                                                        <span class="milestone-badge">{{ badge.name }}</span>
+                                                        {% if badge in user_badges %}
+                                                        <span class="badge-status">
+                                                            <i class="fas fa-check-circle"></i>
+                                                        </span>
+                                                        {% endif %}
+                                                    </div>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="badges-section">
+                                        <h4 class="section-title">Your Badges</h4>
+                                        <div class="row g-4">
+                                            {% for badge in current_user.badges %}
+                                            <div class="col-md-4">
+                                                <div class="badge-card earned">
+                                                    <div class="badge-icon">
+                                                        <img src="{{ badge.image_url }}" alt="{{ badge.name }}">
+                                                    </div>
+                                                    <h5>{{ badge.name }}</h5>
+                                                    <p>{{ badge.description }}</p>
+                                                    <span class="badge-status earned">
+                                                        <i class="fas fa-check-circle"></i> Earned!
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
-
-
-
-
-
 {% endblock %}
+
 {% block scripts %}
+<style>
+/* 个人信息卡片样式 */
+.account-pill__wrapper {
+    width: 2000px !important;
+    margin: 0 auto;
+}
+
+.profile-card {
+    background: #fff;
+    border-radius: 30px;
+    padding: 50px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+    transition: transform 0.3s ease;
+    height: 100%;
+}
+
+.profile-card:hover {
+    transform: translateY(-5px);
+}
+
+.profile-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.profile-image {
+    width: 220px;
+    height: 220px;
+    margin: 0 auto 40px;
+    position: relative;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.profile-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border: 8px solid #f8f9fa;
+    transition: transform 0.3s ease;
+}
+
+.profile-image:hover img {
+    transform: scale(1.1);
+}
+
+.profile-image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.profile-image:hover .profile-image-overlay {
+    opacity: 1;
+}
+
+.profile-image-overlay i {
+    color: #fff;
+    font-size: 3rem;
+}
+
+.profile-name {
+    font-size: 2.4rem;
+    margin-bottom: 15px;
+    color: #333;
+    font-weight: 600;
+}
+
+.profile-email {
+    color: #6c757d;
+    margin-bottom: 0;
+    font-size: 1.4rem;
+}
+
+.profile-stats {
+    border-top: 1px solid #eee;
+    padding-top: 40px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    padding: 25px;
+    background: #f8f9fa;
+    border-radius: 25px;
+    transition: transform 0.3s ease;
+}
+
+.stat-item:hover {
+    transform: translateY(-3px);
+}
+
+.stat-icon {
+    width: 70px;
+    height: 70px;
+    background: #007bff;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stat-icon i {
+    font-size: 2rem;
+    color: #fff;
+}
+
+.stat-info h4 {
+    margin: 0;
+    font-size: 1.8rem;
+    color: #333;
+    font-weight: 600;
+}
+
+.stat-info p {
+    margin: 0;
+    color: #6c757d;
+    font-size: 1.2rem;
+}
+
+/* 内容区域样式 */
+.content-tabs {
+    background: #fff;
+    border-radius: 30px;
+    padding: 50px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    height: 100%;
+}
+
+.nav-tabs {
+    border-bottom: 2px solid #eee;
+    margin-bottom: 50px;
+}
+
+.nav-tabs .nav-link {
+    border: none;
+    color: #6c757d;
+    padding: 20px 40px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: all 0.3s ease;
+    font-size: 1.3rem;
+}
+
+.nav-tabs .nav-link i {
+    font-size: 1.5rem;
+}
+
+.nav-tabs .nav-link:hover {
+    color: #007bff;
+    background: #f8f9fa;
+    border-radius: 15px 15px 0 0;
+}
+
+.nav-tabs .nav-link.active {
+    color: #007bff;
+    border-bottom: 2px solid #007bff;
+    background: none;
+}
+
+.section-title {
+    color: #333;
+    margin-bottom: 35px;
+    font-weight: 600;
+    font-size: 2rem;
+    position: relative;
+    padding-left: 25px;
+}
+
+.section-title::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 6px;
+    height: 30px;
+    background: #007bff;
+    border-radius: 3px;
+}
+
+/* 表单样式 */
+.form-floating {
+    position: relative;
+}
+
+.form-floating > .form-control {
+    height: calc(4.5rem + 2px);
+    padding: 1.5rem 0.75rem;
+    font-size: 1.2rem;
+}
+
+.form-floating > label {
+    padding: 1.5rem 0.75rem;
+    font-size: 1.2rem;
+}
+
+.custom-file-upload {
+    border: 2px dashed #dee2e6;
+    border-radius: 20px;
+    padding: 40px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.custom-file-upload:hover {
+    border-color: #007bff;
+    background: #f8f9fa;
+}
+
+/* 订单卡片样式 */
+.order-card {
+    background: #fff;
+    border-radius: 25px;
+    padding: 40px;
+    margin-bottom: 35px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease;
+}
+
+.order-card:hover {
+    transform: translateY(-5px);
+}
+
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 25px;
+    border-bottom: 1px solid #eee;
+}
+
+.order-info {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.order-id {
+    font-weight: 600;
+    color: #333;
+    font-size: 1.4rem;
+}
+
+.order-date {
+    color: #6c757d;
+    font-size: 1.2rem;
+}
+
+.order-status {
+    padding: 12px 25px;
+    border-radius: 30px;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.order-status i {
+    font-size: 0.9rem;
+}
+
+.order-status.pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.order-status.completed {
+    background: #d4edda;
+    color: #155724;
+}
+
+.order-items {
+    margin-bottom: 30px;
+}
+
+.order-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+    border-bottom: 1px solid #f8f9fa;
+}
+
+.item-info {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.item-name {
+    font-weight: 500;
+    font-size: 1.3rem;
+}
+
+.item-quantity {
+    color: #6c757d;
+    font-size: 1.2rem;
+}
+
+.item-price {
+    font-weight: 600;
+    color: #007bff;
+    font-size: 1.3rem;
+}
+
+.order-footer {
+    text-align: right;
+    padding-top: 25px;
+    border-top: 1px solid #eee;
+}
+
+.order-total {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 20px;
+}
+
+.order-total .amount {
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: #007bff;
+}
+
+/* 成就徽章样式 */
+.water-savings-progress {
+    background: #fff;
+    padding: 45px;
+    border-radius: 25px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.progress-wrapper {
+    position: relative;
+}
+
+.progress {
+    background-color: #e9ecef;
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 15px;
+}
+
+.progress-bar {
+    transition: width 1s ease;
+    background: linear-gradient(45deg, #007bff, #00bcd4);
+    font-size: 1.3rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+}
+
+.next-badge-text {
+    font-size: 1rem;
+    opacity: 0.9;
+}
+
+.progress-milestones {
+    color: #6c757d;
+    font-size: 1.2rem;
+    margin-top: 20px;
+}
+
+.milestone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+    min-width: 120px;
+    padding: 10px;
+    border-radius: 15px;
+    transition: all 0.3s ease;
+}
+
+.milestone.earned {
+    background: rgba(40, 167, 69, 0.1);
+}
+
+.milestone::before {
+    content: '';
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 10px;
+    background: #dee2e6;
+}
+
+.milestone-value {
+    font-weight: 600;
+    color: #333;
+    font-size: 1.1rem;
+}
+
+.milestone-badge {
+    font-size: 0.9rem;
+    color: #6c757d;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.badge-status {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #28a745;
+    color: white;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+}
+
+.badge-card {
+    background: #fff;
+    padding: 45px;
+    border-radius: 25px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.badge-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+.badge-icon {
+    width: 150px;
+    height: 150px;
+    margin: 0 auto 30px;
+    padding: 25px;
+    background: #f8f9fa;
+    border-radius: 50%;
+    transition: transform 0.3s ease;
+}
+
+.badge-card:hover .badge-icon {
+    transform: scale(1.1);
+}
+
+.badge-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.badge-card h5 {
+    font-size: 1.6rem;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.badge-card p {
+    color: #6c757d;
+    font-size: 1.3rem;
+    margin-bottom: 25px;
+    line-height: 1.6;
+}
+
+.no-orders {
+    text-align: center;
+    padding: 70px 40px;
+    color: #6c757d;
+}
+
+.no-orders i {
+    font-size: 5rem;
+    margin-bottom: 30px;
+    color: #dee2e6;
+}
+
+.no-orders p {
+    font-size: 1.6rem;
+    margin-bottom: 30px;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .profile-stats {
+        grid-template-columns: 1fr;
+    }
+    
+    .nav-tabs .nav-link {
+        padding: 15px 25px;
+    }
+    
+    .order-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+    }
+    
+    .order-status {
+        align-self: flex-start;
+    }
+    
+    .profile-card,
+    .content-tabs {
+        padding: 30px;
+    }
+    
+    .profile-image {
+        width: 180px;
+        height: 180px;
+    }
+    
+    .profile-name {
+        font-size: 2rem;
+    }
+    
+    .section-title {
+        font-size: 1.8rem;
+    }
+    
+    .progress-milestones .d-flex {
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+    
+    .milestone {
+        flex: 0 0 50%;
+        min-width: 100px;
+    }
+    
+    .progress-bar {
+        font-size: 1rem;
+        padding: 0 10px;
+    }
+    
+    .next-badge-text {
+        font-size: 0.8rem;
+    }
+}
+</style>
 {% endblock %}

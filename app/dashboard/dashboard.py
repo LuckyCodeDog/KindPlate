@@ -28,7 +28,7 @@ from sqlalchemy.orm import aliased
 from app.common.login_required import dashboard_roles_required
 from app.models.water_saving_badge import WaterSavingBadge
 from app.models.user_badge import UserBadge
-from app.models.user_water_saving import UserWaterSavingHistory
+from app.models.user_water_saving_history import UserWaterSavingHistory
 from app.forms.badge_form import BadgeForm
 dashboard = Blueprint("dashboard", __name__, template_folder="templates")
 

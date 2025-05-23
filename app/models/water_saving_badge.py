@@ -13,7 +13,7 @@ class WaterSavingBadge(db.Model):
     
     # Relationships
     user_badges = db.relationship('UserBadge', backref='badge', lazy=True)
-    water_saving_history = db.relationship('UserWaterSavingHistory', backref='badge', lazy=True)
+    water_saving_history = db.relationship('UserWaterSavingHistory', lazy=True)
     
     @classmethod
     def get_all_badges(cls):

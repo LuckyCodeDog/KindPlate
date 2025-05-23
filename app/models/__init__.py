@@ -14,6 +14,8 @@ from app.models.order import Order
 from app.models.order_item import OrderItem
 from app.models.booking import Booking
 from app.models.restaurant_profile import RestaurantProfile
+from app.models.water_saving_badge import WaterSavingBadge
+from app.models.user_water_saving_history import UserWaterSavingHistory
 
 # Initialize all relationships
 __all__ = [
@@ -25,5 +27,7 @@ __all__ = [
     'Order',
     'OrderItem',
     'Booking',
-    'RestaurantProfile'
+    'RestaurantProfile',
+    'WaterSavingBadge',
+    'UserWaterSavingHistory'
 ] 

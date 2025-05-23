@@ -13,6 +13,7 @@ from app.common.salt import password_salt
 from app.models.booking import Booking
 from app.models.user import User
 from app.models.order import Order
+from app.models.order_item import OrderItem
 from app.models.menu_item import MenuItem
 from app.models.dto.cart_item_dto import cart_item_dto
 from app.common.forms import BookingForm, CheckoutForm, RegisterForm, LoginForm, CustomerInfoForm
@@ -21,6 +22,10 @@ from app.common.MyEnum import Role
 from werkzeug.security import generate_password_hash, check_password_hash
 from app.common.login_required import roles_required
 import os
+from app.models.water_saving_badge import WaterSavingBadge
+from app.models.user_water_saving_history import UserWaterSavingHistory
+from werkzeug.utils import secure_filename
+from decimal import Decimal
 
 home = Blueprint("home", __name__, template_folder="templates")
 
@@ -150,12 +155,36 @@ def checkout():
     menu_items = []
     cartItems = []
     total_price = 0
+    total_water_saved = 0
+
     for item in cart:
         menu_item = MenuItem.get_by_id(int(item['id']))
         if menu_item:
             quantity = item['quantity']
             menu_items.append(menu_item)
             total_price += menu_item.price * quantity
+
+            # Calculate water saved for logged in users
+            water_saved = 0
+            if current_user.is_authenticated:
+                # Get all ingredients for this menu item
+                menu_item_ingredients = menu_item.ingredients.all()
+                for menu_item_ingredient in menu_item_ingredients:
+                    ingredient = menu_item_ingredient.ingredient
+                    # If ingredient is meat-based, calculate water saved
+                    if ingredient.meat_id:
+                        # Convert quantity to kg for water usage calculation
+                        quantity_in_kg = Decimal(str(menu_item_ingredient.quantity))
+                        if menu_item_ingredient.unit == 'g':
+                            quantity_in_kg /= Decimal('1000')
+                        elif menu_item_ingredient.unit == 'l':
+                            quantity_in_kg *= Decimal('1')  # 1L = 1kg
+                        elif menu_item_ingredient.unit == 'gallon':
+                            quantity_in_kg *= Decimal('3.78541')  # 1 gallon = 3.78541L
+                        
+                        # Calculate water saved (meat water usage - plant water usage)
+                        water_saved += (ingredient.water_usage_l_per_kg - Decimal('0')) * quantity_in_kg * Decimal(str(quantity))
+                total_water_saved += water_saved
 
             cart_item_dto_obj = cart_item_dto(
                 menu_item_id=menu_item.menu_item_id,
@@ -164,13 +193,16 @@ def checkout():
                 name=menu_item.name,
                 image_url=menu_item.image_url
             )
-            print(str(cart_item_dto_obj.image_url))
             cartItems.append(cart_item_dto_obj)
             
     # if guest 
     checkout_form = CheckoutForm()
     
-    return render_template('restaurant_checkout.html', cartItems=cartItems, total_price=total_price, form=checkout_form)
+    return render_template('restaurant_checkout.html', 
+                         cartItems=cartItems, 
+                         total_price=total_price, 
+                         total_water_saved=total_water_saved,
+                         form=checkout_form)
 
 
 @home.route("/account", methods=["GET", "POST"])
@@ -231,43 +263,59 @@ def logout():
 #     session.pop('cart', None)  # 清空 session 中的购物车
 
 @home.route('/customer_info', methods=['GET', 'POST'])
-@roles_required(Role.Customer.value)
+@roles_required(Role.Customer.value,Role.Admin.value)
 def customer_info():
-    customerform = CustomerInfoForm()
-    if request.method == 'POST' and customerform.validate_on_submit():
-        # Get the form data
-        first_name = customerform.first_name.data
-        last_name = customerform.last_name.data
-        email = customerform.email.data
-        phone = customerform.phone_number.data
-        contribution = customerform.contribution.data
-        address = customerform.address.data
-        # save the image if provided
-        image = customerform.image.data
-        if image:
-            # Save the image to the server and get the URL
-            file = customerform.image.data
-            filpath = app.config['UPLOAD_FOLDER'] + datetime.datetime.now().strftime("%Y%m%d%H%M%S")+file.filename
-            file.save(filpath)
-            image_url = url_for('static', filename='uploads/' + datetime.datetime.now().strftime("%Y%m%d%H%M%S")) + file.filename 
-            current_user.image_url = image_url
-
-        # Update the current user's information
-        current_user.first_name = first_name
-        current_user.last_name = last_name
-        current_user.email = email
-        current_user.phone_number = phone
-
-        # Commit the changes to the database
+    form = CustomerInfoForm()
+    if form.validate_on_submit():
+        current_user.first_name = form.first_name.data
+        current_user.last_name = form.last_name.data
+        current_user.email = form.email.data
+        current_user.phone_number = form.phone_number.data
+        current_user.address = form.address.data
+        
+        if form.image.data:
+            filename = secure_filename(form.image.data.filename)
+            timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
+            filename = f"{timestamp}_{filename}"
+            form.image.data.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
+            current_user.image_url = url_for('static', filename=f'uploads/{filename}')
+        
         db.session.commit()
-        flash('Your information has been updated!', 'success')
+        flash('Your profile has been updated.', 'success')
         return redirect(url_for('home.customer_info'))
-    customerform.first_name.data = current_user.first_name
-    customerform.last_name.data = current_user.last_name
-    customerform.email.data = current_user.email
-    customerform.phone_number.data = current_user.phone_number
-    customerform.contribution.data = current_user.contribution
-    return render_template('restaurant_customer_info.html', user=current_user, form=customerform)
+    
+    elif request.method == 'GET':
+        form.first_name.data = current_user.first_name
+        form.last_name.data = current_user.last_name
+        form.email.data = current_user.email
+        form.phone_number.data = current_user.phone_number
+        form.address.data = current_user.address
+    
+    # 获取所有徽章
+    all_badges = WaterSavingBadge.query.order_by(WaterSavingBadge.required_water_saved).all()
+    
+    # 获取用户已获得的徽章
+    user_badges = current_user.badges
+    
+    # 计算下一个可获得的徽章
+    next_badge = None
+    for badge in all_badges:
+        if badge not in user_badges and current_user.contribution < badge.required_water_saved:
+            next_badge = badge
+            break
+    
+    # 计算进度
+    if next_badge:
+        progress = (current_user.contribution / next_badge.required_water_saved) * 100
+    else:
+        progress = 100  # 如果已经获得所有徽章，进度为100%
+    
+    return render_template('restaurant_customer_info.html', 
+                         form=form, 
+                         all_badges=all_badges,
+                         user_badges=user_badges,
+                         next_badge=next_badge,
+                         progress=progress)
 
 #blog 
 @home.route('/blog')
@@ -348,3 +396,140 @@ def team():
         User.role == Role.Manager.value or User.role == Role.Staff.value
     ).paginate(page=page, per_page=per_page)
     return render_template('restaurant_team.html', items=items)
+
+@home.route('/process_payment', methods=['POST'])
+def process_payment():
+    cart = session.get('cart', [])
+    if not cart:
+        return jsonify({"error": "Your cart is empty"}), 400
+        
+    try:
+        # Calculate total price
+        total_price = 0
+        order_items = []
+        
+        for item in cart:
+            menu_item = MenuItem.get_by_id(int(item['id']))
+            if menu_item:
+                quantity = item['quantity']
+                total_price += menu_item.price * quantity
+                
+                order_items.append({
+                    'menu_item': menu_item,
+                    'quantity': quantity,
+                    'price': menu_item.price
+                })
+        
+        # Create new order
+        new_order = Order(
+            customer_id=current_user.user_id if current_user.is_authenticated else None,
+            total_amount=total_price,
+            status='Pending',
+            order_date=datetime.now()
+        )
+        db.session.add(new_order)
+        db.session.flush()  # Get the order ID
+        
+        # Add order items
+        for item in order_items:
+            order_item = OrderItem(
+                order_id=new_order.order_id,
+                menu_item_id=item['menu_item'].menu_item_id,
+                quantity=item['quantity'],
+                price=item['price']
+            )
+            db.session.add(order_item)
+        
+        # Update user's contribution if logged in
+        if current_user.is_authenticated:
+            # Calculate water saved based on ingredients
+            total_water_saved = 0
+            for item in order_items:
+                menu_item = item['menu_item']
+                quantity = item['quantity']
+                
+                # Get all ingredients for this menu item
+                menu_item_ingredients = menu_item.ingredients.all()
+                for menu_item_ingredient in menu_item_ingredients:
+                    ingredient = menu_item_ingredient.ingredient
+                    # If ingredient is meat-based, calculate water saved
+                    if ingredient.meat_id:
+                        # Convert quantity to kg for water usage calculation
+                        quantity_in_kg = Decimal(str(menu_item_ingredient.quantity))
+                        if menu_item_ingredient.unit == 'g':
+                            quantity_in_kg /= Decimal('1000')
+                        elif menu_item_ingredient.unit == 'l':
+                            quantity_in_kg *= Decimal('1')  # 1L = 1kg
+                        elif menu_item_ingredient.unit == 'gallon':
+                            quantity_in_kg *= Decimal('3.78541')  # 1 gallon = 3.78541L
+                        
+                        # Calculate water saved (meat water usage - plant water usage)
+                        water_saved = (ingredient.water_usage_l_per_kg - Decimal('0')) * quantity_in_kg * Decimal(str(quantity))
+                        total_water_saved += water_saved
+            
+            # Update user's contribution
+            current_user.contribution += total_water_saved
+            
+            # Record water saving history
+            history = UserWaterSavingHistory(
+                user_id=current_user.user_id,
+                order_id=new_order.order_id,
+                water_saved=total_water_saved
+            )
+            db.session.add(history)
+            
+            # Check and award badges based on total contribution
+            # 使用init.sql中定义的徽章阈值
+            badge_thresholds = {
+                'Sprout Starter': 50.00,
+                'Aqua Guardian': 200.00,
+                'Water Warrior': 500.00,
+                'Eco Ripple Master': 1000.00,
+                'Planet Paladin': 2000.00,
+                'Sustainability Sage': 5000.00,
+                'KindPlate Legend': 10000.00
+            }
+            
+            for badge_name, threshold in badge_thresholds.items():
+                if current_user.contribution >= threshold and not current_user.has_badge(badge_name):
+                    badge = WaterSavingBadge.get_badge_by_name(badge_name)
+                    if badge:
+                        current_user.add_badge(badge_name)
+                        history.badge_id = badge.badge_id
+            
+            db.session.commit()
+        
+        # Commit the transaction
+        db.session.commit()
+        
+        # Clear the cart
+        session.pop('cart', None)
+        
+        response_data = {
+            "success": True,
+            "message": "Order placed successfully!",
+            "order_id": new_order.order_id
+        }
+        
+        # Add water saved info only for logged in users
+        if current_user.is_authenticated:
+            response_data.update({
+                "water_saved": total_water_saved,
+                "new_contribution": current_user.contribution
+            })
+        
+        return jsonify(response_data)
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
+
+@home.route('/order_confirmation/<int:order_id>')
+@roles_required(Role.Customer.value)
+def order_confirmation(order_id):
+    order = Order.query.get_or_404(order_id)
+    if order.user_id != current_user.user_id:
+        flash("You don't have permission to view this order", "danger")
+        return redirect(url_for('home.index'))
+        
+    return render_template('order_confirmation.html', order=order)
