@@ -1,128 +1,181 @@
 {% extends "dashboard_base.html" %}
 
-{% block title %}Home{% endblock %}
+{% block title %}Orders Management{% endblock %}
 
 {% block content %}
 <div class="app-content pt-3 p-md-3 p-lg-4">
     <div class="container-xl">
-
+        <!-- Header Section -->
         <div class="row g-3 mb-4 align-items-center justify-content-between">
             <div class="col-auto">
-                <h1 class="app-page-title mb-0">Oders</h1>
+                <h1 class="app-page-title mb-0">
+                    <i class="fas fa-shopping-cart me-2"></i>Orders
+                </h1>
             </div>
             <div class="col-auto">
                 <div class="page-utilities">
                     <div class="row g-2 justify-content-start justify-content-md-end align-items-center">
+                        <!-- Search Form -->
                         <div class="col-auto">
-                            <form class="table-search-form row gx-1 align-items-center" method="GET" action="{{ url_for('dashboard.users_list') }}">
+                            <form class="table-search-form row gx-1 align-items-center" action="{{ url_for('dashboard.orders_list') }}" method="GET">
                                 <div class="col-auto">
-                                    <input type="text" id="search-orders" name="search"
-                                        class="form-control search-orders" placeholder="Search by name" value="{{ request.args.get('search', '') }}">
-                                </div>
-                                <div class="col-auto">
-                                    <button type="submit" class="btn app-btn-secondary">Search </button>
+                                    <div class="input-group">
+                                        <input type="text" id="search-orders" name="search"
+                                            class="form-control search-orders" placeholder="Search orders..."
+                                            value="{{ request.args.get('search', '') }}">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-search"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </form>
+                        </div>
 
-                        </div><!--//col-->
+                        <!-- Export Button -->
+                        <div class="col-auto">
+                            <a class="btn btn-outline-primary" href="{{ url_for('dashboard.export_orders_csv') }}">
+                                <i class="fas fa-download me-1"></i>
+                                Export CSV
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                        
-                    </div><!--//row-->
-                </div><!--//table-utilities-->
-            </div><!--//col-auto-->
-        </div><!--//row-->
+        <!-- Table Section -->
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="text-nowrap">Order ID</th>
+                                <th class="text-nowrap">Customer</th>
+                                <th class="text-nowrap">Date</th>
+                                <th class="text-nowrap">Status</th>
+                                <th class="text-nowrap">Total Amount</th>
+                                <th class="text-nowrap text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in orders.items %}
+                            <tr>
+                                <td class="text-nowrap fw-medium">#{{ order.order_id }}</td>
+                                <td class="text-nowrap">
+                                    {% if order.customer %}
+                                        {{ order.customer.first_name }} {{ order.customer.last_name }}
+                                    {% else %}
+                                        {{ order.first_name }} {{ order.last_name }}
+                                    {% endif %}
+                                </td>
+                                <td class="text-nowrap">{{ order.order_date.strftime('%Y-%m-%d %H:%M') }}</td>
+                                <td>
+                                    <span class="badge bg-{{ 'success' if order.status == 'Completed' else 'warning' if order.status == 'Pending' else 'info' if order.status == 'Preparing' else 'danger' }}-subtle text-{{ 'success' if order.status == 'Completed' else 'warning' if order.status == 'Pending' else 'info' if order.status == 'Preparing' else 'danger' }}">
+                                        <i class="fas fa-{{ 'check-circle' if order.status == 'Completed' else 'clock' if order.status == 'Pending' else 'spinner' if order.status == 'Preparing' else 'times-circle' }} me-1"></i>
+                                        {{ order.status }}
+                                    </span>
+                                </td>
+                                <td class="text-nowrap fw-medium">${{ "%.2f"|format(order.total_amount) }}</td>
+                                <td class="text-end">
+                                    <a class="btn btn-sm btn-outline-primary" 
+                                       href="{{ url_for('dashboard.view_order', order_id=order.order_id) }}"
+                                       title="View Details">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
 
-        <div class="tab-content" id="orders-table-tab-content">
-            <div class="tab-pane fade show active" id="orders-all" role="tabpanel" aria-labelledby="orders-all-tab">
-                <div class="app-card app-card-orders-table shadow-sm mb-5">
-                    <div class="app-card-body">
-                        <div class="table-responsive">
-                            <table class="table app-table-hover mb-0 text-left">
-                                <thead>
-                                    <tr>
-                                        <th class="cell">Customer Name</th>
-                                        <th class="cell">Waiter Name</th>
-                                        <th class="cell text-truncate">Order Date</th>
-                                        <th class="cell">Status</th>
-                                        <th class="cell">Total Amount</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for order_item in items.items %}
-                                    <tr>
-                
-                                        <td class="cell">{{ order_item.customer.first_name  }} {{order_item.customer.last_name   }}</td>
-
-                                        <td class="cell">{{ order_item.waiter.first_name  }} {{order_item.waiter.last_name   }}</td>
-                                    
-                                        <td class="cell"><span class="truncate">{{ order_item.order_date }}</span></td>
-
-                                        <td class="cell">
-                                            <span class="badge {% if order_item.status == "active" %} bg-success {% else %} bg-danger  {% endif %} ">{{ order_item.status}}</span>
-                                        </td>
-                                        <td class="cell">{{ order_item.total_amount }}</td>
-                                        <td class="cell">
-                                            <a class="btn btn-sm app-btn-primary" href=" ">
-                                                Change Status
-                                            </a>
-                                            <a class="btn btn-sm app-btn-primary" href="#" data-bs-toggle="modal" data-bs-target="#deleteModal" onclick="">
-
-                                                View Details
-                                            </a>
-                                        </td>
-                                          
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div><!--//table-responsive-->
-
-                    </div><!--//app-card-body-->
-                </div><!--//app-card-->
-
-
-                <nav class="app-pagination">
+                <!-- Pagination -->
+                {% if orders.pages > 1 %}
+                <nav class="mt-4">
                     <ul class="pagination justify-content-center">
-                
-                        {% if items.has_prev %}
+                        {% if orders.has_prev %}
                         <li class="page-item">
-                            <a class="page-link" href="{{ url_for('dashboard.orders_list', page=items.prev_num) }}" tabindex="-1"
-                                aria-disabled="true">Previous</a>
+                            <a class="page-link" href="{{ url_for('dashboard.orders_list', page=orders.prev_num, search=request.args.get('search', '')) }}">
+                                <i class="fas fa-chevron-left me-1"></i>Previous
+                            </a>
                         </li>
                         {% else %}
                         <li class="page-item disabled">
-                            <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+                            <a class="page-link" href="#">
+                                <i class="fas fa-chevron-left me-1"></i>Previous
+                            </a>
                         </li>
                         {% endif %}
 
-         
-                        {% for page_num in range(1, items.pages + 1) %}
-                        <li class="page-item {% if page_num == items.page %}active{% endif %}">
-                            <a class="page-link" href="{{ url_for('dashboard.orders_list', page=page_num) }}">{{ page_num }}</a>
-                        </li>
+                        {% for page_num in orders.iter_pages(left_edge=2, left_current=2, right_current=3, right_edge=2) %}
+                            {% if page_num %}
+                                <li class="page-item {% if page_num == orders.page %}active{% endif %}">
+                                    <a class="page-link" href="{{ url_for('dashboard.orders_list', page=page_num, search=request.args.get('search', '')) }}">
+                                        {{ page_num }}
+                                    </a>
+                                </li>
+                            {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link">...</span>
+                                </li>
+                            {% endif %}
                         {% endfor %}
 
-                    
-                        {% if items.has_next %}
+                        {% if orders.has_next %}
                         <li class="page-item">
-                            <a class="page-link" href="{{ url_for('dashboard.orders_list', page=items.next_num) }}">Next</a>
+                            <a class="page-link" href="{{ url_for('dashboard.orders_list', page=orders.next_num, search=request.args.get('search', '')) }}">
+                                Next<i class="fas fa-chevron-right ms-1"></i>
+                            </a>
                         </li>
                         {% else %}
                         <li class="page-item disabled">
-                            <a class="page-link" href="#">Next</a>
+                            <a class="page-link" href="#">
+                                Next<i class="fas fa-chevron-right ms-1"></i>
+                            </a>
                         </li>
                         {% endif %}
                     </ul>
-                </nav><!--//app-pagination-->
-            </div><!--//tab-pane-->
-
-        </div><!--//tab-content-->
-
-
-
-    </div><!--//container-fluid-->
+                </nav>
+                {% endif %}
+            </div>
+        </div>
+    </div>
 </div>
 
+<style>
+    .table > :not(caption) > * > * {
+        padding: 1rem;
+    }
+    
+    .table thead th {
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.5px;
+    }
+    
+    .btn-group .btn {
+        padding: 0.25rem 0.5rem;
+    }
+    
+    .badge {
+        padding: 0.5em 0.75em;
+        font-weight: 500;
+    }
+    
+    .search-orders {
+        min-width: 250px;
+    }
+</style>
 
-
+<script>
+// Add tooltips
+document.addEventListener('DOMContentLoaded', function() {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+});
+</script>
 {% endblock %}

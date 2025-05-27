@@ -20,12 +20,14 @@ from app.common.forms import BookingForm, CheckoutForm, RegisterForm, LoginForm,
 from flask_login import login_user, logout_user, current_user
 from app.common.MyEnum import Role
 from werkzeug.security import generate_password_hash, check_password_hash
+from urllib.parse import urlparse
 from app.common.login_required import roles_required
 import os
 from app.models.water_saving_badge import WaterSavingBadge
 from app.models.user_water_saving_history import UserWaterSavingHistory
 from werkzeug.utils import secure_filename
 from decimal import Decimal
+from app.models.payment import Payment
 
 home = Blueprint("home", __name__, template_folder="templates")
 
@@ -207,38 +209,16 @@ def checkout():
 
 @home.route("/account", methods=["GET", "POST"])
 def account():
-    login_form = LoginForm()
-
-    register_form = RegisterForm()
-
-    if request.method == "POST":
-        if login_form.submit.data and login_form.validate_on_submit():
-            user = User.query.filter_by(username=login_form.username_or_email.data).first()
-            if user and check_password_hash(user.password_hash, login_form.password.data):
-                login_user(user)
-                flash(f"Login successful, welcome !", "success")
-                return redirect(url_for("home.index"))
-            else:
-                flash("Invalid credentials", "danger")
-
-        print(register_form.validate_on_submit())
-        flag = register_form.validate_on_submit()
-        if register_form.submit.data and register_form.validate_on_submit():
-            if User.query.filter_by(username=register_form.username.data).first():
-                flash("Username already exists", "danger")
-            else:
-                user = User.create_user(
-                    username=register_form.username.data,
-                    email=register_form.email.data,
-                    password_hash=generate_password_hash(register_form.password.data),
-                    role=Role.Customer.value, 
-                    first_name=register_form.first_name.data,
-                    last_name=register_form.last_name.data
-                )
-                login_user(user)
-                flash("Registration successful", "success")
-                return redirect(url_for("home.index"))
-    return render_template("restaurant_account.html", login_form=login_form, register_form=register_form)
+    if current_user.is_authenticated:
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return jsonify({
+                'message': 'Already logged in',
+                'redirect': url_for('home.index')
+            })
+        return redirect(url_for('home.index'))
+    
+    # Redirect to login page since we've separated the pages
+    return redirect(url_for('home.login'))
 
 #logout the user
 @home.route("/logout")
@@ -401,7 +381,10 @@ def team():
 def process_payment():
     cart = session.get('cart', [])
     if not cart:
-        return jsonify({"error": "Your cart is empty"}), 400
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return jsonify({"error": "Your cart is empty"}), 400
+        flash('Your cart is empty!')
+        return redirect(url_for('home.view_cart'))
         
     try:
         # Calculate total price
@@ -425,7 +408,13 @@ def process_payment():
             customer_id=current_user.user_id if current_user.is_authenticated else None,
             total_amount=total_price,
             status='Pending',
-            order_date=datetime.now()
+            order_date=datetime.now(),
+            first_name=request.form.get('first_name'),
+            last_name=request.form.get('last_name'),
+            address=request.form.get('address'),
+            city_or_town=request.form.get('city'),
+            zip_code=request.form.get('zip_code'),
+            email=request.form.get('email')
         )
         db.session.add(new_order)
         db.session.flush()  # Get the order ID
@@ -439,6 +428,14 @@ def process_payment():
                 price=item['price']
             )
             db.session.add(order_item)
+        
+        # Create payment record
+        payment = Payment(
+            order_id=new_order.order_id,
+            payment_method=request.form.get('payment_method'),
+            amount=total_price
+        )
+        db.session.add(payment)
         
         # Update user's contribution if logged in
         if current_user.is_authenticated:
@@ -479,7 +476,6 @@ def process_payment():
             db.session.add(history)
             
             # Check and award badges based on total contribution
-            # 使用init.sql中定义的徽章阈值
             badge_thresholds = {
                 'Sprout Starter': 50.00,
                 'Aqua Guardian': 200.00,
@@ -496,8 +492,6 @@ def process_payment():
                     if badge:
                         current_user.add_badge(badge_name)
                         history.badge_id = badge.badge_id
-            
-            db.session.commit()
         
         # Commit the transaction
         db.session.commit()
@@ -505,31 +499,139 @@ def process_payment():
         # Clear the cart
         session.pop('cart', None)
         
-        response_data = {
-            "success": True,
-            "message": "Order placed successfully!",
-            "order_id": new_order.order_id
-        }
+        # If it's an AJAX request, return JSON response
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            response_data = {
+                "success": True,
+                "message": "Order placed successfully!",
+                "order_id": new_order.order_id,
+                "total_amount": float(total_price)
+            }
+            
+            # Add water saved info only for logged in users
+            if current_user.is_authenticated:
+                response_data.update({
+                    "water_saved": float(total_water_saved),
+                    "new_contribution": float(current_user.contribution)
+                })
+            
+            return jsonify(response_data)
         
-        # Add water saved info only for logged in users
+        # For regular form submission, redirect to order confirmation
+        flash('Order placed successfully!', 'success')
         if current_user.is_authenticated:
-            response_data.update({
-                "water_saved": total_water_saved,
-                "new_contribution": current_user.contribution
-            })
-        
-        return jsonify(response_data)
+            return redirect(url_for('home.order_confirmation', order_id=new_order.order_id))
+        else:
+            return redirect(url_for('home.order_confirmation', 
+                                  order_id=new_order.order_id,
+                                  email=new_order.email))
         
     except Exception as e:
         db.session.rollback()
-        return jsonify({"error": str(e)}), 500
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return jsonify({"error": str(e)}), 500
+        flash(f'Error processing payment: {str(e)}', 'error')
+        return redirect(url_for('home.checkout'))
 
 @home.route('/order_confirmation/<int:order_id>')
-@roles_required(Role.Customer.value)
 def order_confirmation(order_id):
     order = Order.query.get_or_404(order_id)
-    if order.user_id != current_user.user_id:
-        flash("You don't have permission to view this order", "danger")
-        return redirect(url_for('home.index'))
+    
+    # For logged-in users, check if they own the order
+    if current_user.is_authenticated:
+        if order.customer_id != current_user.user_id:
+            flash("You don't have permission to view this order", "danger")
+            return redirect(url_for('home.index'))
+    # For guest users, check if the email matches
+    else:
+        if not order.email or order.email != request.args.get('email'):
+            flash("Please provide the email address used for this order", "warning")
+            return redirect(url_for('home.checkout'))
+    
+    # Get water saving information if the user is logged in
+    water_saved = None
+    if current_user.is_authenticated:
+        water_saving_history = UserWaterSavingHistory.query.filter_by(
+            order_id=order.order_id,
+            user_id=current_user.user_id
+        ).first()
+        if water_saving_history:
+            water_saved = water_saving_history.water_saved
         
-    return render_template('order_confirmation.html', order=order)
+    return render_template('restaurant_order_confirmation.html', 
+                         order=order, 
+                         water_saved=water_saved)
+
+@home.route('/login', methods=['GET', 'POST'])
+def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('home.index'))
+    
+    login_form = LoginForm()
+    if login_form.validate_on_submit():
+        user = User.query.filter(
+            (User.username == login_form.username_or_email.data) | 
+            (User.email == login_form.username_or_email.data)
+        ).first()
+        
+        if user and check_password_hash(user.password_hash, login_form.password.data):
+            login_user(user)
+            flash('Login successful!', 'success')
+            next_page = request.args.get('next')
+            if not next_page or urlparse(next_page).netloc != '':
+                next_page = url_for('home.index')
+            return redirect(next_page)
+        else:
+            flash('Invalid username/email or password', 'danger')
+    
+    return render_template('restaurant_login.html', login_form=login_form)
+
+@home.route('/register', methods=['GET', 'POST'])
+def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('home.index'))
+    
+    register_form = RegisterForm()
+    if register_form.validate_on_submit():
+        try:
+            # Check if username already exists
+            if User.query.filter_by(username=register_form.username.data).first():
+                return render_template('restaurant_register.html', register_form=register_form)
+            
+            # Check if email already exists
+            if User.query.filter_by(email=register_form.email.data).first():
+                return render_template('restaurant_register.html', register_form=register_form)
+            
+            # Create new user
+            user = User(
+                username=register_form.username.data,
+                first_name=register_form.first_name.data,
+                last_name=register_form.last_name.data,
+                email=register_form.email.data,
+                phone_number=register_form.phone_number.data,
+                role=Role.Customer.value,  # Set default role as Customer
+                password_hash=generate_password_hash(register_form.password.data)  # Set password hash directly
+            )
+            
+            db.session.add(user)
+            db.session.commit()
+            
+            # Automatically log in the user after successful registration
+            login_user(user)
+            flash('Registration successful! Welcome to KindPlate.', 'success')
+            return redirect(url_for('home.index'))
+            
+        except Exception as e:
+            db.session.rollback()
+            current_app.logger.error(f'Registration error: {str(e)}')
+            current_app.logger.error(f'Form data: {register_form.data}')
+            flash(f'Registration failed: {str(e)}', 'danger')
+            return render_template('restaurant_register.html', register_form=register_form)
+    
+    # If form validation fails, show the errors
+    if request.method == 'POST':
+        for field, errors in register_form.errors.items():
+            for error in errors:
+                flash(f'{field}: {error}', 'danger')
+    
+    return render_template('restaurant_register.html', register_form=register_form)

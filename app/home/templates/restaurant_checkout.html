@@ -249,6 +249,32 @@
   </div>
 </div>
 
+<!-- Success Modal -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body text-center p-5">
+                <div class="mb-4">
+                    <i class="fas fa-check-circle text-success" style="font-size: 4rem;"></i>
+                </div>
+                <h3 class="mb-3">Order Placed Successfully!</h3>
+                <p class="text-muted mb-4">Thank you for your order. We'll start preparing your food right away.</p>
+                <div class="order-details mb-4">
+                    <p class="mb-2">Order Reference: <strong id="orderReference"></strong></p>
+                    <p class="mb-2">Total Amount: <strong id="orderAmount"></strong></p>
+                    {% if current_user.is_authenticated %}
+                    <p class="mb-2">Water Saved: <strong id="waterSaved"></strong></p>
+                    {% endif %}
+                </div>
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('home.index') }}" class="btn btn-primary">Return to Home</a>
+                    <a href="#" class="btn btn-outline-primary" id="viewOrderBtn">View Order Details</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block scripts %}
@@ -274,44 +300,57 @@ document.addEventListener('DOMContentLoaded', function() {
             message: formData.get('message')
         };
 
-        // Submit the form
-        this.submit();
-    });
+        // Show loading state
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalBtnText = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...';
 
-    // Function to populate success modal with order details
-    function populateSuccessModal(orderData) {
-        // Set order information
-        document.getElementById('orderNumber').textContent = orderData.order_number;
-        document.getElementById('orderDate').textContent = new Date().toLocaleString();
-        document.getElementById('paymentMethod').textContent = orderData.payment_method;
-        
-        // Set delivery information
-        document.getElementById('deliveryAddress').textContent = 
-            `${orderData.address}, ${orderData.city}, ${orderData.zip_code}`;
-        document.getElementById('contactInfo').textContent = 
-            `${orderData.first_name} ${orderData.last_name} (${orderData.email})`;
-        
-        // Set order items
-        const orderItemsContainer = document.getElementById('orderItems');
-        orderItemsContainer.innerHTML = '';
-        orderData.items.forEach(item => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${item.name}</td>
-                <td>${item.quantity}</td>
-                <td>$${item.price.toFixed(2)}</td>
-            `;
-            orderItemsContainer.appendChild(row);
+        // Submit the form using fetch
+        fetch(this.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update modal content
+                document.getElementById('orderReference').textContent = `#${data.order_id}`;
+                document.getElementById('orderAmount').textContent = `$${data.total_amount}`;
+                if (data.water_saved) {
+                    document.getElementById('waterSaved').textContent = `${data.water_saved}L`;
+                }
+                
+                // Set order details link
+                document.getElementById('viewOrderBtn').href = `/order_confirmation/${data.order_id}`;
+                
+                // Show success modal
+                const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+                successModal.show();
+                
+                // Clear cart
+                localStorage.removeItem('cart');
+                
+                // Reset form
+                this.reset();
+            } else {
+                // Show error message
+                alert(data.error || 'Payment failed. Please try again.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.');
+        })
+        .finally(() => {
+            // Reset button state
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnText;
         });
-        
-        // Set totals
-        document.getElementById('orderTotal').textContent = `$${orderData.total.toFixed(2)}`;
-        document.getElementById('waterSaved').textContent = `${orderData.water_saved.toFixed(2)} L`;
-        
-        // Show the modal
-        const successModal = new bootstrap.Modal(document.getElementById('paymentSuccessModal'));
-        successModal.show();
-    }
+    });
 });
 </script>
 {% endblock %}

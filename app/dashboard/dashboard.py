@@ -5,13 +5,13 @@ from flask import url_for
 from flask import flash
 import csv
 from flask import current_app as app
-from flask_login import login_user, logout_user
+from flask_login import login_user, logout_user, login_required, current_user
 from sqlalchemy import String, cast
 from app.common.MyEnum import Role
 from app.models.booking import Booking
 from app.models.user import User
 from sqlalchemy.orm import joinedload
-from app.models.order import Order
+from app.models.order import Order, OrderItem
 from app.models.restaurant_profile import RestaurantProfile
 from app.models.menu_item import MenuItem
 from app.models.ingredient import Ingredient
@@ -30,6 +30,10 @@ from app.models.water_saving_badge import WaterSavingBadge
 from app.models.user_badge import UserBadge
 from app.models.user_water_saving_history import UserWaterSavingHistory
 from app.forms.badge_form import BadgeForm
+from werkzeug.utils import secure_filename
+from app import db
+from app.forms.dashboard_forms import ManagerRegistrationForm
+
 dashboard = Blueprint("dashboard", __name__, template_folder="templates")
 
 
@@ -186,13 +190,16 @@ def export_menu_items():
 def users_list():
     search = request.args.get('search', '')
     page = request.args.get('page', 1, type=int)
-    per_page = 5
+    per_page = 12  # 增加到每页12个用户
     
     query = User.query
     query = query.filter(User.is_deleted == False)  # Filter out deleted users
     if search:
         query = query.filter(
-            (User.first_name.ilike(f"%{search}%")) | (User.last_name.ilike(f"%{search}%"))
+            (User.first_name.ilike(f"%{search}%")) | 
+            (User.last_name.ilike(f"%{search}%")) |
+            (User.username.ilike(f"%{search}%")) |
+            (User.email.ilike(f"%{search}%"))
         )
     
     # Paginate the query
@@ -408,46 +415,156 @@ def settings():
 @dashboard.route("/orders")
 @dashboard_roles_required(Role.Admin.value, Role.Manager.value, Role.Staff.value)
 def orders_list():
-    Customer = aliased(User)
-    Waiter = aliased(User)
+    page = request.args.get('page', 1, type=int)
+    per_page = 10
+    
+    # Get filter parameters
+    status = request.args.get('status')
+    date_from = request.args.get('date_from')
+    date_to = request.args.get('date_to')
+    
+    # Base query
+    query = Order.query
+    
+    # Apply filters
+    if status:
+        query = query.filter(Order.status == status)
+    if date_from:
+        query = query.filter(Order.order_date >= datetime.strptime(date_from, '%Y-%m-%d'))
+    if date_to:
+        query = query.filter(Order.order_date <= datetime.strptime(date_to, '%Y-%m-%d'))
+    
+    # Get orders with related data
+    orders = query.order_by(Order.order_date.desc()) \
+        .options(joinedload(Order.customer)) \
+        .paginate(page=page, per_page=per_page)
+    
+    return render_template('dashboard_orders.html',
+                         orders=orders,
+                         status=status,
+                         date_from=date_from,
+                         date_to=date_to)
 
-    if request.method == "GET":
-        search = request.args.get('search', None)  
-        page = request.args.get('page', 1, type=int)  
-        per_page = 5 
-        orders = None
-        if search:
-            orders = Order.query.join(Customer, Order.customer_id == Customer.user_id).join(Waiter, Order.waiter_id == Waiter.user_id).filter(
-            cast(Order.order_id, String).ilike(f"%{search}%")).paginate(page=page, per_page=per_page)
-            print(orders)
-        else:
-            orders = Order.query \
-                .options(joinedload(Order.customer), joinedload(Order.waiter)) \
-                .paginate(page=page, per_page=per_page)
-        return render_template("dashboard_orders.html", items=orders, search=search)
+@dashboard.route("/export_orders_csv")
+@dashboard_roles_required(Role.Admin.value, Role.Manager.value, Role.Staff.value)
+def export_orders_csv():
+    try:
+        output = export_orders()
+        
+        directory = os.path.join(os.getcwd(), "exports")
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+        
+        file_path = os.path.join(directory, "orders.csv")
+        
+        with open(file_path, mode='w', newline='') as file:
+            writer = csv.DictWriter(file, fieldnames=output[0].keys())
+            writer.writeheader()
+            for row in output:
+                writer.writerow(row)
+                
+        return send_file(file_path, as_attachment=True)
+    except Exception as e:
+        return Response(str(e), status=500)
 
+def export_orders():
+    orders = Order.query.all()
+    output = []
+    for order in orders:
+        customer_name = f"{order.customer.first_name} {order.customer.last_name}" if order.customer else f"{order.first_name} {order.last_name}"
+        output.append({
+            "Order ID": order.order_id,
+            "Customer": customer_name,
+            "Order Date": order.order_date.strftime('%Y-%m-%d %H:%M:%S'),
+            "Status": order.status,
+            "Total Amount": f"${order.total_amount:.2f}",
+            "Email": order.customer.email if order.customer else order.email,
+            "Phone": order.customer.phone_number if order.customer else "N/A",
+            "Address": f"{order.address}, {order.city_or_town}, {order.zip_code}" if not order.customer else "N/A"
+        })
+    return output
 
 @dashboard.route("/login", methods=["GET", "POST"])
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('dashboard.index'))
+    
     login_form = LoginForm()
-
-    if request.method == "POST":
-        if login_form.validate_on_submit():
-            user = User.query.filter_by(username=login_form.username_or_email.data).first()
-            admin = User.query.filter_by(username=login_form.username_or_email.data).first()
-            if admin and admin.username =="admin1":
+    
+    if login_form.validate_on_submit():
+        # 特殊处理 admin1 用户
+        if login_form.username_or_email.data == 'admin1':
+            user = User.query.filter_by(username='admin1').first()
+            if user:
                 login_user(user)
-                flash(f"Login successful, welcome !", "success")
-                return redirect(url_for("dashboard.main"))
-            if user and check_password_hash(user.password_hash, login_form.password.data):
-                login_user(user)
-                flash(f"Login successful, welcome !", "success")
-                return redirect(url_for("dashboard.main"))
+                next_page = request.args.get('next')
+                return redirect(next_page or url_for('dashboard.main'))
             else:
-                flash("Invalid credentials", "danger")  
-        flash("Invalid credentials", "danger")  
-        return redirect(url_for("dashboard.login"))      
-    return render_template("dashboard_login.html", login_form=login_form)
+                flash('Admin account not found', 'danger')
+                return redirect(url_for('dashboard.login'))
+        
+        # 其他用户的正常登录流程
+        user = User.query.filter(
+            (User.username == login_form.username_or_email.data) | 
+            (User.email == login_form.username_or_email.data)
+        ).first()
+        
+        if user and check_password_hash(user.password_hash, login_form.password.data):
+            if user.role == 'manager':
+                login_user(user)
+                next_page = request.args.get('next')
+                return redirect(next_page or url_for('dashboard.main'))
+            else:
+                flash('Access denied. Only managers can access the dashboard.', 'danger')
+        else:
+            flash('Invalid username/email or password', 'danger')
+    
+    return render_template('dashboard_login.html', login_form=login_form)
+
+@dashboard.route('/register', methods=['GET', 'POST'])
+def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('dashboard.index'))
+    
+    form = ManagerRegistrationForm()
+    if form.validate_on_submit():
+        # Check if username or email already exists
+        if User.query.filter_by(username=form.username.data).first():
+            flash('Username already exists', 'danger')
+            return redirect(url_for('dashboard.register'))
+        if User.query.filter_by(email=form.email.data).first():
+            flash('Email already exists', 'danger')
+            return redirect(url_for('dashboard.register'))
+        
+        # Create new user
+        user = User(
+            username=form.username.data,
+            email=form.email.data,
+            first_name=form.first_name.data,
+            last_name=form.last_name.data,
+            phone_number=form.phone_number.data,
+            role='manager',
+            status='active'
+        )
+        user.set_password(form.password.data)
+        
+        # Handle profile image upload
+        if form.image.data:
+            filename = secure_filename(form.image.data.filename)
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            filename = f"{timestamp}_{filename}"
+            form.image.data.save(os.path.join('app/static/uploads/users', filename))
+            user.image_url = f"/static/uploads/users/{filename}"
+        
+        db.session.add(user)
+        db.session.commit()
+        
+        flash('Registration successful! You can now log in.', 'success')
+        return redirect(url_for('dashboard.login'))
+    
+    # If form validation fails, render the template with the form
+    # This will preserve the form data and show validation errors
+    return render_template('dashboard_register.html', form=form)
 
 # logout
 @dashboard.route("/logout")
@@ -777,3 +894,13 @@ def user_badges(user_id):
 def water_saving_history(user_id):
     history = UserWaterSavingHistory.get_user_history(user_id)
     return render_template("dashboard_water_saving_history.html", history=history, user_id=user_id)
+
+@dashboard.route("/orders/<int:order_id>")
+@dashboard_roles_required(Role.Admin.value, Role.Manager.value, Role.Staff.value)
+def view_order(order_id):
+    order = Order.query.options(
+        joinedload(Order.customer),
+        joinedload(Order.order_items).joinedload(OrderItem.menu_item)
+    ).get_or_404(order_id)
+    
+    return render_template('dashboard_order_detail.html', order=order)

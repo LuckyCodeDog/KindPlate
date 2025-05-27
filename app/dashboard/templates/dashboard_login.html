@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"> 
 <head>
-    <title>Portal - Bootstrap 5 Admin Dashboard Template For Developers</title>
+    <title>Kind Plate - Admin Login</title>
     
     <!-- Meta -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <meta name="description" content="Portal - Bootstrap 5 Admin Dashboard Template For Developers">
-    <meta name="author" content="Xiaoying Riley at 3rd Wave Media">    
+    <meta name="description" content="Kind Plate - Admin Dashboard">
+    <meta name="author" content="Kind Plate">    
     <link rel="shortcut icon" href="favicon.ico"> 
     
     <!-- FontAwesome JS-->
@@ -21,44 +21,46 @@
 
 <body class="app app-login p-0">    	
     <div class="row g-0 app-auth-wrapper">
-        <div class="d-flex flex-column align-content-end">
-            {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                <div class="alert alert-info">
-                    <ul>
-                    {% for message in messages %}
-                        <li>{{ message }}</li>
-                    {% endfor %}
-                    </ul>
-                </div>
-            {% endif %}
-            {% endwith %}
-            <div class="app-auth-body mx-auto">	
-                <div class="app-auth-branding mb-4">
-                    <a class="app-logo" href="index.html">
-                        <img class="logo-icon me-2" src="{{ restaurant_profile.image_url }}" alt="logo">
-                    </a>
-                </div>
-                <h2 class="auth-heading text-center mb-5">Log in to {{restaurant_profile.description}}</h2>
-                <div class="auth-form-container text-start">
-                    <form class="auth-form login-form" action="{{ url_for('dashboard.login') }}" method="POST">         	
-                        {{ login_form.hidden_tag() }}
-                        <div class="email mb-3">
-                            <label class="sr-only" for="signin-email">username</label>
-                            {{ login_form.username_or_email(class="form-control", id="account-email", placeholder="Enter your user name", required=True) }}
+        <div class="col-12 col-md-7 col-lg-12 auth-main-col text-center p-5">
+            <div class="d-flex flex-column align-content-end">
+                <div class="app-auth-body mx-auto">	
+                    <div class="app-auth-branding mb-4">
+                        <a class="app-logo" href="{{ url_for('home.index') }}">
+                            <img class="logo-icon me-2" src="../../../static/images/app-logo.svg" alt="logo">
+                            <span class="logo-text">Kind Plate</span>
+                        </a>
+                    </div>
+                    <h2 class="auth-heading text-center mb-5">Admin Login</h2>
+                    <div class="auth-form-container text-start">
+                        <form class="auth-form login-form" action="{{ url_for('dashboard.login') }}" method="POST">         	
+                            {{ login_form.hidden_tag() }}
+                            <div class="email mb-3">
+                                <label class="sr-only" for="signin-email">Username</label>
+                                {{ login_form.username_or_email(class="form-control", id="account-email", placeholder="Enter your username", required=True) }}
+                            </div>
+                            <div class="password mb-3">
+                                <label class="sr-only" for="signin-password">Password</label>
+                                {{ login_form.password(class="form-control", id="account-password", placeholder="Enter your password", required=True) }}
+                            </div>
+                            <div class="text-center">
+                                <button type="submit" class="btn app-btn-primary w-100 theme-btn mx-auto">Log In</button>
+                            </div>
+                        </form>
+                        <div class="text-center mt-3">
+                            <p class="mb-0">Don't have an account? <a href="{{ url_for('dashboard.register') }}" class="text-primary">Register as Manager</a></p>
                         </div>
-                        <div class="password mb-3">
-                            <label class="sr-only" for="signin-password">Password</label>
-                            {{ login_form.password(class="form-control", id="account-email", placeholder="Enter your password", required=True) }}
-                        </div>
-                        <div class="text-center">
-                            <button type="submit" class="btn app-btn-primary w-100 theme-btn mx-auto">Log In</button>
-                        </div>
-                    </form>
+                    </div>
                 </div>
             </div>
-        </div>   
+        </div>
+
     </div>
+
+    <!-- Javascript -->          
+    <script src="../../../static/plugins/popper.min.js"></script>
+    <script src="../../../static/plugins/bootstrap/js/bootstrap.min.js"></script>  
+    <script src="../../../static/js/app.js"></script> 
+
 </body>
 </html> 
 

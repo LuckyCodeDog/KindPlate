@@ -1,228 +1,180 @@
 {% extends "restaurant_base.html" %}
-{% block title %}{{restaurant_profile.description}}{% endblock %}
+{% block title %}Customer Information{% endblock %}
 {% block content %}
 
 <div class="account-pill padding-top padding-bottom">
-    <div class="container-fluid px-2">
-        <div class="account-pill__wrapper" style="width: 1500px;">
-            <div class="row g-4">
-                <!-- 左侧个人信息卡片 -->
-                <div class="col-lg-4">
-                    <div class="profile-card">
-                        <div class="profile-header">
-                            <div class="profile-image">
-                                <img src="{{ current_user.image_url or url_for('static', filename='images/default-avatar.png') }}" alt="Profile" class="rounded-circle">
-                                <div class="profile-image-overlay">
-                                    <i class="fas fa-camera"></i>
-                                </div>
-                            </div>
-                            <h3 class="profile-name">{{ current_user.first_name }} {{ current_user.last_name }}</h3>
-                            <p class="profile-email">{{ current_user.email }}</p>
+    <div class="container">
+        <div class="row justify-content-center">
+            <!-- Left Column - Profile Information -->
+            <div class="col-lg-4 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <div class="mb-4">
+                            {% if current_user.image_url %}
+                                <img src="{{ current_user.image_url }}" alt="Profile Picture" class="rounded-circle img-fluid" style="width: 150px; height: 150px; object-fit: cover;">
+                            {% else %}
+                                <img src="{{ url_for('static', filename='images/default-avatar.png') }}" alt="Default Profile Picture" class="rounded-circle img-fluid" style="width: 150px; height: 150px; object-fit: cover;">
+                            {% endif %}
                         </div>
-                        <div class="profile-stats">
-                            <div class="stat-item">
-                                <div class="stat-icon">
-                                    <i class="fas fa-tint"></i>
-                                </div>
-                                <div class="stat-info">
-                                    <h4>{{ "%.2f"|format(current_user.contribution) }}L</h4>
-                                    <p>Water Saved</p>
-                                </div>
-                            </div>
-                            <div class="stat-item">
-                                <div class="stat-icon">
-                                    <i class="fas fa-medal"></i>
-                                </div>
-                                <div class="stat-info">
-                                    <h4>{{ current_user.badges|length }}</h4>
-                                    <p>Badges Earned</p>
-                                </div>
-                            </div>
+                        <h4 class="mb-2">{{ current_user.first_name }} {{ current_user.last_name }}</h4>
+                        <p class="text-muted mb-3">@{{ current_user.username }}</p>
+                        <div class="d-flex justify-content-center gap-2">
+                            <span class="badge bg-primary">{{ current_user.role }}</span>
+                            <span class="badge bg-success">Member since {{ current_user.created_at.strftime('%Y-%m-%d') }}</span>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- 右侧内容区域 -->
-                <div class="col-lg-8">
-                    <div class="content-tabs">
-                        <ul class="nav nav-tabs" id="profileTabs" role="tablist">
-                            <li class="nav-item">
-                                <a class="nav-link active" id="profile-tab" data-bs-toggle="tab" href="#profile" role="tab">
-                                    <i class="fas fa-user"></i> Profile
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="orders-tab" data-bs-toggle="tab" href="#orders" role="tab">
-                                    <i class="fas fa-shopping-bag"></i> Orders
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="achievements-tab" data-bs-toggle="tab" href="#achievements" role="tab">
-                                    <i class="fas fa-trophy"></i> Achievements
-                                </a>
-                            </li>
-                        </ul>
-
-                        <div class="tab-content" id="profileTabsContent">
-                            <!-- 个人信息表单 -->
-                            <div class="tab-pane fade show active" id="profile" role="tabpanel">
-                                <form method="POST" action="{{ url_for('home.customer_info') }}" class="account__form needs-validation" enctype="multipart/form-data" novalidate>
-                                    {{ form.hidden_tag() }}
-                                    <div class="row g-4">
-                                        <div class="col-md-6">
-                                            <div class="form-floating">
-                                                {{ form.first_name(class="form-control", id="first_name", placeholder="Enter your first name", required=True) }}
-                                                <label for="first_name">First Name</label>
+            <!-- Right Column - Form and Badges -->
+            <div class="col-lg-8">
+                <!-- Profile Update Form -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">Update Profile Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" enctype="multipart/form-data">
+                            {{ form.hidden_tag() }}
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        {{ form.first_name(class="form-control", id="first_name") }}
+                                        <label for="first_name">First Name</label>
+                                        {% if form.first_name.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {% for error in form.first_name.errors %}
+                                                    {{ error }}
+                                                {% endfor %}
                                             </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="form-floating">
-                                                {{ form.last_name(class="form-control", id="last_name", placeholder="Enter your last name", required=True) }}
-                                                <label for="last_name">Last Name</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="form-floating">
-                                                {{ form.email(class="form-control", id="email", placeholder="Enter your email", required=True) }}
-                                                <label for="email">Email</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="form-floating">
-                                                {{ form.phone_number(class="form-control", id="phone_number", placeholder="Enter your phone number") }}
-                                                <label for="phone_number">Phone Number</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="form-floating">
-                                                {{ form.address(class="form-control", id="address", placeholder="Enter your address") }}
-                                                <label for="address">Address</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="custom-file-upload">
-                                                <label for="image" class="form-label">Profile Image</label>
-                                                {{ form.image(class="form-control", id="image") }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    {{ form.submit(class="trk-btn trk-btn--border trk-btn--primary d-block mt-5") }}
-                                </form>
-                            </div>
-
-                            <!-- 订单历史 -->
-                            <div class="tab-pane fade" id="orders" role="tabpanel">
-                                <div class="card">
-                                    <div class="card-header">
-                                        <h4 class="section-title mb-0">Order History</h4>
-                                    </div>
-                                    <div class="card-body">
-                                        {% if current_user.orders_as_customer %}
-                                        <div class="order-list">
-                                            {% for order in current_user.orders_as_customer %}
-                                            <div class="card mb-4">
-                                                <div class="card-header bg-white">
-                                                    <div class="d-flex justify-content-between align-items-center">
-                                                        <div class="order-info">
-                                                            <span class="order-id h5 mb-0">Order #{{ order.order_id }}</span>
-                                                            <span class="order-date text-muted d-block">{{ order.order_date.strftime('%Y-%m-%d %H:%M') }}</span>
-                                                        </div>
-                                                        <span class="order-status {{ order.status.lower() }}">
-                                                            <i class="fas fa-circle"></i> {{ order.status }}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                                <div class="card-body">
-                                                    <div class="order-items">
-                                                        {% for item in order.order_items %}
-                                                        <div class="order-item py-2">
-                                                            <div class="item-info">
-                                                                <span class="item-name">{{ item.menu_item.name }}</span>
-                                                                <span class="item-quantity text-muted">x{{ item.quantity }}</span>
-                                                            </div>
-                                                            <span class="item-price">${{ "%.2f"|format(item.price) }}</span>
-                                                        </div>
-                                                        {% endfor %}
-                                                    </div>
-                                                    <div class="order-footer mt-3 pt-3 border-top">
-                                                        <div class="order-total d-flex justify-content-end align-items-center">
-                                                            <span class="me-3">Total Amount:</span>
-                                                            <span class="amount h4 mb-0">${{ "%.2f"|format(order.total_amount) }}</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            {% endfor %}
-                                        </div>
-                                        {% else %}
-                                        <div class="no-orders text-center py-5">
-                                            <i class="fas fa-shopping-bag fa-3x text-muted mb-3"></i>
-                                            <p class="h5 text-muted">No orders yet</p>
-                                            <a href="{{ url_for('home.menu') }}" class="btn btn-primary mt-3">Browse Menu</a>
-                                        </div>
                                         {% endif %}
                                     </div>
                                 </div>
-                            </div>
-
-                            <!-- 成就徽章 -->
-                            <div class="tab-pane fade" id="achievements" role="tabpanel">
-                                <div class="achievements-section">
-                                    <div class="water-savings-progress mb-5">
-                                        <h4 class="section-title">Water Saving Progress</h4>
-                                        <div class="progress-wrapper">
-                                            <div class="progress" style="height: 30px;">
-                                                {% set progress = (current_user.contribution / 10000) * 100 %}
-                                                <div class="progress-bar bg-primary" role="progressbar" 
-                                                     style="width: {{ progress }}%;" 
-                                                     aria-valuenow="{{ progress }}" 
-                                                     aria-valuemin="0" 
-                                                     aria-valuemax="100">
-                                                    {{ "%.2f"|format(current_user.contribution) }}L Saved
-                                                    {% if next_badge %}
-                                                    <span class="next-badge-text">Next: {{ next_badge.name }} ({{ next_badge.required_water_saved }}L)</span>
-                                                    {% endif %}
-                                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        {{ form.last_name(class="form-control", id="last_name") }}
+                                        <label for="last_name">Last Name</label>
+                                        {% if form.last_name.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {% for error in form.last_name.errors %}
+                                                    {{ error }}
+                                                {% endfor %}
                                             </div>
-                                            <div class="progress-milestones mt-3">
-                                                <div class="d-flex justify-content-between">
-                                                    {% for badge in all_badges %}
-                                                    <div class="milestone {% if badge in user_badges %}earned{% endif %}">
-                                                        <span class="milestone-value">{{ "%.0f"|format(badge.required_water_saved) }}L</span>
-                                                        <span class="milestone-badge">{{ badge.name }}</span>
-                                                        {% if badge in user_badges %}
-                                                        <span class="badge-status">
-                                                            <i class="fas fa-check-circle"></i>
-                                                        </span>
-                                                        {% endif %}
-                                                    </div>
-                                                    {% endfor %}
-                                                </div>
-                                            </div>
-                                        </div>
+                                        {% endif %}
                                     </div>
-
-                                    <div class="badges-section">
-                                        <h4 class="section-title">Your Badges</h4>
-                                        <div class="row g-4">
-                                            {% for badge in current_user.badges %}
-                                            <div class="col-md-4">
-                                                <div class="badge-card earned">
-                                                    <div class="badge-icon">
-                                                        <img src="{{ badge.image_url }}" alt="{{ badge.name }}">
-                                                    </div>
-                                                    <h5>{{ badge.name }}</h5>
-                                                    <p>{{ badge.description }}</p>
-                                                    <span class="badge-status earned">
-                                                        <i class="fas fa-check-circle"></i> Earned!
-                                                    </span>
-                                                </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        {{ form.email(class="form-control", id="email") }}
+                                        <label for="email">Email</label>
+                                        {% if form.email.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {% for error in form.email.errors %}
+                                                    {{ error }}
+                                                {% endfor %}
                                             </div>
-                                            {% endfor %}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        {{ form.phone_number(class="form-control", id="phone_number") }}
+                                        <label for="phone_number">Phone Number</label>
+                                        {% if form.phone_number.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {% for error in form.phone_number.errors %}
+                                                    {{ error }}
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-floating">
+                                        {{ form.address(class="form-control", id="address", style="height: 100px") }}
+                                        <label for="address">Address</label>
+                                        {% if form.address.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {% for error in form.address.errors %}
+                                                    {{ error }}
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="mb-3">
+                                        <label for="image" class="form-label">Profile Picture</label>
+                                        {{ form.image(class="form-control", id="image") }}
+                                        {% if form.image.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {% for error in form.image.errors %}
+                                                    {{ error }}
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary w-100">Update Profile</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Water Saving Progress -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">Water Saving Progress</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center mb-4">
+                            <h3 class="mb-2">{{ "%.2f"|format(current_user.contribution) }}L</h3>
+                            <p class="text-muted">Total Water Saved</p>
+                        </div>
+                        {% if next_badge %}
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Progress to {{ next_badge.name }}</span>
+                                    <span>{{ "%.1f"|format(progress) }}%</span>
+                                </div>
+                                <div class="progress" style="height: 10px;">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: {{ progress }}%" aria-valuenow="{{ progress }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                                <small class="text-muted mt-2 d-block">Next badge at {{ next_badge.required_water_saved }}L</small>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-success">
+                                Congratulations! You've earned all available badges!
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Badges Collection -->
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">Your Badges</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            {% for badge in all_badges %}
+                                <div class="col-md-4">
+                                    <div class="card h-100 {% if badge in user_badges %}border-success{% else %}border-light{% endif %}">
+                                        <div class="card-body text-center">
+                                            <img src="{{ badge.image_url }}" alt="{{ badge.name }}" class="img-fluid mb-3" style="max-height: 80px;">
+                                            <h6 class="card-title">{{ badge.name }}</h6>
+                                            <p class="card-text small text-muted">{{ badge.description }}</p>
+                                            {% if badge in user_badges %}
+                                                <span class="badge bg-success">Earned</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">Locked</span>
+                                            {% endif %}
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            {% endfor %}
                         </div>
                     </div>
                 </div>

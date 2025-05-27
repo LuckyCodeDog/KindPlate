@@ -1,0 +1,151 @@
+{% extends "dashboard_base.html" %}
+
+{% block title %}Order Details{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Order #{{ order.order_id }}</h3>
+                    <div class="card-tools">
+                        <a href="{{ url_for('dashboard.orders_list') }}" class="btn btn-default btn-sm">
+                            <i class="fas fa-arrow-left"></i> Back to Orders
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Order Information -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5>Order Information</h5>
+                            <table class="table table-bordered">
+                                <tr>
+                                    <th>Order ID</th>
+                                    <td>#{{ order.order_id }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Order Date</th>
+                                    <td>{{ order.order_date.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Status</th>
+                                    <td>
+                                        <span class="badge badge-{{ 'success' if order.status == 'Completed' else 'warning' if order.status == 'Pending' else 'info' if order.status == 'Preparing' else 'danger' }}">
+                                            {{ order.status }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Total Amount</th>
+                                    <td>${{ "%.2f"|format(order.total_amount) }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Customer Information</h5>
+                            <table class="table table-bordered">
+                                {% if order.customer %}
+                                <tr>
+                                    <th>Name</th>
+                                    <td>{{ order.customer.first_name }} {{ order.customer.last_name }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Email</th>
+                                    <td>{{ order.customer.email }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Phone</th>
+                                    <td>{{ order.customer.phone_number }}</td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <th>Name</th>
+                                    <td>{{ order.first_name }} {{ order.last_name }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Email</th>
+                                    <td>{{ order.email }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Address</th>
+                                    <td>
+                                        {{ order.address }}<br>
+                                        {{ order.city_or_town }}, {{ order.zip_code }}
+                                    </td>
+                                </tr>
+                                {% endif %}
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Order Items -->
+                    <h5>Order Items</h5>
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th class="text-center">Quantity</th>
+                                    <th class="text-end">Price</th>
+                                    <th class="text-end">Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in order.order_items %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            {% if item.menu_item.image_url %}
+                                            <img src="{{ item.menu_item.image_url }}" alt="{{ item.menu_item.name }}" class="img-thumbnail mr-3" style="width: 50px;">
+                                            {% endif %}
+                                            <div>
+                                                <h6 class="mb-0">{{ item.menu_item.name }}</h6>
+                                                <small class="text-muted">{{ item.menu_item.description }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">{{ item.quantity }}</td>
+                                    <td class="text-end">${{ "%.2f"|format(item.price) }}</td>
+                                    <td class="text-end">${{ "%.2f"|format(item.price * item.quantity) }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                                    <td class="text-end"><strong>${{ "%.2f"|format(order.total_amount) }}</strong></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    <!-- Payment Information -->
+                    {% if order.payment %}
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <h5>Payment Information</h5>
+                            <table class="table table-bordered">
+                                <tr>
+                                    <th>Payment Method</th>
+                                    <td>{{ order.payment.payment_method }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Payment Date</th>
+                                    <td>{{ order.payment.payment_date.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Amount Paid</th>
+                                    <td>${{ "%.2f"|format(order.payment.amount) }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

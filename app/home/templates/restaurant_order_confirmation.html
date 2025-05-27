@@ -1,0 +1,139 @@
+{% extends "restaurant_base.html" %}
+
+{% block title %}Order Confirmation{% endblock %}
+
+{% block content %}
+<!-- ============ Order Confirmation Section start Here =========== -->
+<section class="order-confirmation padding-top padding-bottom section-bg">
+    <div class="container">
+        <div class="section-wrapper">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="order-confirmation__wrapper" data-aos="fade-up" data-aos-duration="800">
+                        <!-- Success Message -->
+                        <div class="order-confirmation__header text-center mb-4">
+                            <div class="success-icon mb-3">
+                                <i class="fas fa-check-circle text-success" style="font-size: 4rem;"></i>
+                            </div>
+                            <h2 class="mb-2">Thank You for Your Order!</h2>
+                            <p class="text-muted">Your order has been successfully placed.</p>
+                            {% if water_saved %}
+                            <div class="water-saved-badge mt-3">
+                                <span class="badge bg-success">
+                                    <i class="fas fa-tint me-2"></i>
+                                    You've saved {{ "%.2f"|format(water_saved) }} liters of water!
+                                </span>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Order Details -->
+                        <div class="order-confirmation__details mb-4">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-header bg-success text-white">
+                                    <h4 class="mb-0">Order Details</h4>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <ul class="list-unstyled">
+                                                <li class="mb-2">
+                                                    <strong>Order ID:</strong>
+                                                    <span class="text-success">#{{ order.order_id }}</span>
+                                                </li>
+                                                <li class="mb-2">
+                                                    <strong>Order Date:</strong>
+                                                    <span>{{ order.order_date.strftime('%Y-%m-%d %H:%M:%S') }}</span>
+                                                </li>
+                                                <li class="mb-2">
+                                                    <strong>Status:</strong>
+                                                    <span class="badge bg-success">{{ order.status }}</span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <ul class="list-unstyled">
+                                                <li class="mb-2">
+                                                    <strong>Total Amount:</strong>
+                                                    <span class="text-success">${{ "%.2f"|format(order.total_amount) }}</span>
+                                                </li>
+                                                {% if water_saved %}
+                                                <li class="mb-2">
+                                                    <strong>Water Saved:</strong>
+                                                    <span class="text-success">{{ "%.2f"|format(water_saved) }} liters</span>
+                                                </li>
+                                                {% endif %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Order Items -->
+                        <div class="order-confirmation__items mb-4">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-header bg-success text-white">
+                                    <h4 class="mb-0">Order Items</h4>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Product</th>
+                                                    <th class="text-center">Quantity</th>
+                                                    <th class="text-end">Price</th>
+                                                    <th class="text-end">Total</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for item in order.order_items %}
+                                                <tr>
+                                                    <td>
+                                                        <div class="d-flex align-items-center">
+                                                            {% if item.menu_item.image_url %}
+                                                            <div class="cart__item-thumb me-3">
+                                                                <img src="{{ item.menu_item.image_url }}" alt="{{ item.menu_item.name }}" width="60">
+                                                            </div>
+                                                            {% endif %}
+                                                            <div class="cart__item-content">
+                                                                <h4 class="mb-0">{{ item.menu_item.name }}</h4>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="text-center">{{ item.quantity }}</td>
+                                                    <td class="text-end">${{ "%.2f"|format(item.price) }}</td>
+                                                    <td class="text-end">${{ "%.2f"|format(item.price * item.quantity) }}</td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                                                    <td class="text-end"><strong class="text-success">${{ "%.2f"|format(order.total_amount) }}</strong></td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="text-center mt-4">
+                            <a href="{{ url_for('home.menu') }}" class="trk-btn trk-btn--success me-2">
+                                <i class="fas fa-utensils me-2"></i>Continue Shopping
+                            </a>
+                            <a href="{{ url_for('home.index') }}" class="trk-btn trk-btn--secondary">
+                                <i class="fas fa-home me-2"></i>Return to Home
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- ============ Order Confirmation Section End Here =========== -->
+{% endblock %} 

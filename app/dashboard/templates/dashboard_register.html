@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en"> 
+<head>
+    <title>Kind Plate - Manager Registration</title>
+    
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <meta name="description" content="Kind Plate - Admin Dashboard">
+    <meta name="author" content="Kind Plate">    
+    <link rel="shortcut icon" href="favicon.ico"> 
+    
+    <!-- FontAwesome JS-->
+    <script defer src="../../../static/plugins/fontawesome/js/all.min.js"></script>
+    <!-- App CSS -->  
+    <link id="theme-style" rel="stylesheet" href="../../../static/css/portal.css">
+
+</head> 
+
+<body class="app app-login p-0">    	
+    <div class="row g-0 app-auth-wrapper">
+        <div class="col-12 col-md-7 col-lg-12 auth-main-col text-center p-5">
+            <div class="d-flex flex-column align-content-end">
+                <div class="app-auth-body mx-auto">	
+                    <div class="app-auth-branding mb-4">
+                        <a class="app-logo" href="{{ url_for('home.index') }}">
+                            <img class="logo-icon me-2" src="../../../static/images/app-logo.svg" alt="logo">
+                            <span class="logo-text">Kind Plate</span>
+                        </a>
+                    </div>
+                    <h2 class="auth-heading text-center mb-5">Register as Manager</h2>
+                    <div class="auth-form-container text-start">
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                            {% if messages %}
+                                {% for category, message in messages %}
+                                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                        {{ message }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                        {% endwith %}
+                        
+                        <form class="auth-form register-form" action="{{ url_for('dashboard.register') }}" method="POST" enctype="multipart/form-data">
+                            {{ form.hidden_tag() }}
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">First Name</label>
+                                    {{ form.first_name(class="form-control" + (" is-invalid" if form.first_name.errors else ""), required=True) }}
+                                    {% if form.first_name.errors %}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.first_name.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Last Name</label>
+                                    {{ form.last_name(class="form-control" + (" is-invalid" if form.last_name.errors else ""), required=True) }}
+                                    {% if form.last_name.errors %}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.last_name.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Username</label>
+                                {{ form.username(class="form-control" + (" is-invalid" if form.username.errors else ""), required=True) }}
+                                {% if form.username.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.username.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Email</label>
+                                {{ form.email(class="form-control" + (" is-invalid" if form.email.errors else ""), required=True) }}
+                                {% if form.email.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.email.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Phone Number</label>
+                                {{ form.phone_number(class="form-control" + (" is-invalid" if form.phone_number.errors else ""), required=True) }}
+                                {% if form.phone_number.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.phone_number.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Password</label>
+                                {{ form.password(class="form-control" + (" is-invalid" if form.password.errors else ""), required=True) }}
+                                {% if form.password.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.password.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Confirm Password</label>
+                                {{ form.confirm_password(class="form-control" + (" is-invalid" if form.confirm_password.errors else ""), required=True) }}
+                                {% if form.confirm_password.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.confirm_password.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Profile Image</label>
+                                {{ form.image(class="form-control" + (" is-invalid" if form.image.errors else "")) }}
+                                {% if form.image.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.image.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="text-center">
+                                <button type="submit" class="btn app-btn-primary w-100 theme-btn mx-auto">Register</button>
+                            </div>
+                        </form>
+                        <div class="text-center mt-3">
+                            <p class="mb-0">Already have an account? <a href="{{ url_for('dashboard.login') }}" class="text-primary">Log In</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Javascript -->          
+    <script src="../../../static/plugins/popper.min.js"></script>
+    <script src="../../../static/plugins/bootstrap/js/bootstrap.min.js"></script>  
+    <script src="../../../static/js/app.js"></script> 
+
+</body>
+</html> 

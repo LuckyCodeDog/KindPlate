@@ -5,6 +5,8 @@ from app.models.order import Order
 from sqlalchemy import Enum as SqlEnum
 from app.common.MyEnum import Role
 from flask_login import UserMixin
+from werkzeug.security import generate_password_hash, check_password_hash
+from app.models.water_saving_badge import WaterSavingBadge
 
 class User(UserMixin, db.Model):
     __tablename__ = 'Users'
@@ -131,8 +133,17 @@ class User(UserMixin, db.Model):
 
     def add_badge(self, badge_name):
         """添加徽章到用户"""
-        from app.models.badge import WaterSavingBadge
         badge = WaterSavingBadge.query.filter_by(name=badge_name).first()
         if badge and not self.has_badge(badge_name):
             self.badges.append(badge)
             db.session.commit()
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+    @staticmethod
+    def get_user_by_email(email):
+        return User.query.filter_by(email=email).first()
