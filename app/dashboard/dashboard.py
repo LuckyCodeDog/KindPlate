@@ -40,7 +40,7 @@ dashboard = Blueprint("dashboard", __name__, template_folder="templates")
 @dashboard.route("/")
 @dashboard_roles_required(Role.Admin.value, Role.Manager.value, Role.Staff.value)        
 def main():
-    return redirect(url_for("dashboard.overview"))
+    return redirect(url_for("dashboard.menu_item_list"))
 
 
 @dashboard.route("/overview")
