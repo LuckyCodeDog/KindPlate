@@ -1,4 +1,5 @@
 import datetime
+from datetime import datetime
 import os
 from flask import Response, redirect, request, send_file
 from flask import url_for
@@ -33,6 +34,7 @@ from app.forms.badge_form import BadgeForm
 from werkzeug.utils import secure_filename
 from app import db
 from app.forms.dashboard_forms import ManagerRegistrationForm
+from urllib.parse import urlparse
 
 dashboard = Blueprint("dashboard", __name__, template_folder="templates")
 
@@ -190,7 +192,7 @@ def export_menu_items():
 def users_list():
     search = request.args.get('search', '')
     page = request.args.get('page', 1, type=int)
-    per_page = 12  # 增加到每页12个用户
+    per_page = 12  # Increase to 12 users per page
     
     query = User.query
     query = query.filter(User.is_deleted == False)  # Filter out deleted users
@@ -492,7 +494,7 @@ def login():
     login_form = LoginForm()
     
     if login_form.validate_on_submit():
-        # 特殊处理 admin1 用户
+        # Special handling for admin1 user
         if login_form.username_or_email.data == 'admin1':
             user = User.query.filter_by(username='admin1').first()
             if user:
@@ -503,7 +505,7 @@ def login():
                 flash('Admin account not found', 'danger')
                 return redirect(url_for('dashboard.login'))
         
-        # 其他用户的正常登录流程
+        # Normal login flow for other users
         user = User.query.filter(
             (User.username == login_form.username_or_email.data) | 
             (User.email == login_form.username_or_email.data)
@@ -550,10 +552,19 @@ def register():
         
         # Handle profile image upload
         if form.image.data:
+            # Create upload directory if it doesn't exist
+            upload_dir = os.path.join(app.root_path, 'static', 'uploads', 'users')
+            os.makedirs(upload_dir, exist_ok=True)
+            
             filename = secure_filename(form.image.data.filename)
             timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
             filename = f"{timestamp}_{filename}"
-            form.image.data.save(os.path.join('app/static/uploads/users', filename))
+            
+            # Use os.path.join for cross-platform compatibility
+            file_path = os.path.join(upload_dir, filename)
+            form.image.data.save(file_path)
+            
+            # Store the relative path in the database
             user.image_url = f"/static/uploads/users/{filename}"
         
         db.session.add(user)
@@ -562,8 +573,6 @@ def register():
         flash('Registration successful! You can now log in.', 'success')
         return redirect(url_for('dashboard.login'))
     
-    # If form validation fails, render the template with the form
-    # This will preserve the form data and show validation errors
     return render_template('dashboard_register.html', form=form)
 
 # logout
@@ -634,7 +643,7 @@ def ingredient_list():
 @dashboard_roles_required(Role.Admin.value, Role.Manager.value)
 def create_ingredient():
     form = IngredientForm()
-    # 獲取所有肉類選項
+    # Get all meat options
     meats = Meat.get_all()
     form.meat_id.choices = [(0, 'None')] + [(meat.meat_id, meat.meat_type) for meat in meats]
 
@@ -744,7 +753,7 @@ def manage_menu_item_ingredients(menu_item_id):
         return redirect(url_for("dashboard.menu_item_list"))
 
     form = MenuItemIngredientForm()
-    # 获取所有可用的原材料作为选项
+    # Get all available ingredients as options
     ingredients = Ingredient.get_all()
     form.ingredient_id.choices = [(i.ingredient_id, i.name) for i in ingredients]
 
@@ -753,20 +762,20 @@ def manage_menu_item_ingredients(menu_item_id):
         quantity = form.quantity.data
         unit = form.unit.data
 
-        # 检查是否已存在该原材料
+        # Check if ingredient already exists
         existing = MenuItemIngredient.query.filter_by(
             menu_item_id=menu_item_id,
             ingredient_id=ingredient_id
         ).first()
 
         if existing:
-            # 更新现有的原材料数量和单位
+            # Update existing ingredient quantity and unit
             if menu_item.update_ingredient(ingredient_id, quantity, unit):
                 flash("Ingredient updated successfully", "success")
             else:
                 flash("Failed to update ingredient", "danger")
         else:
-            # 添加新的原材料
+            # Add new ingredient
             if menu_item.add_ingredient(ingredient_id, quantity, unit):
                 flash("Ingredient added successfully", "success")
             else:
@@ -774,7 +783,7 @@ def manage_menu_item_ingredients(menu_item_id):
 
         return redirect(url_for("dashboard.manage_menu_item_ingredients", menu_item_id=menu_item_id))
 
-    # 获取当前菜品的所有原材料
+    # Get all ingredients for current menu item
     current_ingredients = menu_item.get_ingredients()
     ingredient_quantities = {
         mi.ingredient_id: {'quantity': mi.quantity, 'unit': mi.unit}

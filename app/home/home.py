@@ -28,7 +28,6 @@ from app.models.user_water_saving_history import UserWaterSavingHistory
 from werkzeug.utils import secure_filename
 from decimal import Decimal
 from app.models.payment import Payment
-
 home = Blueprint("home", __name__, template_folder="templates")
 
 
@@ -240,7 +239,7 @@ def logout():
 #             item = CartItem(user_id=user_id, product_id=product_id, quantity=quantity)
 #             db.session.add(item)
 #     db.session.commit()
-#     session.pop('cart', None)  # 清空 session 中的购物车
+#     session.pop('cart', None)  # Clear the cart in session
 
 @home.route('/customer_info', methods=['GET', 'POST'])
 @roles_required(Role.Customer.value,Role.Admin.value)
@@ -271,24 +270,24 @@ def customer_info():
         form.phone_number.data = current_user.phone_number
         form.address.data = current_user.address
     
-    # 获取所有徽章
+    # Get all badges
     all_badges = WaterSavingBadge.query.order_by(WaterSavingBadge.required_water_saved).all()
     
-    # 获取用户已获得的徽章
+    # Get user's earned badges
     user_badges = current_user.badges
     
-    # 计算下一个可获得的徽章
+    # Calculate next available badge
     next_badge = None
     for badge in all_badges:
         if badge not in user_badges and current_user.contribution < badge.required_water_saved:
             next_badge = badge
             break
     
-    # 计算进度
+    # Calculate progress
     if next_badge:
         progress = (current_user.contribution / next_badge.required_water_saved) * 100
     else:
-        progress = 100  # 如果已经获得所有徽章，进度为100%
+        progress = 100  # If all badges are earned, progress is 100%
     
     return render_template('restaurant_customer_info.html', 
                          form=form, 
@@ -319,14 +318,43 @@ def about():
 def book():
     try:
         data = request.form
+        
+        # Email validation
+        email = data.get('email', '')
+        if email:
+            import re
+            email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+            if not re.match(email_pattern, email):
+                return jsonify(success=False, message="Please enter a valid email address"), 400
+        
+        # Phone validation
+        phone = data.get('phone', '')
+        phone_pattern = r'^\+?1?\d{9,15}$'  # Allows international format
+        if not re.match(phone_pattern, phone):
+            return jsonify(success=False, message="Please enter a valid phone number (9-15 digits)"), 400
+        
+        booking_date = datetime.strptime(data['date'], "%Y-%m-%d").date()
+        booking_time = datetime.strptime(data['time'], "%H:%M").time()
+        
+        # Validate if booking date is in the future
+        today = datetime.now().date()
+        if booking_date < today:
+            return jsonify(success=False, message="Booking date must be today or later"), 400
+            
+        # If booking is for today, validate the time
+        if booking_date == today:
+            current_time = datetime.now().time()
+            if booking_time <= current_time:
+                return jsonify(success=False, message="Booking time must be later than current time for today's bookings"), 400
+        
         new_booking = Booking.create(
             first_name=data['first_name'],
             last_name=data['last_name'],
-            phone=data['phone'],
-            email=data.get('email'),
+            phone=phone,
+            email=email,
             guests=int(data['guests']),
-            date=datetime.strptime(data['date'], "%Y-%m-%d").date(),
-            time=datetime.strptime(data['time'], "%H:%M").time(),
+            date=booking_date,
+            time=booking_time,
             message=data.get('message'),
         )
         return jsonify(success=True, reference_number=new_booking.reference_number), 200
