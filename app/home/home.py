@@ -33,7 +33,7 @@ home = Blueprint("home", __name__, template_folder="templates")
 
 @home.route("/")
 def index():
-    # load menu items limited to 10
+    # Load menu items, limit to 10
     menu_items = MenuItem.query.filter(MenuItem.available == True).limit(5).all()
     employees = User.query.filter(
         or_(
@@ -79,7 +79,7 @@ def add_to_cart(menu_item_id):
     session['cart'] = cart
     menu_item = MenuItem.query.get(menu_item_id)
 
-    # Calculate total items in cart
+    # Calculate the total number of items in the cart
     cart_count = sum(item['quantity'] for item in cart)
 
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
@@ -127,27 +127,27 @@ def view_cart():
     return render_template("restaurant_cart.html", cartItems=cartItems, total_price=total_price)
 
 
-#update the cart
+# Update the cart
 @home.route('/update_cart', methods=['POST'])
 def update_cart():
     cart_data = request.json.get('cart')
-    #validate the cart data
+    # Validate cart data
     print(cart_data)
     if not cart_data:
         return jsonify({"error": "Invalid cart data"}), 400
-    # validate the cart data in db
+    # Validate cart data in the database
     for data in cart_data:
         print(data)
         menu_item = MenuItem.query.get(int(data["id"]))
         if not menu_item:
             return jsonify({"error": f"Some Menu item with ids  does not exist"}), 400
-    #update the session cart
+    # Update the cart in the session
     session['cart'] = cart_data
     flash('Your cart has been updated!')
     return jsonify({"message": "Cart updated successfully!"})
 
 
-#check out the cart
+# Checkout the cart
 @home.route('/checkout', methods=['GET'])
 def checkout():
     cart = session.get('cart', [])
@@ -167,23 +167,23 @@ def checkout():
             menu_items.append(menu_item)
             total_price += menu_item.price * quantity
 
-            # Calculate water saved for logged in users
+            # Calculate water saved for logged-in users
             water_saved = 0
             if current_user.is_authenticated:
                 # Get all ingredients for this menu item
                 menu_item_ingredients = menu_item.ingredients.all()
                 for menu_item_ingredient in menu_item_ingredients:
                     ingredient = menu_item_ingredient.ingredient
-                    # If ingredient is meat-based, calculate water saved
+                    # If the ingredient is meat, calculate water saved
                     if ingredient.meat_id:
                         # Convert quantity to kg for water usage calculation
                         quantity_in_kg = Decimal(str(menu_item_ingredient.quantity))
                         if menu_item_ingredient.unit == 'g':
                             quantity_in_kg /= Decimal('1000')
                         elif menu_item_ingredient.unit == 'l':
-                            quantity_in_kg *= Decimal('1')  # 1L = 1kg
+                            quantity_in_kg *= Decimal('1')  # 1 liter = 1 kg
                         elif menu_item_ingredient.unit == 'gallon':
-                            quantity_in_kg *= Decimal('3.78541')  # 1 gallon = 3.78541L
+                            quantity_in_kg *= Decimal('3.78541')  # 1 gallon = 3.78541 liters
                         
                         # Calculate water saved (meat water usage - plant water usage)
                         water_saved += (ingredient.water_usage_l_per_kg - Decimal('0')) * quantity_in_kg * Decimal(str(quantity))
@@ -198,7 +198,7 @@ def checkout():
             )
             cartItems.append(cart_item_dto_obj)
             
-    # if guest 
+    # If guest
     checkout_form = CheckoutForm()
     
     return render_template('restaurant_checkout.html', 
@@ -221,7 +221,7 @@ def account():
     # Redirect to login page since we've separated the pages
     return redirect(url_for('home.login'))
 
-#logout the user
+# Logout the user
 @home.route("/logout")
 def logout():
     logout_user()
@@ -278,7 +278,7 @@ def customer_info():
     # Get user's earned badges
     user_badges = current_user.badges
     
-    # Calculate next available badge
+    # Calculate the next available badge
     next_badge = None
     for badge in all_badges:
         if badge not in user_badges and current_user.contribution < badge.required_water_saved:
@@ -289,7 +289,7 @@ def customer_info():
     if next_badge:
         progress = (current_user.contribution / next_badge.required_water_saved) * 100
     else:
-        progress = 100  # If all badges are earned, progress is 100%
+        progress = 100  # If already earned all badges, progress is 100%
     
     return render_template('restaurant_customer_info.html', 
                          form=form, 
@@ -298,20 +298,20 @@ def customer_info():
                          next_badge=next_badge,
                          progress=progress)
 
-#blog 
+# Blog
 @home.route('/blog')
 def blog():
     return render_template('restaurant_blog.html')
 
-#blog details
+# Blog details
 @home.route('/blog/<int:blog_id>')
 def blog_details(blog_id):
-    # Fetch the blog post from the database using the blog_id
-    # For now, we'll just return a placeholder template
+    # Fetch the blog post from the database using blog_id
+    # For now, just return a placeholder template
     return render_template('restaurant_blog_details.html', blog_id=blog_id)
 
 
-#about us
+# About us
 @home.route('/about')
 def about():
     return render_template('restaurant_about.html')
@@ -400,7 +400,7 @@ def download_menu():
         return redirect(url_for('home.restaurant_menu'))
 
 
-# pagination for team
+# Pagination for team
 @home.route('/team')
 def team():
     page = request.args.get('page', 1, type=int)
@@ -482,16 +482,16 @@ def process_payment():
                 menu_item_ingredients = menu_item.ingredients.all()
                 for menu_item_ingredient in menu_item_ingredients:
                     ingredient = menu_item_ingredient.ingredient
-                    # If ingredient is meat-based, calculate water saved
+                    # If the ingredient is meat, calculate water saved
                     if ingredient.meat_id:
                         # Convert quantity to kg for water usage calculation
                         quantity_in_kg = Decimal(str(menu_item_ingredient.quantity))
                         if menu_item_ingredient.unit == 'g':
                             quantity_in_kg /= Decimal('1000')
                         elif menu_item_ingredient.unit == 'l':
-                            quantity_in_kg *= Decimal('1')  # 1L = 1kg
+                            quantity_in_kg *= Decimal('1')  # 1 liter = 1 kg
                         elif menu_item_ingredient.unit == 'gallon':
-                            quantity_in_kg *= Decimal('3.78541')  # 1 gallon = 3.78541L
+                            quantity_in_kg *= Decimal('3.78541')  # 1 gallon = 3.78541 liters
                         
                         # Calculate water saved (meat water usage - plant water usage)
                         water_saved = (ingredient.water_usage_l_per_kg - Decimal('0')) * quantity_in_kg * Decimal(str(quantity))

@@ -71,9 +71,9 @@
                                 </td>
                                 <td class="text-nowrap">{{ order.order_date.strftime('%Y-%m-%d %H:%M') }}</td>
                                 <td>
-                                    <span class="badge bg-{{ 'success' if order.status == 'Completed' else 'warning' if order.status == 'Pending' else 'info' if order.status == 'Preparing' else 'danger' }}-subtle text-{{ 'success' if order.status == 'Completed' else 'warning' if order.status == 'Pending' else 'info' if order.status == 'Preparing' else 'danger' }}">
-                                        <i class="fas fa-{{ 'check-circle' if order.status == 'Completed' else 'clock' if order.status == 'Pending' else 'spinner' if order.status == 'Preparing' else 'times-circle' }} me-1"></i>
-                                        {{ order.status }}
+                                    <span class="badge bg-success-subtle text-success">
+                                        <i class="fas fa-check-circle me-1"></i>
+                                        Completed
                                     </span>
                                 </td>
                                 <td class="text-nowrap fw-medium">${{ "%.2f"|format(order.total_amount) }}</td>
