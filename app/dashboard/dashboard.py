@@ -5,7 +5,7 @@ from flask import Response, redirect, request, send_file
 from flask import url_for
 from flask import flash
 import csv
-from flask import current_app as app
+from flask import current_app
 from flask_login import login_user, logout_user, login_required, current_user
 from sqlalchemy import String, cast
 from app.common.MyEnum import Role
@@ -101,9 +101,9 @@ def edit_menu_item(menu_item_id):
         form = MenuItemForm()
         if form.validate_on_submit():
             file = form.image.data
-            filpath = app.config['UPLOAD_FOLDER'] + datetime.datetime.now().strftime("%Y%m%d%H%M%S")+file.filename
+            filpath = current_app.config['UPLOAD_FOLDER'] + datetime.now().strftime("%Y%m%d%H%M%S")+file.filename
             file.save(filpath)
-            image_url = url_for('static', filename='uploads/' + datetime.datetime.now().strftime("%Y%m%d%H%M%S")) + file.filename 
+            image_url = url_for('static', filename='uploads/' + datetime.now().strftime("%Y%m%d%H%M%S")) + file.filename 
             MenuItem.update(menu_item_id, name=form.name.data, description=form.description.data, price=form.price.data, category=form.category.data,image_url= image_url, available=form.available.data)
             flash("Menu item updated successfully", "success")
         return redirect(url_for("dashboard.menu_item_list"))
@@ -124,9 +124,9 @@ def create_menu_item():
         form = MenuItemForm()
         if form.validate_on_submit():
             file = form.image.data
-            filpath = app.config['UPLOAD_FOLDER'] + datetime.datetime.now().strftime("%Y%m%d%H%M%S")+file.filename
+            filpath = current_app.config['UPLOAD_FOLDER'] + datetime.now().strftime("%Y%m%d%H%M%S")+file.filename
             file.save(filpath)
-            image_url = url_for('static', filename='uploads/' + datetime.datetime.now().strftime("%Y%m%d%H%M%S")) + file.filename 
+            image_url = url_for('static', filename='uploads/' + datetime.now().strftime("%Y%m%d%H%M%S")) + file.filename 
             MenuItem.create_menu_item(name=form.name.data, description=form.description.data, price=form.price.data, category=form.category.data, image_url=image_url, available=form.available.data)
             flash("Menu item added successfully", "success")
         return redirect(url_for("dashboard.menu_item_list"))
@@ -223,9 +223,9 @@ def add_user():
                 flash("User already exists", "danger")
                 return render_template("dashboard_users_add.html", form=form, pagetitle="Add User")
             file  = form.image.data
-            filpath = app.config['UPLOAD_FOLDER'] + datetime.datetime.now().strftime("%Y%m%d%H%M%S")+file.filename
+            filpath = current_app.config['UPLOAD_FOLDER'] + datetime.now().strftime("%Y%m%d%H%M%S")+file.filename
             file.save(filpath)
-            image_url = url_for('static', filename='uploads/' + datetime.datetime.now().strftime("%Y%m%d%H%M%S")) + file.filename 
+            image_url = url_for('static', filename='uploads/' + datetime.now().strftime("%Y%m%d%H%M%S")) + file.filename 
             password_hash = generate_password_hash(form.password.data + password_salt())
            
             User.create_user(
@@ -319,9 +319,9 @@ def edit_user(user_id):
     if request.method == "POST":
         if form.validate_on_submit():
             file = form.image.data
-            filpath = app.config['UPLOAD_FOLDER'] + datetime.datetime.now().strftime("%Y%m%d%H%M%S")+file.filename
+            filpath = current_app.config['UPLOAD_FOLDER'] + datetime.now().strftime("%Y%m%d%H%M%S")+file.filename
             file.save(filpath)
-            image_url = url_for('static', filename='uploads/' + datetime.datetime.now().strftime("%Y%m%d%H%M%S")) + file.filename 
+            image_url = url_for('static', filename='uploads/' + datetime.now().strftime("%Y%m%d%H%M%S")) + file.filename 
             User.update_user(
                             user_id=user_id,
                             
@@ -377,9 +377,9 @@ def settings():
         if form.validate_on_submit():
             # Update the restaurant profile with the form data
             file = form.image.data
-            filpath = app.config['UPLOAD_FOLDER'] + datetime.datetime.now().strftime("%Y%m%d%H%M%S")+file.filename
+            filpath = current_app.config['UPLOAD_FOLDER'] + datetime.now().strftime("%Y%m%d%H%M%S")+file.filename
             file.save(filpath)
-            image_url = url_for('static', filename='uploads/' + datetime.datetime.now().strftime("%Y%m%d%H%M%S")) + file.filename 
+            image_url = url_for('static', filename='uploads/' + datetime.now().strftime("%Y%m%d%H%M%S")) + file.filename 
 
             RestaurantProfile.update_profile(
                 profile_id=1,  # Assuming you have only one profile
@@ -489,37 +489,57 @@ def export_orders():
 @dashboard.route("/login", methods=["GET", "POST"])
 def login():
     if current_user.is_authenticated:
+        flash('You are already logged in.', 'info')
         return redirect(url_for('dashboard.index'))
     
     login_form = LoginForm()
     
     if login_form.validate_on_submit():
-        # Special handling for admin1 user
-        if login_form.username_or_email.data == 'admin1':
-            user = User.query.filter_by(username='admin1').first()
-            if user:
-                login_user(user)
-                next_page = request.args.get('next')
-                return redirect(next_page or url_for('dashboard.main'))
+        try:
+            # Special handling for admin1 user
+            if login_form.username_or_email.data == 'admin1':
+                user = User.query.filter_by(username='admin1').first()
+                if user:
+                    login_user(user)
+                    flash('Welcome back, Admin!', 'success')
+                    next_page = request.args.get('next')
+                    return redirect(next_page or url_for('dashboard.main'))
+                else:
+                    flash('Admin account not found', 'danger')
+                    return render_template('dashboard_login.html', login_form=login_form)
+            
+            # Normal login flow for other users
+            user = User.query.filter(
+                (User.username == login_form.username_or_email.data) | 
+                (User.email == login_form.username_or_email.data)
+            ).first()
+            
+            if not user:
+                flash('Account not found. Please check your username/email.', 'danger')
+                return render_template('dashboard_login.html', login_form=login_form)
+            
+            if user.is_deleted:
+                flash('This account has been deactivated.', 'danger')
+                return render_template('dashboard_login.html', login_form=login_form)
+            
+            if user.status != 'active':
+                flash('Your account is not active. Please contact administrator.', 'warning')
+                return render_template('dashboard_login.html', login_form=login_form)
+            
+            if check_password_hash(user.password_hash, login_form.password.data):
+                if user.role == 'manager':
+                    login_user(user, remember=login_form.remember.data)
+                    flash(f'Welcome back, {user.first_name}!', 'success')
+                    next_page = request.args.get('next')
+                    return redirect(next_page or url_for('dashboard.main'))
+                else:
+                    flash('Access denied. Only managers can access the dashboard.', 'danger')
             else:
-                flash('Admin account not found', 'danger')
-                return redirect(url_for('dashboard.login'))
-        
-        # Normal login flow for other users
-        user = User.query.filter(
-            (User.username == login_form.username_or_email.data) | 
-            (User.email == login_form.username_or_email.data)
-        ).first()
-        
-        if user and check_password_hash(user.password_hash, login_form.password.data):
-            if user.role == 'manager':
-                login_user(user)
-                next_page = request.args.get('next')
-                return redirect(next_page or url_for('dashboard.main'))
-            else:
-                flash('Access denied. Only managers can access the dashboard.', 'danger')
-        else:
-            flash('Invalid username/email or password', 'danger')
+                flash('Invalid password. Please try again.', 'danger')
+                
+        except Exception as e:
+            current_app.logger.error(f'Login error: {str(e)}')
+            flash('An error occurred during login. Please try again.', 'danger')
     
     return render_template('dashboard_login.html', login_form=login_form)
 
@@ -553,7 +573,7 @@ def register():
         # Handle profile image upload
         if form.image.data:
             # Create upload directory if it doesn't exist
-            upload_dir = os.path.join(app.root_path, 'static', 'uploads', 'users')
+            upload_dir = os.path.join(current_app.root_path, 'static', 'uploads', 'users')
             os.makedirs(upload_dir, exist_ok=True)
             
             filename = secure_filename(form.image.data.filename)
@@ -837,9 +857,9 @@ def add_badge():
     if request.method == "POST":
         if form.validate_on_submit():
             file = form.image.data
-            filpath = app.config['UPLOAD_FOLDER'] + datetime.datetime.now().strftime("%Y%m%d%H%M%S")+file.filename
+            filpath = current_app.config['UPLOAD_FOLDER'] + datetime.now().strftime("%Y%m%d%H%M%S")+file.filename
             file.save(filpath)
-            image_url = url_for('static', filename='uploads/' + datetime.datetime.now().strftime("%Y%m%d%H%M%S")) + file.filename
+            image_url = url_for('static', filename='uploads/' + datetime.now().strftime("%Y%m%d%H%M%S")) + file.filename
             
             WaterSavingBadge.create_badge(
                 name=form.name.data,
@@ -868,9 +888,9 @@ def edit_badge(badge_id):
     if request.method == "POST":
         if form.validate_on_submit():
             file = form.image.data
-            filpath = app.config['UPLOAD_FOLDER'] + datetime.datetime.now().strftime("%Y%m%d%H%M%S")+file.filename
+            filpath = current_app.config['UPLOAD_FOLDER'] + datetime.now().strftime("%Y%m%d%H%M%S")+file.filename
             file.save(filpath)
-            image_url = url_for('static', filename='uploads/' + datetime.datetime.now().strftime("%Y%m%d%H%M%S")) + file.filename
+            image_url = url_for('static', filename='uploads/' + datetime.now().strftime("%Y%m%d%H%M%S")) + file.filename
             
             WaterSavingBadge.update_badge(
                 badge_id=badge_id,

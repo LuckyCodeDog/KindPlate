@@ -1,66 +1,136 @@
 <!DOCTYPE html>
-<html lang="en"> 
+<html lang="en">
 <head>
-    <title>Kind Plate - Admin Login</title>
-    
-    <!-- Meta -->
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <meta name="description" content="Kind Plate - Admin Dashboard">
-    <meta name="author" content="Kind Plate">    
-    <link rel="shortcut icon" href="favicon.ico"> 
-    
-    <!-- FontAwesome JS-->
-    <script defer src="../../../static/plugins/fontawesome/js/all.min.js"></script>
-    <!-- App CSS -->  
-    <link id="theme-style" rel="stylesheet" href="../../../static/css/portal.css">
-
-</head> 
-
-<body class="app app-login p-0">    	
-    <div class="row g-0 app-auth-wrapper">
-        <div class="col-12 col-md-7 col-lg-12 auth-main-col text-center p-5">
-            <div class="d-flex flex-column align-content-end">
-                <div class="app-auth-body mx-auto">	
-                    <div class="app-auth-branding mb-4">
-                        <a class="app-logo" href="{{ url_for('home.index') }}">
-                            <img class="logo-icon me-2" src="../../../static/images/app-logo.svg" alt="logo">
-                            <span class="logo-text">Kind Plate</span>
-                        </a>
+    <title>Login - KindPlate Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <!-- SweetAlert2 -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .card {
+            border: none;
+            border-radius: 10px;
+        }
+        .card-header {
+            border-radius: 10px 10px 0 0 !important;
+        }
+        .btn-primary {
+            padding: 10px;
+        }
+        .form-control {
+            padding: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0"><i class="fas fa-sign-in-alt me-2"></i>Login</h4>
                     </div>
-                    <h2 class="auth-heading text-center mb-5">Admin Login</h2>
-                    <div class="auth-form-container text-start">
-                        <form class="auth-form login-form" action="{{ url_for('dashboard.login') }}" method="POST">         	
+                    <div class="card-body">
+                        <!-- Flash Messages -->
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                            {% if messages %}
+                                {% for category, message in messages %}
+                                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                        {{ message }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                        {% endwith %}
+
+                        <form method="POST" action="{{ url_for('dashboard.login') }}">
                             {{ login_form.hidden_tag() }}
-                            <div class="email mb-3">
-                                <label class="sr-only" for="signin-email">Username</label>
-                                {{ login_form.username_or_email(class="form-control", id="account-email", placeholder="Enter your username", required=True) }}
+                            
+                            <div class="mb-3">
+                                <label for="username_or_email" class="form-label">Username or Email</label>
+                                {{ login_form.username_or_email(class="form-control", placeholder="Enter your username or email") }}
+                                {% if login_form.username_or_email.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in login_form.username_or_email.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
                             </div>
-                            <div class="password mb-3">
-                                <label class="sr-only" for="signin-password">Password</label>
-                                {{ login_form.password(class="form-control", id="account-password", placeholder="Enter your password", required=True) }}
+
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                {{ login_form.password(class="form-control", placeholder="Enter your password") }}
+                                {% if login_form.password.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in login_form.password.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
                             </div>
-                            <div class="text-center">
-                                <button type="submit" class="btn app-btn-primary w-100 theme-btn mx-auto">Log In</button>
+
+                            <div class="mb-3 form-check">
+                                {{ login_form.remember(class="form-check-input") }}
+                                <label class="form-check-label" for="remember">Remember me</label>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-sign-in-alt me-2"></i>Login
+                                </button>
                             </div>
                         </form>
-                        <div class="text-center mt-3">
-                            <p class="mb-0">Don't have an account? <a href="{{ url_for('dashboard.register') }}" class="text-primary">Register as Manager</a></p>
+
+                        <div class="mt-3 text-center">
+                            <p class="mb-0">Don't have an account? <a href="{{ url_for('dashboard.register') }}">Register here</a></p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
     </div>
 
-    <!-- Javascript -->          
-    <script src="../../../static/plugins/popper.min.js"></script>
-    <script src="../../../static/plugins/bootstrap/js/bootstrap.min.js"></script>  
-    <script src="../../../static/js/app.js"></script> 
-
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.all.min.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get all flash messages
+        const flashMessages = document.querySelectorAll('.alert');
+        
+        // Convert each flash message to SweetAlert2
+        flashMessages.forEach(function(flash) {
+            const message = flash.textContent.trim();
+            const category = flash.classList.contains('alert-success') ? 'success' :
+                            flash.classList.contains('alert-danger') ? 'error' :
+                            flash.classList.contains('alert-warning') ? 'warning' : 'info';
+            
+            // Remove the original flash message
+            flash.remove();
+            
+            // Show SweetAlert2
+            Swal.fire({
+                title: category.charAt(0).toUpperCase() + category.slice(1),
+                text: message,
+                icon: category,
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true
+            });
+        });
+    });
+    </script>
 </body>
 </html> 
 
