@@ -34,7 +34,7 @@ home = Blueprint("home", __name__, template_folder="templates")
 @home.route("/")
 def index():
     # load menu items limited to 10
-    menu_items = MenuItem.query.limit(5).all()
+    menu_items = MenuItem.query.filter(MenuItem.available == True).limit(5).all()
     employees = User.query.filter(
         or_(
             User.role == Role.Manager,
@@ -47,11 +47,13 @@ def index():
     per_page = 12  
     if search:
         items = MenuItem.query.filter(
-                (MenuItem.name.ilike(f"%{search}%"))
+                (MenuItem.name.ilike(f"%{search}%")) & 
+                (MenuItem.available == True)
             ).paginate(page=page, per_page=per_page)
     else:
-        items = MenuItem.query.paginate(page=page, per_page=per_page)
-
+        items = MenuItem.query.filter(
+            MenuItem.available == True
+        ).paginate(page=page, per_page=per_page)
 
     print(current_user.is_authenticated)
     return render_template("restaurant_index.html", employees=employees, menu_items=menu_items, search=search, items=items)
@@ -373,10 +375,13 @@ def menu():
         per_page = 12  
         if search:
             items = MenuItem.query.filter(
-                (MenuItem.name.ilike(f"%{search}%"))
+                (MenuItem.name.ilike(f"%{search}%")) & 
+                (MenuItem.available == True)
             ).paginate(page=page, per_page=per_page)
         else:
-            items = MenuItem.query.paginate(page=page, per_page=per_page)
+            items = MenuItem.query.filter(
+                MenuItem.available == True
+            ).paginate(page=page, per_page=per_page)
 
         return render_template("restaurant_menu.html", items=items, search=search)
 

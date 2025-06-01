@@ -494,7 +494,7 @@ def export_orders():
 def login():
     if current_user.is_authenticated:
         flash('You are already logged in.', 'info')
-        return redirect(url_for('dashboard.index'))
+        return redirect(url_for('dashboard.main'))
     
     login_form = LoginForm()
     
@@ -550,7 +550,7 @@ def login():
 @dashboard.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
-        return redirect(url_for('dashboard.index'))
+        return redirect(url_for('dashboard.main'))
     
     form = ManagerRegistrationForm()
     if form.validate_on_submit():
