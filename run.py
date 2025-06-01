@@ -26,7 +26,7 @@ def inject_restaurant_profile():
     opening_dt = datetime.combine(today, opening)
     closing_dt = datetime.combine(today, closing)
 
-    # 每隔30分钟生成一个时间段
+    # Generate a time slot every 30 minutes
     time_slots = []
     while opening_dt <= closing_dt:
         time_slots.append(opening_dt.strftime("%H:%M"))

@@ -11,7 +11,7 @@ class UserWaterSavingHistory(db.Model):
     badge_id = db.Column(db.Integer, db.ForeignKey('WaterSavingBadges.badge_id'))
     created_at = db.Column(db.TIMESTAMP, default=datetime.utcnow)
 
-    # 关系
+    # Relationships
     user = db.relationship('User', backref=db.backref('water_saving_history', lazy='dynamic'))
     order = db.relationship('Order', backref=db.backref('water_saving_history', lazy='dynamic'))
     badge = db.relationship('WaterSavingBadge', backref=db.backref('awarded_history', lazy='dynamic'))

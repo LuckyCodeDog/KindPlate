@@ -86,7 +86,7 @@ class MenuItem(db.Model):
             db.session.rollback()
             return False
 
-    # 新增的原材料相關方法
+    # New ingredient-related methods
     def get_ingredients(self):
         """獲取菜品的所有原材料"""
         return [item.ingredient for item in self.ingredients]

@@ -104,7 +104,7 @@ class User(UserMixin, db.Model):
                 user.image_url = image_url
             if is_deleted:
                 user.is_deleted = is_deleted
-            user.updated_at = datetime.utcnow()  # 更新修改时间
+            user.updated_at = datetime.utcnow()  # Update modification time
             db.session.commit()
             return user
         return None
@@ -128,11 +128,11 @@ class User(UserMixin, db.Model):
         return User.query.filter_by(status=status).all()
 
     def has_badge(self, badge_name):
-        """检查用户是否拥有指定徽章"""
+        """Check if the user has a specified badge"""
         return any(badge.name == badge_name for badge in self.badges)
 
     def add_badge(self, badge_name):
-        """添加徽章到用户"""
+        """Add a badge to the user"""
         badge = WaterSavingBadge.query.filter_by(name=badge_name).first()
         if badge and not self.has_badge(badge_name):
             self.badges.append(badge)
