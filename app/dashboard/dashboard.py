@@ -101,9 +101,11 @@ def edit_menu_item(menu_item_id):
         form = MenuItemForm()
         if form.validate_on_submit():
             file = form.image.data
-            filpath = current_app.config['UPLOAD_FOLDER'] + datetime.now().strftime("%Y%m%d%H%M%S")+file.filename
-            file.save(filpath)
-            image_url = url_for('static', filename='uploads/' + datetime.now().strftime("%Y%m%d%H%M%S")) + file.filename 
+            timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+            filename = f"{timestamp}_{file.filename}"
+            filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+            file.save(filepath)
+            image_url = url_for('static', filename=f'uploads/{filename}')
             MenuItem.update(menu_item_id, name=form.name.data, description=form.description.data, price=form.price.data, category=form.category.data,image_url= image_url, available=form.available.data)
             flash("Menu item updated successfully", "success")
         return redirect(url_for("dashboard.menu_item_list"))
@@ -319,9 +321,11 @@ def edit_user(user_id):
     if request.method == "POST":
         if form.validate_on_submit():
             file = form.image.data
-            filpath = current_app.config['UPLOAD_FOLDER'] + datetime.now().strftime("%Y%m%d%H%M%S")+file.filename
-            file.save(filpath)
-            image_url = url_for('static', filename='uploads/' + datetime.now().strftime("%Y%m%d%H%M%S")) + file.filename 
+            timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+            filename = f"{timestamp}_{file.filename}"
+            filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+            file.save(filepath)
+            image_url = url_for('static', filename=f'uploads/{filename}')
             User.update_user(
                             user_id=user_id,
                             

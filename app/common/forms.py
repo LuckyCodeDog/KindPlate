@@ -117,6 +117,7 @@ class RegisterForm(FlaskForm):
 class LoginForm(FlaskForm):
     username_or_email = StringField('Username or Email', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
+    remember = BooleanField('Remember Me')
     submit = SubmitField('Login')
 
 class CustomerInfoForm(FlaskForm):
